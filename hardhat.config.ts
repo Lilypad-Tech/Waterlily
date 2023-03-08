@@ -7,7 +7,7 @@ import { HardhatUserConfig } from 'hardhat/config';
 import { resolve } from 'path';
 
 //Import our customised tasks
-// import './tasks';
+// import './hardhat/tasks';
 
 const dotenvConfigPath: string = process.env.DOTENV_CONFIG_PATH || './.env';
 dotenvConfig({ path: resolve(__dirname, dotenvConfigPath) });
@@ -22,29 +22,24 @@ const config: HardhatUserConfig = {
   solidity: '0.8.17',
   defaultNetwork: 'filecoinHyperspace',
   networks: {
-    hardhat: {},
+    localhost: {},
     filecoinHyperspace: {
-      url: 'https://filecoin-hyperspace.chainstacklabs.com/rpc/v1', //https://api.hyperspace.node.glif.io/rpc/v1',
+      url: 'https://api.hyperspace.node.glif.io/rpc/v1', //'https://filecoin-hyperspace.chainstacklabs.com/rpc/v1'
       chainId: 3141,
       accounts: [walletPrivateKey],
     },
-    filecoinMainnet: {
-      url: '',
-      chainId: 314,
-      accounts: [walletPrivateKey],
-    },
   },
-  // paths: {
-  //   root: './pages/api/hardhat',
-  //   tests: './pages/api/hardhat/tests', //who names a directory in the singular?!!!
-  //   cache: './pages/api/hardhat/cache',
-  // },
+  paths: {
+    root: './src/hardhat',
+    tests: './src/hardhat/tests', //who names a directory in the singular?!!!
+    cache: './src/hardhat/cache',
+  },
 };
 
 export default config;
 
 /*
-Networks example params
+Networks
     params: {
       url: 'https://wallaby.node.glif.io/rpc/v0',
       chainId: 31415,
