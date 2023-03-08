@@ -7,4 +7,6 @@
 // export { StatusDisplay } from './StatusDisplay';
 // export { LoadingDisplay } from './LoadingDisplay';
 
-export * from './Header';
+export * from './WebHeader';
+export * from './Logo';
+export * from './Title';

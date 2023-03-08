@@ -4,8 +4,9 @@ import {
   responsiveFontSizes,
 } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import styles from '@/styles/Home.module.css';
-import { Header } from '@/components';
+import { WebHeader } from '@/components';
+import { PageLayout } from '@/layouts';
+import HomePage from './HomePage';
 
 let theme = createTheme({
   palette: {
@@ -17,12 +18,16 @@ theme = responsiveFontSizes(theme);
 //Wallet auth belongs here too?
 export default function Home() {
   return (
+    //Wallet Context Provider here
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Header />
-      <main className={styles.main}>
+      <WebHeader />
+      <PageLayout>
+        <HomePage />
+        {/* <main className={styles.main}>
         <div className={styles.description}>Take me home</div>
-      </main>
+      </main> */}
+      </PageLayout>
     </ThemeProvider>
   );
 }

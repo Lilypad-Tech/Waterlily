@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { ReactElement } from 'react';
 
-export const Header: React.FC = (): ReactElement => {
+export const WebHeader: React.FC = (): ReactElement => {
   return (
     <Head>
       <title>ArtisteLys</title>

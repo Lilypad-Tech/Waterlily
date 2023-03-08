@@ -1,12 +1,14 @@
 import { ReactNode } from 'react';
 import { Box } from '@mui/material';
+import { FooterLayout } from '@/layouts';
 
 interface Props {
   children: ReactNode;
 }
 
 const style = {
-  minHeight: '100vh',
+  height: '100%',
+  minHeight: '150vh',
   overflow: 'scroll',
   textAlign: 'center',
   display: 'flex',
@@ -15,8 +17,11 @@ const style = {
   margin: '1rem',
 };
 
-const PageLayout = ({ children }: Props) => {
-  return <Box sx={style}>{children}</Box>;
+export const PageLayout = ({ children }: Props) => {
+  return (
+    <Box sx={style}>
+      {children}
+      <FooterLayout />
+    </Box>
+  );
 };
-
-export default PageLayout;
