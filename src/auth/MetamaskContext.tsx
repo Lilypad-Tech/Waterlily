@@ -29,3 +29,5 @@ const useMetamask = () => {
 
   return metamaskContext;
 };
+
+export default useMetamask;

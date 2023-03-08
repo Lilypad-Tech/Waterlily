@@ -2,6 +2,10 @@ const store = () => {
   return 'hi';
 };
 export default store;
+//index.ts
+// export { MetamaskStateProvider } from './store';
+// export { default as useMetamask } from './useMetamask';
+
 // import React, { createContext, useReducer } from 'react';
 
 // const typeStateMap = {
