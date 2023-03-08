@@ -1,3 +1,7 @@
+const useMeta = () => {
+  return 'hi';
+};
+export default useMeta;
 // import { useContext, useEffect, useState, useRef } from 'react';
 // import { MetaStateContext, MetaDispatchContext } from './store';
 

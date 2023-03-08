@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   ThemeProvider,
   createTheme,
@@ -17,7 +16,6 @@ theme = responsiveFontSizes(theme);
 
 //Wallet auth belongs here too?
 export default function Home() {
-  const [wallet, setWallet] = useState({}); //create a hook for this
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

@@ -1,3 +1,7 @@
+const store = () => {
+  return 'hi';
+};
+export default store;
 // import React, { createContext, useReducer } from 'react';
 
 // const typeStateMap = {
