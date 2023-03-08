@@ -36,7 +36,6 @@
     "@definitions/*": ["src/definitions/*"],
     "@api/*": ["src/api/*"],
     "@hardhat/*": ["src/hardhat/*"],
-    "@contracts/*": ["src/hardhat/artifacts/contracts/*"],
-    "@auth": ["src/auth/*"]
+    "@contracts/*": ["src/hardhat/artifacts/contracts/*"]
   }
 }
