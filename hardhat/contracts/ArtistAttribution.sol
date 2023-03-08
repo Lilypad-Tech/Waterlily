@@ -11,11 +11,11 @@ import "./LilypadCallerInterface.sol";
 contract ArtistAttribution is LilypadCallerInterface, Ownable {
     LilypadEvents public bridge;
 
-    uint32 public computeProviderEscrow;
-    uint32 public computeProviderRevenue;
+    uint256 public computeProviderEscrow;
+    uint256 public computeProviderRevenue;
 
-    uint32 public imageCost;
-    uint32 public artistCommission;
+    uint256 public imageCost;
+    uint256 public artistCommission;
 
     struct StableDiffusionImage {
         uint id;
@@ -23,6 +23,7 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         string artist;
         string prompt;
         string ipfsResult;
+        string errorMessage;
         bool isComplete;
         bool isCancelled;
     }
@@ -54,30 +55,35 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
     // mapping of artist address onto their ID
     // this makes withdraw easier where we only know thier address
     mapping (address => string) artistAddresses;
+    // we need this so we can itetate over the artists
+    string[] artistIDs;
+
+    uint256 public constant DEFAULT_IMAGE_COST = 650000000000000 * 250;
+    uint256 public constant DEFAULT_IMAGE_COMMISSION = 650000000000000 * 50;
 
     event ImageGenerated(StableDiffusionImage image);
     event ImageCancelled(StableDiffusionImage image);
 
     constructor(
       address _eventsContractAddress,
-      uint32 _imageCost,
-      uint32 _artistCommission
+      uint256 _imageCost,
+      uint256 _artistCommission
     ) {
         require(_artistCommission <= _imageCost, "ArtistAttribution: artist commission must be less than image cost");
         console.log("Deploying StableDiffusion contract");
-        bridge = LilypadEvents(_eventsAddress);
+        bridge = LilypadEvents(_eventsContractAddress);
 
         if(_imageCost == 0) {
           // how much gwei does it cost to run a job?
           // this is 0.00065 ETH then converted to Filecoin
           // it represents around $0.50
-          _imageCost = 650000000000000 * 250;
+          _imageCost = DEFAULT_IMAGE_COST;
         }
 
         if(_artistCommission == 0) {
           // how much gewi does the artist get?
           // this is expressed as gwei but is basically a percentage of 20%
-          _artistCommission = 650000000000000 * 50;
+          _artistCommission = DEFAULT_IMAGE_COMMISSION;
         }
         
         imageCost = _imageCost;
@@ -102,7 +108,7 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         '}';
 
     function StableDiffusion(string calldata _artistID, string calldata _prompt) external payable {
-        require(artists[_artistID].id != "", "ArtistAttribution: artist does not exist");
+        require(bytes(artists[_artistID].id).length > 0, "ArtistAttribution: artist does not exist");
         require(msg.value >= imageCost, "ArtistAttribution: not enough FIL sent to pay for image");
 
         string memory actualPrompt = string.concat(_prompt, ' in the style of ', _artistID);
@@ -122,7 +128,11 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
             id: id,
             customer: msg.sender,
             artist: _artistID,
-            prompt: actualPrompt
+            prompt: actualPrompt,
+            ipfsResult: "",
+            errorMessage: "",
+            isComplete: false,
+            isCancelled: false
         });
         imageIDs.push(id);
         // if they have paid too much then refund the difference
@@ -133,41 +143,59 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         }
     }
 
-    function getArtists() public view returns (mapping (string => Artist) storage) {
-        return artists;
+    function getArtistIDs() public view returns (string[] memory) {
+        return artistIDs;
     }
 
-    function getImageIDs() public view returns (uint[] storage) {
+    function getArtist(string calldata id) public view returns (Artist memory) {
+        return artists[id];
+    }
+
+    function getImageIDs() public view returns (uint[] memory) {
         return imageIDs;
     }
 
-    function getImage(uint id) public view returns (StableDiffusionImage storage) {
+    function getImage(uint id) public view returns (StableDiffusionImage memory) {
         return images[id];
     }
 
-    function updateArtist(string id, address wallet, string metadata) public onlyOwner {
+    function updateArtist(string calldata id, address wallet, string calldata metadata) public onlyOwner {
+        if(bytes(artists[id].id).length > 0) {
+          artistIDs.push(id);
+        }
         artists[id] = Artist({
           id: id,
           wallet: wallet,
-          metadata: metadata
+          metadata: metadata,
+          escrow: 0,
+          revenue: 0,
+          numJobsRun: 0
         });
         artistAddresses[wallet] = id;
     }
 
-    function deleteArtist(string id, address wallet, string metadata) public onlyOwner {
-        artist = artists[image.artist];
-        require(artist.id != "", "ArtistAttribution: artist does not exist");
+    function deleteArtist(string calldata id) public onlyOwner {
+        require(bytes(artists[id].id).length > 0, "ArtistAttribution: artist does not exist");
+        Artist storage artist = artists[id];
         require(artist.escrow == 0, "ArtistAttribution: please have the artist withdraw escrow first"); // they have money still to claim
         delete(artistAddresses[artist.wallet]);
         delete(artists[id]);
+        // remove from artistIDs
+        for (uint i = 0; i < artistIDs.length; i++) {
+            if (keccak256(abi.encodePacked((artistIDs[i]))) == keccak256(abi.encodePacked((id)))) {
+                artistIDs[i] = artistIDs[artistIDs.length - 1];
+                artistIDs.pop();
+                break;
+            }
+        }
     }
 
     function artistWithdraw() public payable {
-        artistID = artistAddresses[msg.sender];
-        require(artistID != "", "ArtistAttribution: artist does not exist");
-        artist = artists[artistID];
+        string memory artistID = artistAddresses[msg.sender];
+        require(bytes(artists[artistID].id).length > 0, "ArtistAttribution: artist does not exist");
+        Artist storage artist = artists[artistID];
         require(artist.escrow > 0, "ArtistAttribution: artist does not have any money to withdraw");
-        escrowToSend = artist.escrow;
+        uint256 escrowToSend = artist.escrow;
         artist.escrow = 0;
         address payable to = payable(msg.sender);
         to.transfer(escrowToSend);
@@ -186,7 +214,7 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         require(_resultType == LilypadResultType.CID);
 
         // get a reference to the image
-        image = images[_jobId];
+        StableDiffusionImage storage image = images[_jobId];
 
         // sanity check that the image exists with that ID
         require(image.id > 0, "ArtistAttribution: image does not exist");
@@ -195,11 +223,11 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         require(image.isCancelled == false, "ArtistAttribution: image was cancalled");
 
         // get a reference to the artist for this image
-        artist = artists[image.artist];
+        Artist storage artist = artists[image.artist];
 
         // edge case where we deleted the artist in between the job
         // starting and completing
-        require(artist.id != "", "ArtistAttribution: artist does not exist");
+        require(bytes(artist.id).length > 0, "ArtistAttribution: artist does not exist");
         
         // update the result of the image
         image.ipfsResult = _result;
@@ -219,7 +247,7 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         require(_from == address(bridge)); // TODO: really not secure
 
         // get a reference to the image
-        image = images[_jobId];
+        StableDiffusionImage storage image = images[_jobId];
 
         // sanity check that the image exists with that ID
         require(image.id > 0, "ArtistAttribution: image does not exist");
@@ -228,7 +256,10 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
 
         // mark the image as cancelled and refund the customer
         image.isCancelled = true;
-        image.customer.transfer(imageCost);
+        image.errorMessage = _errorMsg;
+
+        address payable to = payable(image.customer);
+        to.transfer(imageCost);
 
         emit ImageCancelled(image);
     }
