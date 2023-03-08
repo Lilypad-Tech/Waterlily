@@ -26,5 +26,17 @@
     "./src"
   ],
   "exclude": ["node_modules"],
-  "files": ["./hardhat.config.ts"]
+  "files": ["./hardhat.config.ts"],
+  "paths": {
+    "@layouts": ["src/layouts/*"],
+    "@components": ["src/components/*"],
+    "@utils/*": ["src/utils/*"],
+    "@assets/*": ["src/assets/*"],
+    "@models": ["src/models/*"],
+    "@definitions/*": ["src/definitions/*"],
+    "@api/*": ["src/api/*"],
+    "@hardhat/*": ["src/hardhat/*"],
+    "@contracts/*": ["src/hardhat/artifacts/contracts/*"],
+    "@auth": ["src/auth/*"]
+  }
 }

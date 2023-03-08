@@ -1,9 +1,11 @@
-// const ArtistProfile = () => {
-//   return <div>ArtistProfile</div>;
-// };
+import PageLayout from '@/layouts/PageLayout';
 
-// export default ArtistProfile;
+const ArtistProfile = () => {
+  return (
+    <PageLayout>
+      <div>Artist Profile</div>
+    </PageLayout>
+  );
+};
 
-export default function ArtistProfile() {
-  return <div>ArtistProfile</div>;
-}
+export default ArtistProfile;
