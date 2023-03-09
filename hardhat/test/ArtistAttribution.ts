@@ -84,4 +84,47 @@ describe("ArtistAttribution", function () {
     })
   })
 
+  describe("Image", function () {
+    it("Should revert when the artist ID is wrong", async function () {
+      const { artistContract, customerAccount } = await loadFixture(getDeployContracts())
+      await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world')).to.be.revertedWith(
+        'artist does not exist'
+      )
+    })
+
+    it("Should revert when not enough FIL has been sent", async function () {
+      const { artistContract, customerAccount, artist1Account } = await loadFixture(getDeployContracts())
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
+      await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world')).to.be.revertedWith(
+        'not enough FIL sent to pay for image'
+      )
+      await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
+        value: DEFAULT_IMAGE_COST.sub(BigNumber.from('1')),
+      })).to.be.revertedWith(
+        'not enough FIL sent to pay for image'
+      )
+      await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
+        value: DEFAULT_IMAGE_COST,
+      })).not.to.be.reverted
+    })
+
+    it("Should emit an event from the events contract", async function () {
+      const { eventsContract, artistContract, customerAccount, artist1Account, artist2Account } = await loadFixture(getDeployContracts())
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
+      await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
+        value: DEFAULT_IMAGE_COST,
+      })).to.emit(eventsContract, "NewBacalhauJobSubmitted")
+
+      const events = await eventsContract.queryFilter(eventsContract.filters.NewBacalhauJobSubmitted())
+      expect(events.length).to.equal(1)
+      const args = events[0].args.job
+      expect(args.requestor).to.equal(artistContract.address)
+      expect(args.resultType).to.equal(0)
+      expect(args.id).to.equal(BigNumber.from(0))
+      expect(args.spec).to.equal(`{"Engine": "docker","Verifier": "noop","Publisher": "estuary","Docker": {"Image": "ghcr.io/bacalhau-project/examples/stable-diffusion-gpu:0.0.1","Entrypoint": ["python", "main.py", "--o", "./outputs", "--p", "hello world in the style of artist1"]},"Resources": {"GPU": "1"},"Outputs": [{"Name": "outputs", "Path": "/outputs"}],"Deal": {"Concurrency": 1}}`)
+      
+    })
+
+  })
+
 })
