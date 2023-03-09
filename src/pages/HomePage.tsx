@@ -54,7 +54,6 @@ const HomePage = () => {
         <Title text="Artists" sx={{ fontSize: '3rem' }} />
         <div>artist portfolio</div>
       </ImageLayout>
-      <div>Take me home</div>
     </>
   );
 };

@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { MyButton } from '@/components';
+import { artists } from '@/definitions/artists';
 
 // import { appUserInput } from '@/definitions/strings';
 
@@ -51,6 +52,12 @@ export const UserInput: FC<UserInputProps> = (): ReactElement => {
     console.log('run lilypad function');
   };
 
+  const menuItems = () => {
+    return artists.map((artist) => {
+      return <MenuItem value={artist.name}>{artist.name}</MenuItem>;
+    });
+  };
+
   return (
     <Box sx={containerStyle}>
       <Typography sx={textStyle}>
@@ -78,17 +85,15 @@ export const UserInput: FC<UserInputProps> = (): ReactElement => {
         </Grid>
         <Grid item xs={4} sx={{ paddingLeft: '0.5rem', ...itemStyle }}>
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Artist</InputLabel>
+            <InputLabel id="artist-select-label">Artist</InputLabel>
             <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
+              labelId="artist-select-label"
+              id="artist-select"
               value={artist}
               label="Artist"
               onChange={handleChange}
             >
-              <MenuItem value={10}>PaintLys</MenuItem>
-              <MenuItem value={20}>Ryan</MenuItem>
-              <MenuItem value={30}>Mona</MenuItem>
+              {menuItems()}
             </Select>
           </FormControl>
         </Grid>

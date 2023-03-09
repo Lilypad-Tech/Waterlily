@@ -11,7 +11,7 @@ const style = {
   alignItems: 'center',
   justifyContent: 'center',
   width: '100%',
-  marginTop: '2rem',
+  marginTop: '1rem',
 };
 
 export const UserInputLayout = ({ children }: Props) => {
