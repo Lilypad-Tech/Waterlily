@@ -6,7 +6,7 @@ const descriptionStyle = {
   width: '100%',
   fontWeight: 'bold',
   whiteSpace: 'pre-line',
-  fontFamily: 'fantasy',
+  // fontFamily: 'fantasy',
   lineHeight: '1.7',
 };
 const boxStyle = {

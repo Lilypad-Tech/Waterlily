@@ -35,7 +35,7 @@ const itemStyle = {
 };
 
 const textStyle = {
-  fontFamily: 'fantasy',
+  // fontFamily: 'fantasy',
 };
 
 type UserInputProps = {};

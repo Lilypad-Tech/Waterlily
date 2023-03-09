@@ -1,14 +1,12 @@
 import Head from 'next/head';
 import { ReactElement } from 'react';
+import { appTitle, appHeader } from '@/definitions/strings';
 
 export const WebHeader: React.FC = (): ReactElement => {
   return (
     <Head>
-      <title>ArtisteLys</title>
-      <meta
-        name="description"
-        content="AI-Art-Attribution Project dedicated to enabling ethical AI artwork generation by @BacalhauProject and @DeveloperAlly"
-      />
+      <title>{appTitle}</title>
+      <meta name="description" content={appHeader} />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <link
         rel="apple-touch-icon"
