@@ -9,6 +9,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { MyButton } from '@/components';
 
 // import { appUserInput } from '@/definitions/strings';
 
@@ -46,6 +47,10 @@ export const UserInput: FC<UserInputProps> = (): ReactElement => {
     setArtist(event.target.value as string);
   };
 
+  const generateImages = () => {
+    console.log('run lilypad function');
+  };
+
   return (
     <Box sx={containerStyle}>
       <Typography sx={textStyle}>
@@ -63,7 +68,7 @@ export const UserInput: FC<UserInputProps> = (): ReactElement => {
         >
           <TextField
             label="Text Prompt"
-            placeholder="A rainbow Bacalhau in the style of a Monet picture dancing on an Australian Beach"
+            placeholder="A rainbow unicorn dancing on an Australian Beach"
             id="prompt_input"
             onChange={(e) => setPrompt(e.target.value)}
             fullWidth
@@ -88,6 +93,12 @@ export const UserInput: FC<UserInputProps> = (): ReactElement => {
           </FormControl>
         </Grid>
       </Grid>
+      <br />
+      <MyButton
+        name="Generate Images"
+        action={generateImages}
+        disabled={!prompt || !artist}
+      />
     </Box>
   );
 };

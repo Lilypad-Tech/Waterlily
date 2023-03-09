@@ -5,7 +5,7 @@ import { Button } from '@mui/material';
 interface Props {
   action: Function;
   name: string;
-  background: string;
+  background?: string;
   disabled?: boolean;
 }
 
@@ -25,7 +25,9 @@ export const MyButton: FC<Props> = ({ action, name, background, disabled }) => {
         background: `${
           disabled
             ? styles.disabled
-            : `${styles[background as keyof typeof styles]}`
+            : background
+            ? `${styles[background as keyof typeof styles]}`
+            : styles.connected
         }`,
         backgroundSize: '200% 200%',
         animation: `gradient-animation 4s ease infinite`,
