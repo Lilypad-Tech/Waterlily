@@ -17,8 +17,9 @@ const titleStyle = {
 
 type TitleProps = {
   text?: string;
+  sx?: object;
 };
 
-export const Title: FC<TitleProps> = ({ text }): ReactElement => {
-  return <Box sx={titleStyle}>{text || appTitle}</Box>;
+export const Title: FC<TitleProps> = ({ text, sx }): ReactElement => {
+  return <Box sx={{ ...titleStyle, ...sx }}>{text || appTitle}</Box>;
 };

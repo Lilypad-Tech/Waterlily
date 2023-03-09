@@ -3,6 +3,7 @@ import {
   HeaderLayout,
   TitleLayout,
   SectionLayout,
+  UserInputLayout,
   ImageLayout,
 } from '@/layouts';
 import { Logo, Title, Subtitle, Description, MyButton } from '@/components';
@@ -26,14 +27,24 @@ const HomePage = () => {
         <Subtitle />
         <Description />
       </TitleLayout>
-      <SectionLayout>
+      {/* <SectionLayout>
         <div>status updates? use snack?</div>
-      </SectionLayout>
+      </SectionLayout> */}
       <SectionLayout>
-        <div>changeable - prompt input or wallet connect</div>
+        {!isConnected ? (
+          <MyButton
+            action={() => setConnected(!isConnected)}
+            name={isConnected ? 'connected' : 'connect'}
+            background={isConnected ? 'connected' : 'connect'}
+          />
+        ) : (
+          <UserInputLayout>
+            <div>changeable - prompt input or wallet connect</div>
+          </UserInputLayout>
+        )}
       </SectionLayout>
       <ImageLayout>
-        <div>header title</div>
+        <Title text="Artists" sx={{ fontSize: '3rem' }} />
         <div>artist portfolio</div>
       </ImageLayout>
       <div>Take me home</div>

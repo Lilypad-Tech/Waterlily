@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Button } from '@mui/material';
-import { buttonStrings } from '@/definitions/strings';
+// import { buttonStrings } from '@/definitions/strings';
 
 interface Props {
   action: Function;
@@ -32,9 +32,6 @@ export const MyButton: FC<Props> = ({ action, name, background, disabled }) => {
         color: 'white',
         fontWeight: 'bold',
         fontSize: 'larger',
-        // paddingTop: '0.5em',
-        // paddingRight: '1.5em',
-        // paddingLeft: '1.5em',
       }}
       disabled={disabled}
       onClick={() => action()}

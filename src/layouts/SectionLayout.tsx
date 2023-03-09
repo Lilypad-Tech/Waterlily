@@ -5,8 +5,8 @@ interface Props {
   children: ReactNode;
 }
 
-const style = {};
+const style = { padding: '1rem 0 1rem 0' };
 
 export const SectionLayout = ({ children }: Props) => {
-  return <Box>{children}</Box>;
+  return <Box sx={style}>{children}</Box>;
 };
