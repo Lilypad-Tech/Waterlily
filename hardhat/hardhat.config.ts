@@ -15,7 +15,7 @@ if (!walletPrivateKey) {
 
 const config: HardhatUserConfig = {
   solidity: '0.8.17',
-  defaultNetwork: 'localhost',
+  defaultNetwork: 'hardhat',
   namedAccounts: {
     admin: 0,
   },

@@ -58,7 +58,10 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
     // we need this so we can itetate over the artists
     string[] artistIDs;
 
+    // this is the default cost of an image
+    // it's about 50 cents
     uint256 public constant DEFAULT_IMAGE_COST = 650000000000000 * 250;
+    // this is 20% of the image cost
     uint256 public constant DEFAULT_IMAGE_COMMISSION = 650000000000000 * 50;
 
     event ImageGenerated(StableDiffusionImage image);
