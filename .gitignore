@@ -46,3 +46,4 @@ typechain-types
 cache
 artifacts
 
+.terraform*
