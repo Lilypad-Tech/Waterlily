@@ -204,8 +204,9 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
     }
 
     function adminWithdraw(address payable to) public payable onlyOwner {
+        uint256 escrowToSend = computeProviderEscrow;
         computeProviderEscrow = 0;
-        to.transfer(computeProviderEscrow);
+        to.transfer(escrowToSend);
     }
 
     function lilypadFulfilled(address _from, uint _jobId, LilypadResultType _resultType, string calldata _result) external override {
