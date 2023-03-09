@@ -72,8 +72,7 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
       uint256 _imageCost,
       uint256 _artistCommission
     ) {
-        require(_artistCommission <= _imageCost, "ArtistAttribution: artist commission must be less than image cost");
-        console.log("Deploying StableDiffusion contract");
+        require(_artistCommission <= _imageCost, "artist commission must be less than image cost");
         bridge = LilypadEvents(_eventsContractAddress);
 
         if(_imageCost == 0) {
@@ -111,8 +110,8 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         '}';
 
     function StableDiffusion(string calldata _artistID, string calldata _prompt) external payable {
-        require(bytes(artists[_artistID].id).length > 0, "ArtistAttribution: artist does not exist");
-        require(msg.value >= imageCost, "ArtistAttribution: not enough FIL sent to pay for image");
+        require(bytes(artists[_artistID].id).length > 0, "artist does not exist");
+        require(msg.value >= imageCost, "not enough FIL sent to pay for image");
 
         string memory actualPrompt = string.concat(_prompt, ' in the style of ', _artistID);
         string memory tag = _artistID;
@@ -163,7 +162,7 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
     }
 
     function updateArtist(string calldata id, address wallet, string calldata metadata) public onlyOwner {
-        if(bytes(artists[id].id).length > 0) {
+        if(bytes(artists[id].id).length == 0) {
           artistIDs.push(id);
         }
         artists[id] = Artist({
@@ -178,9 +177,9 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
     }
 
     function deleteArtist(string calldata id) public onlyOwner {
-        require(bytes(artists[id].id).length > 0, "ArtistAttribution: artist does not exist");
+        require(bytes(artists[id].id).length > 0, "artist does not exist");
         Artist storage artist = artists[id];
-        require(artist.escrow == 0, "ArtistAttribution: please have the artist withdraw escrow first"); // they have money still to claim
+        require(artist.escrow == 0, "please have the artist withdraw escrow first"); // they have money still to claim
         delete(artistAddresses[artist.wallet]);
         delete(artists[id]);
         // remove from artistIDs
@@ -195,9 +194,9 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
 
     function artistWithdraw() public payable {
         string memory artistID = artistAddresses[msg.sender];
-        require(bytes(artists[artistID].id).length > 0, "ArtistAttribution: artist does not exist");
+        require(bytes(artists[artistID].id).length > 0, "artist does not exist");
         Artist storage artist = artists[artistID];
-        require(artist.escrow > 0, "ArtistAttribution: artist does not have any money to withdraw");
+        require(artist.escrow > 0, "artist does not have any money to withdraw");
         uint256 escrowToSend = artist.escrow;
         artist.escrow = 0;
         address payable to = payable(msg.sender);
@@ -220,17 +219,17 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         StableDiffusionImage storage image = images[_jobId];
 
         // sanity check that the image exists with that ID
-        require(image.id > 0, "ArtistAttribution: image does not exist");
+        require(image.id > 0, "image does not exist");
         // this is important otherwise we are paying out multiple times for the same image
-        require(image.isComplete == false, "ArtistAttribution: image already complete");
-        require(image.isCancelled == false, "ArtistAttribution: image was cancalled");
+        require(image.isComplete == false, "image already complete");
+        require(image.isCancelled == false, "image was cancalled");
 
         // get a reference to the artist for this image
         Artist storage artist = artists[image.artist];
 
         // edge case where we deleted the artist in between the job
         // starting and completing
-        require(bytes(artist.id).length > 0, "ArtistAttribution: artist does not exist");
+        require(bytes(artist.id).length > 0, "artist does not exist");
         
         // update the result of the image
         image.ipfsResult = _result;
@@ -253,9 +252,9 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         StableDiffusionImage storage image = images[_jobId];
 
         // sanity check that the image exists with that ID
-        require(image.id > 0, "ArtistAttribution: image does not exist");
-        require(image.isComplete == false, "ArtistAttribution: image already complete");
-        require(image.isCancelled == false, "ArtistAttribution: image was cancalled");
+        require(image.id > 0, "image does not exist");
+        require(image.isComplete == false, "image already complete");
+        require(image.isCancelled == false, "image was cancalled");
 
         // mark the image as cancelled and refund the customer
         image.isCancelled = true;
