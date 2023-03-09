@@ -6,7 +6,14 @@ import {
   UserInputLayout,
   ImageLayout,
 } from '@/layouts';
-import { Logo, Title, Subtitle, Description, MyButton } from '@/components';
+import {
+  Logo,
+  Title,
+  Subtitle,
+  Description,
+  MyButton,
+  UserInput,
+} from '@/components';
 
 const HomePage = () => {
   const [isConnected, setConnected] = useState(false);
@@ -39,7 +46,7 @@ const HomePage = () => {
           />
         ) : (
           <UserInputLayout>
-            <div>changeable - prompt input or wallet connect</div>
+            <UserInput />
           </UserInputLayout>
         )}
       </SectionLayout>
