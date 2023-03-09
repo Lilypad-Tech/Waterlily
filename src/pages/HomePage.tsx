@@ -13,11 +13,13 @@ import {
   Description,
   MyButton,
   UserInput,
+  PromptInput,
 } from '@/components';
 
 const HomePage = () => {
   const [isConnected, setConnected] = useState(false);
   const [isGenerating, setGenerating] = useState(false);
+  const [prompt, setPrompt] = useState('');
 
   return (
     <>

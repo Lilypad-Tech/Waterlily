@@ -7,12 +7,11 @@ interface Props {
 
 const style = {
   display: 'flex',
+  flexGrow: 1,
   alignItems: 'center',
   justifyContent: 'center',
-  background: 'pink',
   width: '100%',
-  padding: '0 1rem 0 1rem',
-  minHeight: '3rem',
+  marginTop: '2rem',
 };
 
 export const UserInputLayout = ({ children }: Props) => {
