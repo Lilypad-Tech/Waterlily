@@ -54,7 +54,11 @@ export const UserInput: FC<UserInputProps> = (): ReactElement => {
 
   const menuItems = () => {
     return artists.map((artist) => {
-      return <MenuItem value={artist.name}>{artist.name}</MenuItem>;
+      return (
+        <MenuItem key={artist.name} value={artist.name}>
+          {artist.name}
+        </MenuItem>
+      );
     });
   };
 
