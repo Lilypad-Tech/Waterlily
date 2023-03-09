@@ -1,5 +1,6 @@
 import { FC, ReactElement } from 'react';
 import { Box } from '@mui/material';
+import { appTitle } from '@/definitions/strings';
 
 const titleStyle = {
   background:
@@ -19,5 +20,5 @@ type TitleProps = {
 };
 
 export const Title: FC<TitleProps> = ({ text }): ReactElement => {
-  return <Box sx={titleStyle}>{text || 'ArtisteLys'}</Box>;
+  return <Box sx={titleStyle}>{text || appTitle}</Box>;
 };

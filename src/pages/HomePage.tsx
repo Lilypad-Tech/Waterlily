@@ -1,21 +1,30 @@
+import { useState } from 'react';
 import {
   HeaderLayout,
   TitleLayout,
   SectionLayout,
   ImageLayout,
 } from '@/layouts';
-import { Logo, Title } from '@/components';
+import { Logo, Title, Subtitle, Description, MyButton } from '@/components';
 
 const HomePage = () => {
+  const [isConnected, setConnected] = useState(false);
+  const [isGenerating, setGenerating] = useState(false);
+
   return (
     <>
       <HeaderLayout>
-        <Logo height={30} />
-        <div>wallet</div>
+        <Logo height={40} />
+        <MyButton
+          action={() => setConnected(!isConnected)}
+          name={isConnected ? 'connected' : 'connect'}
+          background={isConnected ? 'connected' : 'connect'}
+        />
       </HeaderLayout>
       <TitleLayout>
-        <Title text="ArtisteLys" />
-        <div>Description on multiple lines</div>
+        <Title />
+        <Subtitle />
+        <Description />
       </TitleLayout>
       <SectionLayout>
         <div>status updates? use snack?</div>

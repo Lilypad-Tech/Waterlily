@@ -8,7 +8,7 @@ interface Props {
 const style = {
   display: 'flex',
   flexDirection: 'row',
-  padding: '0.8rem 1.5rem 0.8rem 1.5rem',
+  padding: '0 0 0.5rem 0',
   justifyContent: 'space-between',
   alignItems: 'center',
 };

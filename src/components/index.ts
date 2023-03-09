@@ -10,3 +10,6 @@
 export * from './WebHeader';
 export * from './Logo';
 export * from './Title';
+export * from './Subtitle';
+export * from './Description';
+export * from './MyButton';
