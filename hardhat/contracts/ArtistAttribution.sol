@@ -101,7 +101,7 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         string memory tag = _artistID;
 
         // TODO: delete this once we've got images tagged with the artist id
-        tag = "0.0.1";
+        // tag = "0.0.1";
 
         // TODO: replace double quotes in the prompt otherwise our JSON breaks
         // TODO: do proper json encoding, look out for quotes in _prompt
