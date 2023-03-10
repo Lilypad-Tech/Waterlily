@@ -2,7 +2,9 @@
   "name": "lilypad",
   "version": "0.1.0",
   "scripts": {
-    "node": "hardhat node --network hardhat"
+    "node": "hardhat node --network hardhat",
+    "compile": "hardhat compile",
+    "postcompile": "cp -r ./artifacts/contracts ../src/artifacts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.1",
