@@ -22,11 +22,9 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "./src/hardhat/scripts",
     "./src"
   ],
-  "exclude": ["node_modules"],
-  "files": ["./hardhat.config.ts"],
+  "exclude": ["node_modules", "hardhat"],
   "paths": {
     "@layouts": ["src/layouts/*"],
     "@components": ["src/components/*"],
@@ -34,8 +32,6 @@
     "@assets": ["src/assets"],
     "@models": ["src/models/*"],
     "@definitions/*": ["src/definitions/*"],
-    "@api/*": ["src/api/*"],
-    "@hardhat/*": ["src/hardhat/*"],
-    "@contracts/*": ["src/hardhat/artifacts/contracts/*"]
+    "@api/*": ["src/api/*"]
   }
 }
