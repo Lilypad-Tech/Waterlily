@@ -38,6 +38,8 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         // this id a string that is the same as the prompt we use for stable diffusion
         string id;
         address wallet;
+        // the docker image that we inject into the bacalhau spec
+        string dockerImage;
         /**
           an IPFS CID of the artists metadata? eg. portfolio links etc.
           Artist Style : string
@@ -81,7 +83,7 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         '"Verifier": "noop",'
         '"Publisher": "estuary",'
         '"Docker": {'
-        '"Image": "ghcr.io/bacalhau-project/examples/stable-diffusion-gpu:';
+        '"Image": "';
 
     string constant spec2 = '",'
         '"Entrypoint": ["python", "main.py", "--o", "./outputs", "--p", "';
@@ -97,15 +99,13 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         require(bytes(artists[_artistID].id).length > 0, "artist does not exist");
         require(msg.value >= imageCost, "not enough FIL sent to pay for image");
 
-        string memory actualPrompt = string.concat(_prompt, ' in the style of ', _artistID);
-        string memory tag = _artistID;
-
-        // TODO: delete this once we've got images tagged with the artist id
-        // tag = "0.0.1";
+        string memory actualPrompt = string.concat(_prompt, ', in the style of ', _artistID);
+        Artist storage artist = artists[_artistID];
+      
 
         // TODO: replace double quotes in the prompt otherwise our JSON breaks
         // TODO: do proper json encoding, look out for quotes in _prompt
-        string memory spec = string.concat(spec1, tag, spec2, actualPrompt, spec3);
+        string memory spec = string.concat(spec1, artist.dockerImage, spec2, actualPrompt, spec3);
         
         // run the job in lilypad and get the id back
         // record the image so we can reference it when the callbacks are triggered
@@ -176,13 +176,16 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         artistCommission = _artistCommission;   
     }
 
-    function updateArtist(string calldata id, address wallet, string calldata metadata) public onlyOwner {
+    function updateArtist(string calldata id, address wallet, string calldata dockerImage, string calldata metadata) public onlyOwner {
+        require(bytes(id).length > 0, "please provide an id");
+        require(bytes(dockerImage).length > 0, "please provide a docker image");
         if(bytes(artists[id].id).length == 0) {
           artistIDs.push(id);
         }
         artists[id] = Artist({
           id: id,
           wallet: wallet,
+          dockerImage: dockerImage,
           metadata: metadata,
           escrow: 0,
           revenue: 0,
