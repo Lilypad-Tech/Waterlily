@@ -4,10 +4,10 @@ This is the deployment for the AI-Artist-Attribution project.
 
 We run this as:
 
- * a vercel app hosting the frontend
- * some smart contracts on FVM
- * a golang process on a google cloud VM
- * a private bacalhau cluster
+- a vercel app hosting the frontend
+- some smart contracts on FVM
+- a golang process on a google cloud VM
+- a private bacalhau cluster
 
 ## deploy smart contracts
 
@@ -36,9 +36,9 @@ LilypadEvents set authorized contract to:  0xC89642668A64A5CeEF51B5dCe4621ACA209
 
 Open the `hardhat/.env` file and copy the address for the events contract and artist contract to:
 
- * `CONTRACT_ADDRESS` = events contract (e.g. `0x961F90f5F12CF532E8D0E65F0E79eb25aa949000`)
- * `DEPLOYED_CONTRACT_ADDRESS` = events contract (e.g. `0x961F90f5F12CF532E8D0E65F0E79eb25aa949000`)
- * `ARTIST_CONTRACT_ADDRESS` = events contract (e.g. `0xC89642668A64A5CeEF51B5dCe4621ACA209b82a6`)
+- `CONTRACT_ADDRESS` = events contract (e.g. `0x961F90f5F12CF532E8D0E65F0E79eb25aa949000`)
+- `DEPLOYED_CONTRACT_ADDRESS` = events contract (e.g. `0x961F90f5F12CF532E8D0E65F0E79eb25aa949000`)
+- `ARTIST_CONTRACT_ADDRESS` = events contract (e.g. `0xC89642668A64A5CeEF51B5dCe4621ACA209b82a6`)
 
 ## adding/updating artists
 
@@ -72,6 +72,10 @@ export ARTIST=artist1
 export PROMPT='an orange on the moon'
 npx hardhat --network filecoinHyperspace run scripts/generateImage.ts
 ```
+
+<!--
+export ARTIST=mckhallstyle
+PROMPT='rainbow unicorn' npx hardhat --network filecoinHyperspace run scripts/generateImage.ts -->
 
 ## listing images
 
@@ -178,6 +182,7 @@ cat filestore-deploy/04-deployment.yaml | envsubst | kubectl apply -f -
 ```
 
 ## changing the bacalhau job spec
+
 The smart contract issues a JSON packet to the bridge with a `_lilypad_template` field.
 
 This runs the functions in `lilypad/pkg/bridge/spec_templates.go`.

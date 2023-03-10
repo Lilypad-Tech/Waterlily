@@ -9,7 +9,7 @@ interface Props {
 const style = {
   height: '100%',
   minHeight: '150vh',
-  overflow: 'scroll',
+  // overflow: 'scroll',
   textAlign: 'center',
   display: 'flex',
   flexDirection: 'column',

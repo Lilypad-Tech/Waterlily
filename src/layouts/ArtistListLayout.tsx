@@ -13,7 +13,7 @@ const style = {
   flexFlow: 'wrap',
   justifyContent: 'center',
   overflow: 'hidden',
-  overflowY: 'scroll',
+  // overflowY: 'scroll',
 };
 
 export const ArtistListLayout = ({ children }: Props) => {
