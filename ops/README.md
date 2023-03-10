@@ -15,7 +15,9 @@ We run this as:
 cd hardhat
 npm install
 npm run compile
-echo "WALLET_PRIVATE_KEY=xxx\n" > .env
+echo "BACALHAU_API_HOST=ai-art-requester.cluster.world" > .env
+# NOTE: you need to actaully get the key below
+echo "WALLET_PRIVATE_KEY=XXX\n" >> .env
 npx hardhat --network filecoinHyperspace run scripts/deploy.ts
 ```
 
@@ -27,16 +29,16 @@ You will see something like:
 
 ```
 LilypadEvents deploying....
-LilypadEvents deployed to  0x5552F88C4dA717b61f6018408a0B3a32D380e06e
-ArtistAttribution deployed to 0xB5d1E9b8e9a0C0F11EdE5390703d966Ae8b3e09b
-LilypadEvents set authorized contract to:  0xB5d1E9b8e9a0C0F11EdE5390703d966Ae8b3e09b
+LilypadEvents deployed to  0x961F90f5F12CF532E8D0E65F0E79eb25aa949000
+ArtistAttribution deployed to 0xC89642668A64A5CeEF51B5dCe4621ACA209b82a6
+LilypadEvents set authorized contract to:  0xC89642668A64A5CeEF51B5dCe4621ACA209b82a6
 ```
 
 Open the `hardhat/.env` file and copy the address for the events contract and artist contract to:
 
- * `CONTRACT_ADDRESS` = events contract (e.g. `0x5552F88C4dA717b61f6018408a0B3a32D380e06e`)
- * `DEPLOYED_CONTRACT_ADDRESS` = events contract (e.g. `0x5552F88C4dA717b61f6018408a0B3a32D380e06e`)
- * `ARTIST_CONTRACT_ADDRESS` = events contract (e.g. `0xB5d1E9b8e9a0C0F11EdE5390703d966Ae8b3e09b`)
+ * `CONTRACT_ADDRESS` = events contract (e.g. `0x961F90f5F12CF532E8D0E65F0E79eb25aa949000`)
+ * `DEPLOYED_CONTRACT_ADDRESS` = events contract (e.g. `0x961F90f5F12CF532E8D0E65F0E79eb25aa949000`)
+ * `ARTIST_CONTRACT_ADDRESS` = events contract (e.g. `0xC89642668A64A5CeEF51B5dCe4621ACA209b82a6`)
 
 ## adding/updating artists
 
@@ -47,7 +49,6 @@ cd hardhat
 source .env
 export ARTIST=artist1
 export ADDRESS='0x71bE63f3384f5fb98995898A86B02Fb2426c5788'
-export DOCKER_IMAGE='algoveraai/sdprojectv2:mckhallstyle'
 export META='apples oranges'
 npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
 ```
@@ -129,7 +130,8 @@ npx hardhat --network filecoinHyperspace run scripts/deploy.ts
 IMAGE_COST=100 ARTIST_COMMISSION=20 \
 npx hardhat --network filecoinHyperspace run scripts/changePrice.ts
 # this wallet is a test wallet that Ally controls - we can change that later
-ARTIST=mckhallstyle ADDRESS=0x230115404c551Fcd0B6d447DE1DaD3afca230E07 DOCKER_IMAGE=algoveraai/sdprojectv2:mckhallstyle npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
+ARTIST=mckhallstyle ADDRESS=0x230115404c551Fcd0B6d447DE1DaD3afca230E07 npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
+npx hardhat --network filecoinHyperspace run scripts/listArtists.ts
 ```
 
 ## commands to test lilypad end to end
