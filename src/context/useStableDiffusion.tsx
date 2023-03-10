@@ -5,7 +5,7 @@ import {
   StableDiffusionContextType,
 } from './StableDiffusionContext';
 
-function useStableDiffusion(): StableDiffusionContextType {
+function useStableDiffusion() {
   const [stableDiffusion, setStableDiffusion] =
     useState<StableDiffusionContextType>(defaultStableDiffusionState);
 
