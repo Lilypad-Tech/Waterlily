@@ -1,4 +1,4 @@
-import { useCallback, useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import {
   StableDiffusionContext,
   defaultStableDiffusionState,
