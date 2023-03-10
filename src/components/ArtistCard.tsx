@@ -48,7 +48,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
   style = 'ArtistStyle',
   description = 'Artist Portfolio description',
   image = {
-    link: 'https://lh3.googleusercontent.com/ci/AEwo86ckKPeuZCWNi-HnGaRuv859NM6FYVkFrj9M-76Y_m08ICrdhy7ThPuetWx8HPNo81RfXLpf9xY',
+    link: '', //'https://lh3.googleusercontent.com/ci/AEwo86ckKPeuZCWNi-HnGaRuv859NM6FYVkFrj9M-76Y_m08ICrdhy7ThPuetWx8HPNo81RfXLpf9xY',
     alt: 'Monet Waterlilies',
   },
 }): ReactElement => {
