@@ -116,3 +116,15 @@ This build the binary - then we run the script:
 cd ops
 bash deploy.sh
 ```
+
+## commands to actually deploy prod
+
+The most recent set of commands for the prod contract:
+
+```bash
+cd hardhat
+source .env
+npx hardhat compile
+npx hardhat --network filecoinHyperspace run scripts/deploy.ts
+IMAGE_COST=100 ARTIST_COMMISSION=20 npx hardhat --network filecoinHyperspace run scripts/changePrice.ts
+```

@@ -10,7 +10,6 @@ const args = minimist(process.argv, {
 })
 
 async function main() {
-  if(!args.contract) throw new Error('no CONTRACT env provided')
   if(!args.imageCost) throw new Error('no IMAGE_COST env provided')
   if(!args.artistCommission) throw new Error('no ARTIST_COMMISSION env provided')
 

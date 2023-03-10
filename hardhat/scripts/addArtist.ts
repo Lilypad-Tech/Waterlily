@@ -12,7 +12,6 @@ const args = minimist(process.argv, {
 })
 
 async function main() {
-  if(!args.contract) throw new Error('no CONTRACT env provided')
   if(!args.artist) throw new Error('no ARTIST env provided')
   if(!args.address) throw new Error('no ADDRESS env provided')
   if(!args.dockerImage) throw new Error('no DOCKER_IMAGE env provided')
