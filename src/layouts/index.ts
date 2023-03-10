@@ -5,3 +5,4 @@ export * from './SectionLayout';
 export * from './TitleLayout';
 export * from './FooterLayout';
 export * from './UserInputLayout';
+export * from './ArtistListLayout';

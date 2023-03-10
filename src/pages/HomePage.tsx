@@ -5,6 +5,7 @@ import {
   SectionLayout,
   UserInputLayout,
   ImageLayout,
+  ArtistListLayout,
 } from '@/layouts';
 import {
   Logo,
@@ -13,6 +14,7 @@ import {
   Description,
   MyButton,
   UserInput,
+  ArtistCard,
 } from '@/components';
 
 const HomePage = () => {
@@ -52,7 +54,11 @@ const HomePage = () => {
       </SectionLayout>
       <ImageLayout>
         <Title text="Artists" sx={{ fontSize: '3rem' }} />
-        <div>artist portfolio</div>
+        <ArtistListLayout>
+          <ArtistCard />
+          <ArtistCard />
+          <ArtistCard />
+        </ArtistListLayout>
       </ImageLayout>
     </>
   );
