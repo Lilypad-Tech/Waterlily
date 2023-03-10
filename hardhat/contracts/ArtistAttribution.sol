@@ -86,7 +86,7 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         '"Image": "';
 
     string constant spec2 = '",'
-        '"Entrypoint": ["python", "main.py", "--o", "./outputs", "--p", "';
+        '"Entrypoint": ["python", "main.py", "--o", "/outputs", "--p", "';
         
     string constant spec3 =
         '"]},'
