@@ -80,6 +80,10 @@ contract LilypadEvents is Ownable {
         return thisJobId;
     }
 
+    function currentJobID() public view returns (uint) {
+        return _jobIds.current();
+    }
+
     function returnBacalhauResults(address _to, uint _jobId, LilypadResultType _resultType, string memory _result) public onlyOwner {
         BacalhauJobResult memory jobResult = BacalhauJobResult({
             requestor: _to,

@@ -2,6 +2,7 @@
 pragma solidity >=0.8.4;
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "./LilypadEvents.sol";
 import "./LilypadCallerInterface.sol";
 
@@ -38,8 +39,6 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         // this id a string that is the same as the prompt we use for stable diffusion
         string id;
         address wallet;
-        // the docker image that we inject into the bacalhau spec
-        string dockerImage;
         /**
           an IPFS CID of the artists metadata? eg. portfolio links etc.
           Artist Style : string
@@ -78,44 +77,27 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         bridge = LilypadEvents(_eventsContractAddress);
     }
 
-    string constant spec1 = '{'
-        '"Engine": "docker",'
-        '"Verifier": "noop",'
-        '"Publisher": "estuary",'
-        '"Docker": {'
-        '"Image": "';
-
-    string constant spec2 = '",'
-        '"Entrypoint": ["python", "main.py", "--o", "/outputs", "--p", "';
-        
-    string constant spec3 =
-        '"]},'
-        '"Resources": {"GPU": "1"},'
-        '"Outputs": [{"Name": "outputs", "Path": "/outputs"}],'
-        '"Deal": {"Concurrency": 1},'
-        '"Network": {"Type": "Full"}'
-        '}';
-
     function StableDiffusion(string calldata _artistID, string calldata _prompt) external payable {
         require(bytes(artists[_artistID].id).length > 0, "artist does not exist");
         require(msg.value >= imageCost, "not enough FIL sent to pay for image");
 
-        string memory actualPrompt = string.concat(_prompt, ', in the style of ', _artistID);
-        Artist storage artist = artists[_artistID];
-      
+        uint currentID = bridge.currentJobID();
+        uint nextID = currentID + 1;
 
         // TODO: replace double quotes in the prompt otherwise our JSON breaks
         // TODO: do proper json encoding, look out for quotes in _prompt
-        string memory spec = string.concat(spec1, artist.dockerImage, spec2, actualPrompt, spec3);
+        string memory spec = string.concat('{"_lilypad_template": "waterlily", "prompt": "', _prompt, '", "artistid": "', _artistID, '", "imageid": "', Strings.toString(nextID), '"}');
         
         // run the job in lilypad and get the id back
         // record the image so we can reference it when the callbacks are triggered
         uint id = bridge.runBacalhauJob(address(this), spec, LilypadResultType.CID);
+
+        require(id == nextID, "we ended up with different image ids");
         images[id] = StableDiffusionImage({
             id: id,
             customer: msg.sender,
             artist: _artistID,
-            prompt: actualPrompt,
+            prompt: _prompt,
             ipfsResult: "",
             errorMessage: "",
             isComplete: false,
@@ -177,16 +159,14 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         artistCommission = _artistCommission;   
     }
 
-    function updateArtist(string calldata id, address wallet, string calldata dockerImage, string calldata metadata) public onlyOwner {
+    function updateArtist(string calldata id, address wallet, string calldata metadata) public onlyOwner {
         require(bytes(id).length > 0, "please provide an id");
-        require(bytes(dockerImage).length > 0, "please provide a docker image");
         if(bytes(artists[id].id).length == 0) {
           artistIDs.push(id);
         }
         artists[id] = Artist({
           id: id,
           wallet: wallet,
-          dockerImage: dockerImage,
           metadata: metadata,
           escrow: 0,
           revenue: 0,

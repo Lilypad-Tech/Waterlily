@@ -52,7 +52,7 @@ describe("ArtistAttribution", function () {
     async function deployContractsAndPostImage() {
       const ret = await deployer()
       const { artistContract, customerAccount, artist1Account } = ret
-      await expect(artistContract.updateArtist('artist1', artist1Account.address, 'ubuntu', '123')).not.to.be.reverted
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
       await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
         value: DEFAULT_IMAGE_COST,
       })).not.to.be.reverted
@@ -128,15 +128,15 @@ describe("ArtistAttribution", function () {
   describe("Artists", function () {
     it("Should only allow admin to add or delete artists", async function () {
       const { artistContract, customerAccount, artist1Account, artist2Account } = await loadFixture(getDeployContracts())
-      await expect(artistContract.updateArtist('artist1', artist1Account.address, 'ubuntu', '123')).not.to.be.reverted
-      await expect(artistContract.connect(customerAccount).updateArtist('artist1', artist1Account.address, 'ubuntu', '123')).to.be.reverted
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
+      await expect(artistContract.connect(customerAccount).updateArtist('artist1', artist1Account.address, '123')).to.be.reverted
       await expect(artistContract.connect(customerAccount).deleteArtist('artist1')).to.be.reverted
     })
 
     it("Should allow the addition of multiple artists", async function () {
       const { artistContract, artist1Account, artist2Account } = await loadFixture(getDeployContracts())
-      await expect(artistContract.updateArtist('artist1', artist1Account.address, 'ubuntu', '123')).not.to.be.reverted
-      await expect(artistContract.updateArtist('artist2', artist2Account.address, 'ubuntu', '456')).not.to.be.reverted
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
+      await expect(artistContract.updateArtist('artist2', artist2Account.address, '456')).not.to.be.reverted
       expect(await artistContract.getArtistIDs()).to.deep.equal(['artist1', 'artist2'])
       await expect(artistContract.deleteArtist('artist2')).not.to.be.reverted
       expect(await artistContract.getArtistIDs()).to.deep.equal(['artist1'])
@@ -158,7 +158,7 @@ describe("ArtistAttribution", function () {
 
     it("Should revert when not enough FIL has been sent", async function () {
       const { artistContract, customerAccount, artist1Account } = await loadFixture(getDeployContracts())
-      await expect(artistContract.updateArtist('artist1', artist1Account.address, 'ubuntu', '123')).not.to.be.reverted
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
       await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world')).to.be.revertedWith(
         'not enough FIL sent to pay for image'
       )
@@ -172,9 +172,20 @@ describe("ArtistAttribution", function () {
       })).not.to.be.reverted
     })
 
+    it("Should return the image ID", async function () {
+      const { eventsContract, artistContract, customerAccount, artist1Account } = await loadFixture(getDeployContracts())
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
+      const tx = await artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
+        value: DEFAULT_IMAGE_COST,
+      })
+      const txReceipt = await tx.wait()
+      const [jobEvent] = txReceipt.logs.map((log) => eventsContract.interface.parseLog(log))
+      expect(jobEvent.args.job.id).to.equal(BigNumber.from(1))
+    })
+
     it("Should emit an event from the events contract", async function () {
       const { eventsContract, artistContract, customerAccount, artist1Account } = await loadFixture(getDeployContracts())
-      await expect(artistContract.updateArtist('artist1', artist1Account.address, 'ubuntu', '123')).not.to.be.reverted
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
       await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
         value: DEFAULT_IMAGE_COST,
       })).to.emit(eventsContract, "NewBacalhauJobSubmitted")
@@ -184,7 +195,7 @@ describe("ArtistAttribution", function () {
       expect(args.requestor).to.equal(artistContract.address)
       expect(args.resultType).to.equal(0)
       expect(args.id).to.equal(BigNumber.from(1))
-      expect(args.spec).to.equal(`{"Engine": "docker","Verifier": "noop","Publisher": "estuary","Docker": {"Image": "ubuntu","Entrypoint": ["python", "main.py", "--o", "./outputs", "--p", "hello world, in the style of artist1"]},"Resources": {"GPU": "1"},"Outputs": [{"Name": "outputs", "Path": "/outputs"}],"Deal": {"Concurrency": 1}}`)      
+      expect(args.spec).to.equal('{"_lilypad_template": "waterlily", "prompt": "hello world", "artistid": "artist1", "imageid": "1"}');
     })
 
     it("Should be able to read the image", async function () {
@@ -193,7 +204,7 @@ describe("ArtistAttribution", function () {
       const image = await artistContract.getImage(BigNumber.from(1))
       expect(image.customer).to.equal(customerAccount.address)
       expect(image.artist).to.equal('artist1')
-      expect(image.prompt).to.equal('hello world, in the style of artist1')
+      expect(image.prompt).to.equal('hello world')
       expect(image.ipfsResult).to.equal('')
       expect(image.errorMessage).to.equal('')
       expect(image.isComplete).to.equal(false)
@@ -232,7 +243,7 @@ describe("ArtistAttribution", function () {
       expect(args.id).to.equal(BigNumber.from(1))
       expect(args.customer).to.equal(customerAccount.address)
       expect(args.artist).to.equal('artist1')
-      expect(args.prompt).to.equal('hello world, in the style of artist1')
+      expect(args.prompt).to.equal('hello world')
       expect(args.ipfsResult).to.equal('I AM RESULT')
       expect(args.errorMessage).to.equal('')
       expect(args.isComplete).to.equal(true)
@@ -245,7 +256,7 @@ describe("ArtistAttribution", function () {
       expect(image.id).to.equal(BigNumber.from(1))
       expect(image.customer).to.equal(customerAccount.address)
       expect(image.artist).to.equal('artist1')
-      expect(image.prompt).to.equal('hello world, in the style of artist1')
+      expect(image.prompt).to.equal('hello world')
       expect(image.ipfsResult).to.equal('I AM RESULT')
       expect(image.errorMessage).to.equal('')
       expect(image.isComplete).to.equal(true)
@@ -366,7 +377,7 @@ describe("ArtistAttribution", function () {
     it("Should allow the price to be changed and handle under payments", async function () {
       const { artistContract, customerAccount, artist1Account } = await loadFixture(getDeployContracts())
       await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('20'))).not.to.be.reverted
-      await expect(artistContract.updateArtist('artist1', artist1Account.address, 'ubuntu', '123')).not.to.be.reverted
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
       await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
         value: BigNumber.from('99'),
       })).to.be.revertedWith(
@@ -377,7 +388,7 @@ describe("ArtistAttribution", function () {
     it("Should allow the price to be changed and handle over payments", async function () {
       const { artistContract, customerAccount, artist1Account } = await loadFixture(getDeployContracts())
       await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('20'))).not.to.be.reverted
-      await expect(artistContract.updateArtist('artist1', artist1Account.address, 'ubuntu', '123')).not.to.be.reverted
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
       await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
         value: BigNumber.from('200'),
       })).to.changeEtherBalances(
@@ -389,7 +400,7 @@ describe("ArtistAttribution", function () {
     it("Should payout when we trigger fulfilled", async function () {
       const { artistContract, eventsContract, customerAccount, artist1Account, owner, other } = await loadFixture(getDeployContracts())
       await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('20'))).not.to.be.reverted
-      await expect(artistContract.updateArtist('artist1', artist1Account.address, 'ubuntu', '123')).not.to.be.reverted
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
       await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
         value: BigNumber.from('100'),
       })).not.to.reverted;
