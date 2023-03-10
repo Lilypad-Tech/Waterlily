@@ -84,7 +84,7 @@ export const UserInput: FC<UserInputProps> = (): ReactElement => {
             onChange={(e) => setPrompt(e.target.value)}
             fullWidth
             value={prompt}
-            sx={{ '-webkit-box-shadow': 'none' }}
+            sx={{ WebkitBoxShadow: 'none' }}
           />
         </Grid>
         <Grid item xs={4} sx={{ paddingLeft: '0.5rem', ...itemStyle }}>

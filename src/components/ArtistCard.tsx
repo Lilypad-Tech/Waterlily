@@ -22,9 +22,9 @@ const boxStyle = {
 };
 
 interface ArtistCardProps {
-  name: string;
-  style: string;
-  description: string;
+  name?: string;
+  style?: string;
+  description?: string;
   image?: { link: string; alt: string };
 }
 
@@ -44,13 +44,14 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 }));
 
 export const ArtistCard: FC<ArtistCardProps> = ({
-  name = 'ArtistName',
-  style = 'ArtistStyle',
-  description = 'Artist Portfolio description',
-  image = {
-    link: '', //'https://lh3.googleusercontent.com/ci/AEwo86ckKPeuZCWNi-HnGaRuv859NM6FYVkFrj9M-76Y_m08ICrdhy7ThPuetWx8HPNo81RfXLpf9xY',
-    alt: 'Monet Waterlilies',
-  },
+  name,
+  style,
+  description,
+  image,
+  // image = {
+  //   link: '', //'https://lh3.googleusercontent.com/ci/AEwo86ckKPeuZCWNi-HnGaRuv859NM6FYVkFrj9M-76Y_m08ICrdhy7ThPuetWx8HPNo81RfXLpf9xY',
+  //   alt: 'Monet Waterlilies',
+  // },
 }): ReactElement => {
   const [expanded, setExpanded] = useState(false);
 
@@ -60,17 +61,20 @@ export const ArtistCard: FC<ArtistCardProps> = ({
 
   return (
     <Box sx={boxStyle}>
-      <Card sx={{ maxWidth: 280 }}>
+      <Card sx={{ maxWidth: 300 }}>
         {/* <CardActionArea onClick={() => console.log('visit artist portfolio?')}> */}
-        <CardHeader title={name} subheader={style} />
-        {/* <Watermark text={name}> */}
-        <CardMedia
-          component="img"
-          height="200"
-          image="./monet-water-lilies.jpeg"
-          alt={image.alt}
+        <CardHeader
+          title={name || 'Artist Name'}
+          subheader={style || 'Artist Style'}
         />
-        {/* </Watermark> */}
+        <Watermark text={name || 'ArtistName'}>
+          <CardMedia
+            component="img"
+            height="250"
+            image="./monet-water-lilies.jpeg"
+            alt="Monet Water Lilies"
+          />
+        </Watermark>
         <CardContent>
           <Typography variant="body2" color="text.secondary">
             Water Lilies by Claude Monet is an oil on canvas painting created in

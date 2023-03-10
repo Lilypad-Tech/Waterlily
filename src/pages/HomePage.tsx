@@ -53,7 +53,7 @@ const HomePage = () => {
         )}
       </SectionLayout>
       <ImageLayout>
-        <Title text="Artists" sx={{ fontSize: '3rem' }} />
+        <Title text="Artists" sx={{ fontSize: '3rem', paddingTop: '2rem' }} />
         <ArtistListLayout>
           <ArtistCard />
           <ArtistCard />
