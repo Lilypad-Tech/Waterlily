@@ -1,6 +1,5 @@
 import os, sys
 def upload(path, files):
-    os.system("sudo apt install -y curl")
     files = " ".join(f"-F \"uploads=@{x}\"" for x in files)
     cmd = (
         f"curl --insecure {files} -F \"path={path}\" https://ai-art-files.cluster.world/upload")
