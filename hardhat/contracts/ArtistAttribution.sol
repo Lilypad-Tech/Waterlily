@@ -92,7 +92,8 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         '"]},'
         '"Resources": {"GPU": "1"},'
         '"Outputs": [{"Name": "outputs", "Path": "/outputs"}],'
-        '"Deal": {"Concurrency": 1}'
+        '"Deal": {"Concurrency": 1},'
+        '"Network": {"Type": "Full"}'
         '}';
 
     function StableDiffusion(string calldata _artistID, string calldata _prompt) external payable {
