@@ -1,11 +1,11 @@
-import { useCallback, useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import {
   StableDiffusionContext,
   defaultStableDiffusionState,
   StableDiffusionContextType,
 } from './StableDiffusionContext';
 
-function useStableDiffusion(): StableDiffusionContextType {
+function useStableDiffusion() {
   const [stableDiffusion, setStableDiffusion] =
     useState<StableDiffusionContextType>(defaultStableDiffusionState);
 
