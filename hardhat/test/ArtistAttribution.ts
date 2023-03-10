@@ -120,7 +120,7 @@ describe("ArtistAttribution", function () {
         DEFAULT_IMAGE_COST,
         DEFAULT_IMAGE_COST.add(BigNumber.from('1')),
       )).to.be.revertedWith(
-        'artist commission must be less than image cost'
+        'artist commission must be less than or equal to image cost'
       )
     })
   })
@@ -240,7 +240,7 @@ describe("ArtistAttribution", function () {
     })
 
     it("Should have the results", async function () {
-      const { owner, eventsContract, artistContract, customerAccount } = await loadFixture(deployAndReturnImage())
+      const { artistContract, customerAccount } = await loadFixture(deployAndReturnImage())
       const image = await artistContract.getImage(BigNumber.from(1))
       expect(image.id).to.equal(BigNumber.from(1))
       expect(image.customer).to.equal(customerAccount.address)
@@ -340,6 +340,67 @@ describe("ArtistAttribution", function () {
       )).to.be.revertedWith(
         'image already complete'
       )
+    })
+
+  })
+
+  describe("Price", function () {
+    it("Should allow the price to be changed", async function () {
+      const { artistContract } = await loadFixture(getDeployContracts())
+      await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('101'))).to.be.revertedWith(
+        'artist commission must be less than or equal to image cost'
+      )
+      await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('20'))).not.to.be.reverted
+      expect(await artistContract.getImageCost()).to.equal(BigNumber.from('100'))
+      expect(await artistContract.getArtistCommission()).to.equal(BigNumber.from('20'))
+    })
+
+    it("Should allow the price to be changed and handle under payments", async function () {
+      const { artistContract, customerAccount, artist1Account } = await loadFixture(getDeployContracts())
+      await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('20'))).not.to.be.reverted
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
+      await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
+        value: BigNumber.from('99'),
+      })).to.be.revertedWith(
+        'not enough FIL sent to pay for image'
+      )
+    })
+
+    it("Should allow the price to be changed and handle over payments", async function () {
+      const { artistContract, customerAccount, artist1Account } = await loadFixture(getDeployContracts())
+      await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('20'))).not.to.be.reverted
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
+      await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
+        value: BigNumber.from('200'),
+      })).to.changeEtherBalances(
+        [customerAccount],
+        [BigNumber.from('-100')],
+      );
+    })
+
+    it("Should payout when we trigger fulfilled", async function () {
+      const { artistContract, eventsContract, customerAccount, artist1Account, owner, other } = await loadFixture(getDeployContracts())
+      await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('20'))).not.to.be.reverted
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
+      await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
+        value: BigNumber.from('100'),
+      })).not.to.reverted;
+      await expect(eventsContract.connect(owner).returnBacalhauResults(
+        artistContract.address,
+        BigNumber.from(1),
+        BigNumber.from(0),
+        'I AM RESULT',
+      )).not.to.be.reverted;
+      const artistBeforeWithdraw = await artistContract.getArtist('artist1')
+      expect(artistBeforeWithdraw.escrow).to.equal(BigNumber.from('20'))
+      expect(artistBeforeWithdraw.revenue).to.equal(BigNumber.from('20'))
+      await expect(artistContract.connect(artist1Account).artistWithdraw()).to.changeEtherBalances(
+        [artist1Account],
+        [BigNumber.from('20')],
+      );
+      const artistAfterWithdraw = await artistContract.getArtist('artist1')
+      expect(artistAfterWithdraw.escrow).to.equal(0)
+      expect(artistAfterWithdraw.revenue).to.equal(BigNumber.from('20'))
     })
 
   })

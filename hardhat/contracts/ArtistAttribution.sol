@@ -5,6 +5,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./LilypadEvents.sol";
 import "./LilypadCallerInterface.sol";
 
+// this is the default cost of an image
+// it's about 50 cents
+uint256 constant DEFAULT_IMAGE_COST = 650000000000000 * 250;
+// this is 20% of the image cost
+uint256 constant DEFAULT_ARTIST_COMMISSION = 650000000000000 * 50;
+
 /**
     @notice An experimental contract for POC work to call Bacalhau jobs from FVM smart contracts
 */
@@ -58,12 +64,6 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
     // we need this so we can itetate over the artists
     string[] artistIDs;
 
-    // this is the default cost of an image
-    // it's about 50 cents
-    uint256 public constant DEFAULT_IMAGE_COST = 650000000000000 * 250;
-    // this is 20% of the image cost
-    uint256 public constant DEFAULT_IMAGE_COMMISSION = 650000000000000 * 50;
-
     event ImageGenerated(StableDiffusionImage image);
     event ImageCancelled(StableDiffusionImage image);
 
@@ -72,24 +72,8 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
       uint256 _imageCost,
       uint256 _artistCommission
     ) {
-        require(_artistCommission <= _imageCost, "artist commission must be less than image cost");
+        _updateCost(_imageCost, _artistCommission);        
         bridge = LilypadEvents(_eventsContractAddress);
-
-        if(_imageCost == 0) {
-          // how much gwei does it cost to run a job?
-          // this is 0.00065 ETH then converted to Filecoin
-          // it represents around $0.50
-          _imageCost = DEFAULT_IMAGE_COST;
-        }
-
-        if(_artistCommission == 0) {
-          // how much gewi does the artist get?
-          // this is expressed as gwei but is basically a percentage of 20%
-          _artistCommission = DEFAULT_IMAGE_COMMISSION;
-        }
-        
-        imageCost = _imageCost;
-        artistCommission = _artistCommission;   
     }
 
     string constant spec1 = '{'
@@ -153,12 +137,43 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         return artists[id];
     }
 
+    function getImageCost() public view returns (uint256) {
+        return imageCost;
+    }
+
+    function getArtistCommission() public view returns (uint256) {
+        return artistCommission;
+    }
+
     function getImageIDs() public view returns (uint[] memory) {
         return imageIDs;
     }
 
     function getImage(uint id) public view returns (StableDiffusionImage memory) {
         return images[id];
+    }
+
+    function updateCost(uint256 _imageCost, uint256 _artistCommission) public onlyOwner {
+      _updateCost(_imageCost, _artistCommission);
+    }
+
+    function _updateCost(uint256 _imageCost, uint256 _artistCommission) private {
+        require(_artistCommission <= _imageCost, "artist commission must be less than or equal to image cost");
+        if(_imageCost == 0) {
+          // how much gwei does it cost to run a job?
+          // this is 0.00065 ETH then converted to Filecoin
+          // it represents around $0.50
+          _imageCost = DEFAULT_IMAGE_COST;
+        }
+
+        if(_artistCommission == 0) {
+          // how much gewi does the artist get?
+          // this is expressed as gwei but is basically a percentage of 20%
+          _artistCommission = DEFAULT_ARTIST_COMMISSION;
+        }
+        
+        imageCost = _imageCost;
+        artistCommission = _artistCommission;   
     }
 
     function updateArtist(string calldata id, address wallet, string calldata metadata) public onlyOwner {
