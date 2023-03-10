@@ -12,17 +12,6 @@ let theme = createTheme({
   palette: {
     mode: 'dark',
   },
-  components: {
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          '&.MuiInputBase': {
-            '-webkit-box-shadow': '0 0 0 100px #26679800 inset',
-          },
-        },
-      },
-    },
-  },
 });
 theme = responsiveFontSizes(theme);
 
