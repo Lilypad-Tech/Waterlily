@@ -1,5 +1,4 @@
 import minimist from 'minimist'
-import bluebird from 'bluebird'
 import { getEventsContract } from './utils'
 
 const args = minimist(process.argv, {
@@ -12,9 +11,6 @@ async function main() {
   const {
     contract,
   } = await getEventsContract(args.contract)
-
-  console.log('--------------------------------------------')
-  console.dir(contract.address)
   const jobs = await contract.fetchAllJobs()
   console.log(JSON.stringify(jobs, null, 4))
 }

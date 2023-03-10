@@ -12,7 +12,6 @@ async function main() {
   const {
     contract,
   } = await getContract(args.contract)
-
   const artistIDs = await contract.getArtistIDs()
   const artists = await bluebird.map(artistIDs, async (artistID) => {
     const artist = await contract.getArtist(artistID)

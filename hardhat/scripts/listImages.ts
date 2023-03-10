@@ -12,10 +12,6 @@ async function main() {
   const {
     contract,
   } = await getContract(args.contract)
-
-  console.log('--------------------------------------------')
-  console.log(contract.address)
-
   const imageIDs = await contract.getImageIDs()
   const images = await bluebird.map(imageIDs, async (imageID) => {
     const image = await contract.getImage(imageID)
