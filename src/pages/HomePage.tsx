@@ -16,6 +16,7 @@ import {
   UserInput,
   ArtistCard,
 } from '@/components';
+import { artists } from '@/definitions/artists';
 
 const HomePage = () => {
   const [isConnected, setConnected] = useState(false);
@@ -55,9 +56,19 @@ const HomePage = () => {
       <ImageLayout>
         <Title text="Artists" sx={{ fontSize: '3rem', paddingTop: '2rem' }} />
         <ArtistListLayout>
-          <ArtistCard />
-          <ArtistCard />
-          <ArtistCard />
+          {artists.map((artist, e) => {
+            const { name, style, description, portfolio, image } = artist;
+            return (
+              <ArtistCard
+                key={e}
+                name={name}
+                style={style}
+                description={description}
+                portfolio={portfolio}
+                image={image}
+              />
+            );
+          })}
         </ArtistListLayout>
       </ImageLayout>
     </>

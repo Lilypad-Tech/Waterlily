@@ -4,13 +4,13 @@ import { styled } from '@mui/material/styles';
 import {
   Box,
   Card,
-  CardActionArea,
   CardHeader,
   CardMedia,
   CardContent,
   CardActions,
   Collapse,
   Typography,
+  Link,
 } from '@mui/material';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -26,6 +26,7 @@ interface ArtistCardProps {
   style?: string;
   description?: string;
   image?: { link: string; alt: string };
+  portfolio: string;
 }
 
 interface ExpandMoreProps extends IconButtonProps {
@@ -48,6 +49,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
   style,
   description,
   image,
+  portfolio,
   // image = {
   //   link: '', //'https://lh3.googleusercontent.com/ci/AEwo86ckKPeuZCWNi-HnGaRuv859NM6FYVkFrj9M-76Y_m08ICrdhy7ThPuetWx8HPNo81RfXLpf9xY',
   //   alt: 'Monet Waterlilies',
@@ -67,23 +69,29 @@ export const ArtistCard: FC<ArtistCardProps> = ({
           title={name || 'Artist Name'}
           subheader={style || 'Artist Style'}
         />
-        <Watermark text={name || 'ArtistName'}>
-          <CardMedia
-            component="img"
-            height="250"
-            image="./monet-water-lilies.jpeg"
-            alt="Monet Water Lilies"
-          />
-        </Watermark>
+        <Link
+          href={portfolio || 'https://www.google.com'}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <Watermark text={name || 'ArtistName'}>
+            <CardMedia
+              component="img"
+              // height="250"
+              // image="https://lh3.googleusercontent.com/ci/AEwo86ckKPeuZCWNi-HnGaRuv859NM6FYVkFrj9M-76Y_m08ICrdhy7ThPuetWx8HPNo81RfXLpf9xY"
+              image={image?.link || './monet-water-lilies.jpeg'}
+              alt={image?.alt || 'Monet Water Lilies'}
+              sx={{ pointerEvents: 'none' }}
+            />
+          </Watermark>
+        </Link>
         <CardContent>
           <Typography variant="body2" color="text.secondary">
-            Water Lilies by Claude Monet is an oil on canvas painting created in
-            France in 1916 in the small village of Giverny down stream on the
-            Seine from Paris.
-            {/* description */}
+            {description ||
+              'Water Lilies by Claude Monet is an oil on canvas painting created in France in 1916 in the small village of Giverny down stream on the Seine from Paris.'}
           </Typography>
         </CardContent>
-        <CardActions disableSpacing>
+        {/* <CardActions disableSpacing>
           <ExpandMore
             expand={expanded}
             onClick={handleExpandClick}
@@ -92,8 +100,8 @@ export const ArtistCard: FC<ArtistCardProps> = ({
           >
             <ExpandMoreIcon />
           </ExpandMore>
-        </CardActions>
-        <Collapse in={expanded} timeout="auto" unmountOnExit>
+        </CardActions> */}
+        {/* <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
             <Typography paragraph>
               Monet began work in 1883 in the small village of Giverny down
@@ -128,7 +136,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
               of the finest of these late "Water Lilies" paintings.
             </Typography>
           </CardContent>
-        </Collapse>
+        </Collapse> */}
         {/* </CardActionArea> */}
       </Card>
     </Box>
