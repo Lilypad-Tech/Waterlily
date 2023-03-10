@@ -37,6 +37,8 @@ Open the `hardhat/.env` file and copy the address for the events contract and ar
  * `DEPLOYED_CONTRACT_ADDRESS` = events contract (e.g. `0xAfc65F7A0130E8966132167B9a527FcD78D71214`)
  * `ARTIST_CONTRACT_ADDRESS` = events contract (e.g. `0x4cdfb4e91b1B498b8A6FDBD5b62C11D4da1D1d0b`)
 
+## adding/updating artists
+
 Then we need to add artists:
 
 ```bash
@@ -47,6 +49,15 @@ export META='apples oranges'
 npx hardhat --network filecoinHyperspace run scripts/addArtist.js
 ```
 
+## listing artists
+
+```bash
+cd hardhat
+npx hardhat --network filecoinHyperspace run scripts/listArtists.js
+```
+
+## test generating an image
+
 Then we can generate an image:
 
 ```bash
@@ -54,6 +65,13 @@ cd hardhat
 export ARTIST=artist1
 export PROMPT='an orange on the moon'
 npx hardhat --network filecoinHyperspace run scripts/generateImage.js
+```
+
+## listing images
+
+```bash
+cd hardhat
+npx hardhat --network filecoinHyperspace run scripts/listImages.js
 ```
 
 ## deploy VM
