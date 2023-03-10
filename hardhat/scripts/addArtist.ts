@@ -6,6 +6,7 @@ const args = minimist(process.argv, {
     contract: process.env.CONTRACT,
     artist: process.env.ARTIST,
     address: process.env.ADDRESS,
+    dockerImage: process.env.DOCKER_IMAGE,
     meta: process.env.META,
   },
 })
@@ -14,13 +15,14 @@ async function main() {
   if(!args.contract) throw new Error('no CONTRACT env provided')
   if(!args.artist) throw new Error('no ARTIST env provided')
   if(!args.address) throw new Error('no ADDRESS env provided')
+  if(!args.dockerImage) throw new Error('no DOCKER_IMAGE env provided')
 
   const {
     contract,
     owner,
   } = await getContract(args.contract)
 
-  const trx = await contract.connect(owner).updateArtist(args.artist, args.address, args.meta || '')
+  const trx = await contract.connect(owner).updateArtist(args.artist, args.address, args.dockerImage, args.meta || '')
   await trx.wait()
   const artistIDs = await contract.getArtistIDs()
 

@@ -27,16 +27,16 @@ You will see something like:
 
 ```
 LilypadEvents deploying....
-LilypadEvents deployed to  0x186621122d4A84A56D838EE28f883E3C3D81E11B
-ArtistAttribution deployed to 0xF4Fa8fb3560E03E9a83D60F861eDe257C37a436E
-LilypadEvents set authorized contract to:  0xF4Fa8fb3560E03E9a83D60F861eDe257C37a436E
+LilypadEvents deployed to  0x5552F88C4dA717b61f6018408a0B3a32D380e06e
+ArtistAttribution deployed to 0xB5d1E9b8e9a0C0F11EdE5390703d966Ae8b3e09b
+LilypadEvents set authorized contract to:  0xB5d1E9b8e9a0C0F11EdE5390703d966Ae8b3e09b
 ```
 
 Open the `hardhat/.env` file and copy the address for the events contract and artist contract to:
 
- * `CONTRACT_ADDRESS` = events contract (e.g. `0x186621122d4A84A56D838EE28f883E3C3D81E11B`)
- * `DEPLOYED_CONTRACT_ADDRESS` = events contract (e.g. `0x186621122d4A84A56D838EE28f883E3C3D81E11B`)
- * `ARTIST_CONTRACT_ADDRESS` = events contract (e.g. `0xF4Fa8fb3560E03E9a83D60F861eDe257C37a436E`)
+ * `CONTRACT_ADDRESS` = events contract (e.g. `0x5552F88C4dA717b61f6018408a0B3a32D380e06e`)
+ * `DEPLOYED_CONTRACT_ADDRESS` = events contract (e.g. `0x5552F88C4dA717b61f6018408a0B3a32D380e06e`)
+ * `ARTIST_CONTRACT_ADDRESS` = events contract (e.g. `0xB5d1E9b8e9a0C0F11EdE5390703d966Ae8b3e09b`)
 
 ## adding/updating artists
 
@@ -47,6 +47,7 @@ cd hardhat
 source .env
 export ARTIST=artist1
 export ADDRESS='0x71bE63f3384f5fb98995898A86B02Fb2426c5788'
+export DOCKER_IMAGE='algoveraai/sdprojectv2:mckhallstyle'
 export META='apples oranges'
 npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
 ```
