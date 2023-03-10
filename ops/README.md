@@ -126,5 +126,8 @@ cd hardhat
 source .env
 npx hardhat compile
 npx hardhat --network filecoinHyperspace run scripts/deploy.ts
-IMAGE_COST=100 ARTIST_COMMISSION=20 npx hardhat --network filecoinHyperspace run scripts/changePrice.ts
+IMAGE_COST=100 ARTIST_COMMISSION=20 \
+npx hardhat --network filecoinHyperspace run scripts/changePrice.ts
+# this wallet is a test wallet that Ally controls - we can change that later
+ARTIST=mckhallstyle ADDRESS=0x230115404c551Fcd0B6d447DE1DaD3afca230E07 DOCKER_IMAGE=algoveraai/sdprojectv2:mckhallstyle npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
 ```
