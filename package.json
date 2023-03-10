@@ -23,6 +23,7 @@
     "eslint-config-next": "13.2.3",
     "multiformats": "^11.0.2",
     "next": "13.2.3",
+    "nft.storage": "^7.0.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "4.9.5"
