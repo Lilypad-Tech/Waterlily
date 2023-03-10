@@ -150,3 +150,27 @@ cd hardhat
 source .env
 ARTIST=mckhallstyle PROMPT='an orange' npx hardhat --network filecoinHyperspace run scripts/generateImage.ts
 ```
+
+## deploy image store
+
+We host the image store that jobs upload their images to.
+
+This is currently living on Kai's k8s cluster (we ran out of time).
+
+Ideally we would move this to run on the same VM as the bridge golang process.
+
+In the meantime - here is how it was deployed:
+
+```bash
+kubectl create ns waterlily-filestore
+kubectl apply -f filestore-deploy/01-pv.yaml
+kubectl apply -f filestore-deploy/02-pvc.yaml
+kubectl apply -f filestore-deploy/03-service.yaml
+kubectl apply -f filestore-deploy/ingress.yaml
+cd filestore
+export CI_COMMIT_SHA=$(git rev-parse HEAD)
+export FILESTORE_IMAGE=gcr.io/webkit-servers/waterlily-filestore:$CI_COMMIT_SHA
+docker build -t $FILESTORE_IMAGE filestore
+docker push $FILESTORE_IMAGE
+cat filestore-deploy/04-deployment.yaml | envsubst | kubectl apply -f -
+```
