@@ -1,4 +1,5 @@
-import { FC, ReactElement, useState } from 'react';
+import { FC, ReactElement, useEffect, useState } from 'react';
+import Image from 'next/image';
 import { Watermark } from '@hirohe/react-watermark';
 import { styled } from '@mui/material/styles';
 import {
@@ -19,12 +20,6 @@ const boxStyle = {
   display: 'flex',
   justifyContent: 'center',
   padding: '1rem',
-};
-
-const imageStyle = {
-  width: '100%',
-  fontWeight: 'bold',
-  whiteSpace: 'pre-line',
 };
 
 interface ArtistCardProps {
@@ -53,13 +48,23 @@ export const ArtistCard: FC<ArtistCardProps> = ({
   name = 'ArtistName',
   style = 'ArtistStyle',
   description = 'Artist Portfolio description',
-  image,
+  image = {
+    link: 'https://lh3.googleusercontent.com/ci/AEwo86ckKPeuZCWNi-HnGaRuv859NM6FYVkFrj9M-76Y_m08ICrdhy7ThPuetWx8HPNo81RfXLpf9xY',
+    alt: 'Monet Waterlilies',
+  },
 }): ReactElement => {
   const [expanded, setExpanded] = useState(false);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
+
+  const imageLoader = ({ src, width, quality }) => {
+    return `https://lh3.googleusercontent.com/${src}?w=${width}&q=${
+      quality || 75
+    }`;
+  };
+
   return (
     <Box sx={boxStyle}>
       <Card sx={{ maxWidth: 280 }}>
@@ -68,12 +73,10 @@ export const ArtistCard: FC<ArtistCardProps> = ({
           <Watermark text="artistname">
             <CardMedia
               component="img"
-              height="194"
-              image="https://lh3.googleusercontent.com/ci/AEwo86ckKPeuZCWNi-HnGaRuv859NM6FYVkFrj9M-76Y_m08ICrdhy7ThPuetWx8HPNo81RfXLpf9xY" //{image.link}
-              alt="Monet Waterlilies" //{image.alt}
-              sx={{
-                pointerEvents: 'none',
-              }}
+              height="200"
+              image="./monet-water-lilies.jpeg"
+              alt={image.alt}
+              sx={{ pointerEvents: 'none' }}
             />
           </Watermark>
           <CardContent>

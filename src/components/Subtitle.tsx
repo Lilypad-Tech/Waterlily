@@ -9,10 +9,10 @@ const subtitleStyle = {
   fontWeight: 'bold',
   backgroundSize: '100%',
   backgroundClip: 'text',
-  '-webkit-background-clip': 'text',
-  '-moz-background-clip': 'text',
-  '-webkit-text-fill-color': 'transparent',
-  '-moz-text-fill-color': 'transparent',
+  WebkitBackgroundClip: 'text',
+  MozBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  MozTextFillColor: 'transparent',
 };
 
 type SubtitleProps = {
