@@ -131,3 +131,22 @@ npx hardhat --network filecoinHyperspace run scripts/changePrice.ts
 # this wallet is a test wallet that Ally controls - we can change that later
 ARTIST=mckhallstyle ADDRESS=0x230115404c551Fcd0B6d447DE1DaD3afca230E07 DOCKER_IMAGE=algoveraai/sdprojectv2:mckhallstyle npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
 ```
+
+## commands to test lilypad end to end
+
+```bash
+cd hardhat
+source .env
+cd ../../lilypad
+export LOG_LEVEL=debug
+go run .
+# lilypad is now running against the deployed contract and pointing at the custom bacalhau cluster
+```
+
+Then in another window to write a job tx:
+
+```bash
+cd hardhat
+source .env
+ARTIST=mckhallstyle PROMPT='an orange' npx hardhat --network filecoinHyperspace run scripts/generateImage.ts
+```
