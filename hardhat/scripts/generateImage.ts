@@ -31,9 +31,10 @@ async function main() {
   const ArtistAttribution = await ethers.getContractFactory("ArtistAttribution")
   const artistContract = ArtistAttribution.attach(args.contract)
 
-  await artistContract.connect(owner).StableDiffusion(args.artist, args.prompt, {
+  const trx = await artistContract.connect(owner).StableDiffusion(args.artist, args.prompt, {
     value: DEFAULT_IMAGE_COST,
   })
+  await trx.wait()
 
   const imageIDS = await artistContract.getImageIDs()
   const image = await artistContract.getImage(imageIDS[imageIDS.length-1])

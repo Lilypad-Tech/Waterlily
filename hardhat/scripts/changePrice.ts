@@ -25,7 +25,8 @@ async function main() {
     owner,
   } = await getContract(args.contract)
 
-  await contract.connect(owner).updateCost(imageCost, artistCommission)
+  const trx = await contract.connect(owner).updateCost(imageCost, artistCommission)
+  await trx.wait()
 
   const imageCostOutput = await contract.getImageCost()
   const artistCommissionOutput = await contract.getArtistCommission()

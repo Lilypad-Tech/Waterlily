@@ -20,8 +20,8 @@ async function main() {
     owner,
   } = await getContract(args.contract)
 
-  await contract.connect(owner).updateArtist(args.artist, args.address, args.meta || '')
-
+  const trx = await contract.connect(owner).updateArtist(args.artist, args.address, args.meta || '')
+  await trx.wait()
   const artistIDs = await contract.getArtistIDs()
 
   console.log('--------------------------------------------')
