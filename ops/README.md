@@ -174,3 +174,10 @@ docker build -t $FILESTORE_IMAGE filestore
 docker push $FILESTORE_IMAGE
 cat filestore-deploy/04-deployment.yaml | envsubst | kubectl apply -f -
 ```
+
+## changing the bacalhau job spec
+The smart contract issues a JSON packet to the bridge with a `_lilypad_template` field.
+
+This runs the functions in `lilypad/pkg/bridge/spec_templates.go`.
+
+To change the job spec that is run on bacalhau - change the spec in `spec_templates.go` and re-deploy the bridge.
