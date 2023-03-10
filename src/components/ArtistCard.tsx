@@ -63,14 +63,14 @@ export const ArtistCard: FC<ArtistCardProps> = ({
       <Card sx={{ maxWidth: 280 }}>
         {/* <CardActionArea onClick={() => console.log('visit artist portfolio?')}> */}
         <CardHeader title={name} subheader={style} />
-        <Watermark text={name}>
-          <CardMedia
-            component="img"
-            height="200"
-            image="./monet-water-lilies.jpeg"
-            alt={image.alt}
-          />
-        </Watermark>
+        {/* <Watermark text={name}> */}
+        <CardMedia
+          component="img"
+          height="200"
+          image="./monet-water-lilies.jpeg"
+          alt={image.alt}
+        />
+        {/* </Watermark> */}
         <CardContent>
           <Typography variant="body2" color="text.secondary">
             Water Lilies by Claude Monet is an oil on canvas painting created in
