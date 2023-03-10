@@ -2,9 +2,7 @@
 pragma solidity >=0.8.4;
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./LilypadCallerInterface.sol";
 
 error LilypadEventsUpgradeableError();
@@ -12,35 +10,16 @@ error LilypadEventsUpgradeableError();
 /**
     @notice An experimental contract for POC work to call Bacalhau jobs from FVM smart contracts
 */
-contract LilypadEvents is Initializable, AccessControlUpgradeable, UUPSUpgradeable {
-    bool private initialized;
-    bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
-    address payable public escrowAddress; //unused but leaving for now for memory slot in UUPS
-    uint256[49] private __gap; //for extra memory slots that may be needed in future upgrades.
-
+contract LilypadEvents is Ownable {
     using Counters for Counters.Counter; // create job id's?
     Counters.Counter private _jobIds;
 
-    /// @custom:oz-upgrades-unsafe-allow constructor
+    // only this contract is allowed to call this bridge
+    address private authorizedContract;
+
     constructor() {
-        _disableInitializers();
+        
     }
-
-    function initialize() public initializer {
-        require(!initialized, "Contract Instance has already been initialized");
-        console.log("Deploying LilypadEvents contract");
-        initialized = true;
-        __AccessControl_init();
-        __UUPSUpgradeable_init();
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(UPGRADER_ROLE, msg.sender);
-    }
-
-    function _authorizeUpgrade(address newImplementation)
-        internal
-        onlyRole(UPGRADER_ROLE)
-        override
-    {}
 
     struct BacalhauJob {
         address requestor;
@@ -72,9 +51,22 @@ contract LilypadEvents is Initializable, AccessControlUpgradeable, UUPSUpgradeab
     event NewBacalhauJobSubmitted(BacalhauJob job);
     event BacalhauJobResultsReturned(BacalhauJobResult result);
 
+    // only this contract is allowed to call "runBacalhauJob"
+    // this is to stop anyone triggering bacalhau jobs for free on our
+    // artists stable diffusion cluster
+    function setAuthorizedContract(address _authorizedContract) public onlyOwner {
+      authorizedContract = _authorizedContract;
+    }
+
+    modifier callerIsAuthorizedContract() {
+      require(msg.sender == authorizedContract, "Can only be called from authorized contract address");
+      _;
+    }
+
     //msg.sender is always the address where the current (external) function call came from.
     //need interface for different jobs available to verify params before sending
-    function runBacalhauJob(address _from, string memory _spec, LilypadResultType _resultType) public returns (uint) {
+    function runBacalhauJob(address _from, string memory _spec, LilypadResultType _resultType) public callerIsAuthorizedContract returns (uint) {
+        _jobIds.increment();
         uint thisJobId = _jobIds.current();
         BacalhauJob memory jobCalled = BacalhauJob({
             requestor: _from,
@@ -85,13 +77,10 @@ contract LilypadEvents is Initializable, AccessControlUpgradeable, UUPSUpgradeab
 
         bacalhauJobHistory.push(jobCalled);
         emit NewBacalhauJobSubmitted(jobCalled);
-        _jobIds.increment();
-
         return thisJobId;
     }
 
-    // this should really be owner only - our admin contract should be the only one able to call it
-    function returnBacalhauResults(address _to, uint _jobId, LilypadResultType _resultType, string memory _result) public {
+    function returnBacalhauResults(address _to, uint _jobId, LilypadResultType _resultType, string memory _result) public onlyOwner {
         BacalhauJobResult memory jobResult = BacalhauJobResult({
             requestor: _to,
             id: _jobId,
@@ -106,7 +95,7 @@ contract LilypadEvents is Initializable, AccessControlUpgradeable, UUPSUpgradeab
         LilypadCallerInterface(_to).lilypadFulfilled(address(this), _jobId, _resultType, _result);
     }
 
-    function returnBacalhauError(address _to, uint _jobId, string memory _errorMsg) public onlyRole(UPGRADER_ROLE) {
+    function returnBacalhauError(address _to, uint _jobId, string memory _errorMsg) public onlyOwner {
         BacalhauJobResult memory jobResult = BacalhauJobResult({
             requestor: _to,
             id: _jobId,
@@ -133,24 +122,3 @@ contract LilypadEvents is Initializable, AccessControlUpgradeable, UUPSUpgradeab
         return bacalhauJobResultByAddress[_requestor];
     }
 }
-
-
-/*
-Notes:
-Upgradeable contracts: https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeable
-    In Solidity, code that is inside a constructor or part of a global variable
-    declaration is not part of a deployed contract’s runtime bytecode.
-
-    OZ: Due to this requirement of the proxy-based upgradeability system,
-    no constructors can be used in upgradeable contracts.
-    To learn about the reasons behind this restriction, head to Proxies.
-
-    Another difference between a constructor and a regular function is that Solidity takes care of
-    automatically invoking the constructors of all ancestors of a contract. When writing an initializer,
-    you need to take special care to manually call the initializers of all parent contracts. Note that
-    the initializer modifier can only be called once even when using inheritance, so parent contracts
-    should use the onlyInitializing modifier:
-
-Proxy Upgrade Pattern: https://docs.openzeppelin.com/upgrades-plugins/1.x/proxies#the-constructor-caveat
-
-*/

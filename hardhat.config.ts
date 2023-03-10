@@ -30,7 +30,7 @@ const config: HardhatUserConfig = {
     },
   },
   paths: {
-    root: './src/hardhat',
+    root: './src/hardhat/',
     tests: './src/hardhat/tests', //who names a directory in the singular?!!!
     cache: './src/hardhat/cache',
   },

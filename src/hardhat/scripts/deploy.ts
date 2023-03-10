@@ -1,25 +1,52 @@
-import { ethers } from 'hardhat';
+import hre, { ethers } from 'hardhat';
+import { BigNumber } from 'ethers';
+
+const BASE_COST = BigNumber.from('650000000000000');
+const DEFAULT_IMAGE_COST = BASE_COST.mul(BigNumber.from('250'));
+const DEFAULT_IMAGE_COMMISSION = BASE_COST.mul(BigNumber.from('50'));
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  console.log('LilypadEvents deploying....');
 
-  const lockedAmount = ethers.utils.parseEther('0.001');
+  let owner: any;
+  [owner] = await ethers.getSigners();
 
-  const Lock = await ethers.getContractFactory('Lock');
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  if (hre.network.name == 'filecoinHyperspace') {
+    owner = new ethers.Wallet(
+      process.env.WALLET_PRIVATE_KEY || '',
+      ethers.provider
+    );
+  }
 
-  await lock.deployed();
+  const LilypadEvents = await ethers.getContractFactory('LilypadEvents');
+  const ArtistAttribution = await ethers.getContractFactory(
+    'ArtistAttribution'
+  );
+
+  const eventsContract = await LilypadEvents.connect(owner).deploy();
+  await eventsContract.deployed();
+
+  console.log('LilypadEvents deployed to ', eventsContract.address);
+
+  const artistContract = await ArtistAttribution.connect(owner).deploy(
+    eventsContract.address,
+    DEFAULT_IMAGE_COST,
+    DEFAULT_IMAGE_COMMISSION
+  );
+  await artistContract.deployed();
+
+  console.log('ArtistAttribution deployed to ', artistContract.address);
+
+  await eventsContract
+    .connect(owner)
+    .setAuthorizedContract(artistContract.address);
 
   console.log(
-    `Lock with ${ethers.utils.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
+    'LilypadEvents set authorized contract to: ',
+    artistContract.address
   );
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
