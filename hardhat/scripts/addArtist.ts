@@ -1,5 +1,5 @@
-import hre, { ethers } from 'hardhat'
 import minimist from 'minimist'
+import { getContract } from './utils'
 
 const args = minimist(process.argv, {
   default:{
@@ -11,27 +11,17 @@ const args = minimist(process.argv, {
 })
 
 async function main() {
-  let owner: any
-  [owner] = await ethers.getSigners()
-
-  if(hre.network.name == 'filecoinHyperspace') {
-    args.contract = process.env.ARTIST_CONTRACT_ADDRESS
-    owner = new ethers.Wallet(
-      process.env.WALLET_PRIVATE_KEY || '',
-      ethers.provider
-    )
-  }
-
-  if(!args.contract) throw new Error('no CONTRACT env provided')
   if(!args.artist) throw new Error('no ARTIST env provided')
   if(!args.address) throw new Error('no ADDRESS env provided')
 
-  const ArtistAttribution = await ethers.getContractFactory("ArtistAttribution")
-  const artistContract = ArtistAttribution.attach(args.contract)
+  const {
+    contract,
+    owner,
+  } = await getContract(args.contract)
 
-  await artistContract.connect(owner).updateArtist(args.artist, args.address, args.meta || '')
-
-  const artistIDs = await artistContract.getArtistIDs()
+  const trx = await contract.connect(owner).updateArtist(args.artist, args.address, args.meta || '')
+  await trx.wait()
+  const artistIDs = await contract.getArtistIDs()
 
   console.log('--------------------------------------------')
   console.dir(artistIDs)

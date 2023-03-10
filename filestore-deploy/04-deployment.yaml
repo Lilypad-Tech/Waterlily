@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: filestore
+  namespace: waterlily-filestore
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: filestore
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: filestore
+    spec:
+      containers:
+      - name: filestore
+        image: ${FILESTORE_IMAGE}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+          name: web
+          protocol: TCP
+        volumeMounts:
+          - mountPath: /data
+            name: data-volume
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: waterlily-images-pvc

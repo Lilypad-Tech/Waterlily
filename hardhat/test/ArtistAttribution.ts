@@ -120,7 +120,7 @@ describe("ArtistAttribution", function () {
         DEFAULT_IMAGE_COST,
         DEFAULT_IMAGE_COST.add(BigNumber.from('1')),
       )).to.be.revertedWith(
-        'artist commission must be less than image cost'
+        'artist commission must be less than or equal to image cost'
       )
     })
   })
@@ -172,6 +172,17 @@ describe("ArtistAttribution", function () {
       })).not.to.be.reverted
     })
 
+    it("Should return the image ID", async function () {
+      const { eventsContract, artistContract, customerAccount, artist1Account } = await loadFixture(getDeployContracts())
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
+      const tx = await artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
+        value: DEFAULT_IMAGE_COST,
+      })
+      const txReceipt = await tx.wait()
+      const [jobEvent] = txReceipt.logs.map((log) => eventsContract.interface.parseLog(log))
+      expect(jobEvent.args.job.id).to.equal(BigNumber.from(1))
+    })
+
     it("Should emit an event from the events contract", async function () {
       const { eventsContract, artistContract, customerAccount, artist1Account } = await loadFixture(getDeployContracts())
       await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
@@ -184,7 +195,7 @@ describe("ArtistAttribution", function () {
       expect(args.requestor).to.equal(artistContract.address)
       expect(args.resultType).to.equal(0)
       expect(args.id).to.equal(BigNumber.from(1))
-      expect(args.spec).to.equal(`{"Engine": "docker","Verifier": "noop","Publisher": "estuary","Docker": {"Image": "ghcr.io/bacalhau-project/examples/stable-diffusion-gpu:0.0.1","Entrypoint": ["python", "main.py", "--o", "./outputs", "--p", "hello world in the style of artist1"]},"Resources": {"GPU": "1"},"Outputs": [{"Name": "outputs", "Path": "/outputs"}],"Deal": {"Concurrency": 1}}`)      
+      expect(args.spec).to.equal('{"_lilypad_template": "waterlily", "prompt": "hello world", "artistid": "artist1", "imageid": "1"}');
     })
 
     it("Should be able to read the image", async function () {
@@ -193,7 +204,7 @@ describe("ArtistAttribution", function () {
       const image = await artistContract.getImage(BigNumber.from(1))
       expect(image.customer).to.equal(customerAccount.address)
       expect(image.artist).to.equal('artist1')
-      expect(image.prompt).to.equal('hello world in the style of artist1')
+      expect(image.prompt).to.equal('hello world')
       expect(image.ipfsResult).to.equal('')
       expect(image.errorMessage).to.equal('')
       expect(image.isComplete).to.equal(false)
@@ -232,7 +243,7 @@ describe("ArtistAttribution", function () {
       expect(args.id).to.equal(BigNumber.from(1))
       expect(args.customer).to.equal(customerAccount.address)
       expect(args.artist).to.equal('artist1')
-      expect(args.prompt).to.equal('hello world in the style of artist1')
+      expect(args.prompt).to.equal('hello world')
       expect(args.ipfsResult).to.equal('I AM RESULT')
       expect(args.errorMessage).to.equal('')
       expect(args.isComplete).to.equal(true)
@@ -240,12 +251,12 @@ describe("ArtistAttribution", function () {
     })
 
     it("Should have the results", async function () {
-      const { owner, eventsContract, artistContract, customerAccount } = await loadFixture(deployAndReturnImage())
+      const { artistContract, customerAccount } = await loadFixture(deployAndReturnImage())
       const image = await artistContract.getImage(BigNumber.from(1))
       expect(image.id).to.equal(BigNumber.from(1))
       expect(image.customer).to.equal(customerAccount.address)
       expect(image.artist).to.equal('artist1')
-      expect(image.prompt).to.equal('hello world in the style of artist1')
+      expect(image.prompt).to.equal('hello world')
       expect(image.ipfsResult).to.equal('I AM RESULT')
       expect(image.errorMessage).to.equal('')
       expect(image.isComplete).to.equal(true)
@@ -340,6 +351,75 @@ describe("ArtistAttribution", function () {
       )).to.be.revertedWith(
         'image already complete'
       )
+    })
+
+  })
+
+  describe("Price", function () {
+    it("Should allow the price to be changed", async function () {
+      const { artistContract } = await loadFixture(getDeployContracts())
+      await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('101'))).to.be.revertedWith(
+        'artist commission must be less than or equal to image cost'
+      )
+      await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('20'))).not.to.be.reverted
+      expect(await artistContract.getImageCost()).to.equal(BigNumber.from('100'))
+      expect(await artistContract.getArtistCommission()).to.equal(BigNumber.from('20'))
+    })
+
+    it("Should allow the price to be reset to defaults", async function () {
+      const { artistContract } = await loadFixture(getDeployContracts())
+      await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('20'))).not.to.be.reverted
+      await expect(artistContract.updateCost(BigNumber.from('0'), BigNumber.from('0'))).not.to.be.reverted
+      expect(await artistContract.getImageCost()).to.equal(DEFAULT_IMAGE_COST)
+      expect(await artistContract.getArtistCommission()).to.equal(DEFAULT_IMAGE_COMMISSION)
+    })
+
+    it("Should allow the price to be changed and handle under payments", async function () {
+      const { artistContract, customerAccount, artist1Account } = await loadFixture(getDeployContracts())
+      await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('20'))).not.to.be.reverted
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
+      await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
+        value: BigNumber.from('99'),
+      })).to.be.revertedWith(
+        'not enough FIL sent to pay for image'
+      )
+    })
+
+    it("Should allow the price to be changed and handle over payments", async function () {
+      const { artistContract, customerAccount, artist1Account } = await loadFixture(getDeployContracts())
+      await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('20'))).not.to.be.reverted
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
+      await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
+        value: BigNumber.from('200'),
+      })).to.changeEtherBalances(
+        [customerAccount],
+        [BigNumber.from('-100')],
+      );
+    })
+
+    it("Should payout when we trigger fulfilled", async function () {
+      const { artistContract, eventsContract, customerAccount, artist1Account, owner, other } = await loadFixture(getDeployContracts())
+      await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('20'))).not.to.be.reverted
+      await expect(artistContract.updateArtist('artist1', artist1Account.address, '123')).not.to.be.reverted
+      await expect(artistContract.connect(customerAccount).StableDiffusion('artist1', 'hello world', {
+        value: BigNumber.from('100'),
+      })).not.to.reverted;
+      await expect(eventsContract.connect(owner).returnBacalhauResults(
+        artistContract.address,
+        BigNumber.from(1),
+        BigNumber.from(0),
+        'I AM RESULT',
+      )).not.to.be.reverted;
+      const artistBeforeWithdraw = await artistContract.getArtist('artist1')
+      expect(artistBeforeWithdraw.escrow).to.equal(BigNumber.from('20'))
+      expect(artistBeforeWithdraw.revenue).to.equal(BigNumber.from('20'))
+      await expect(artistContract.connect(artist1Account).artistWithdraw()).to.changeEtherBalances(
+        [artist1Account],
+        [BigNumber.from('20')],
+      );
+      const artistAfterWithdraw = await artistContract.getArtist('artist1')
+      expect(artistAfterWithdraw.escrow).to.equal(0)
+      expect(artistAfterWithdraw.revenue).to.equal(BigNumber.from('20'))
     })
 
   })
