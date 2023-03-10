@@ -355,6 +355,14 @@ describe("ArtistAttribution", function () {
       expect(await artistContract.getArtistCommission()).to.equal(BigNumber.from('20'))
     })
 
+    it("Should allow the price to be reset to defaults", async function () {
+      const { artistContract } = await loadFixture(getDeployContracts())
+      await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('20'))).not.to.be.reverted
+      await expect(artistContract.updateCost(BigNumber.from('0'), BigNumber.from('0'))).not.to.be.reverted
+      expect(await artistContract.getImageCost()).to.equal(DEFAULT_IMAGE_COST)
+      expect(await artistContract.getArtistCommission()).to.equal(DEFAULT_IMAGE_COMMISSION)
+    })
+
     it("Should allow the price to be changed and handle under payments", async function () {
       const { artistContract, customerAccount, artist1Account } = await loadFixture(getDeployContracts())
       await expect(artistContract.updateCost(BigNumber.from('100'), BigNumber.from('20'))).not.to.be.reverted
