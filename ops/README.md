@@ -14,9 +14,13 @@ We run this as:
 ```bash
 cd hardhat
 npm install
-npx hardhat compile
+npm run compile
 npx hardhat --network filecoinHyperspace run scripts/deploy.js
 ```
+
+NOTE: when the contracts are compiled - we copy the ABI to the frontend - so you should re-deploy the frontend.
+
+(but the contract address just changed anyway so there are bigger reasons to have the re-deploy the frontend :-)
 
 You will see something like:
 
