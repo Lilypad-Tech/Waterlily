@@ -15,3 +15,4 @@ export * from './Description';
 export * from './MyButton';
 export * from './UserInput';
 export * from './ArtistCard';
+export * from './WalletButton';

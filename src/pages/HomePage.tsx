@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import {
   HeaderLayout,
   TitleLayout,
@@ -15,24 +15,22 @@ import {
   MyButton,
   UserInput,
   ArtistCard,
+  WalletButton,
 } from '@/components';
 import { artists } from '@/definitions/artists';
-import { StableDiffusionContext } from '@/context';
+import { StableDiffusionContext, WalletContext } from '@/context';
 import { CircularProgress } from '@mui/material';
 
 const HomePage = () => {
-  const [isConnected, setConnected] = useState(false);
+  // const [isConnected, setConnected] = useState(false);
+  const { walletState } = useContext(WalletContext);
   const { stableDiffusionState } = useContext(StableDiffusionContext);
 
   return (
     <>
       <HeaderLayout>
         <Logo height={40} />
-        <MyButton
-          action={() => setConnected(!isConnected)}
-          name={isConnected ? 'connected' : 'connect'}
-          background={isConnected ? 'connected' : 'connect'}
-        />
+        <WalletButton />
       </HeaderLayout>
       <TitleLayout>
         <Title />
@@ -40,16 +38,12 @@ const HomePage = () => {
         <Description />
       </TitleLayout>
       {/* <SectionLayout>
-        <div>status updates? use snack?</div>
+        <div>status updates ? use snack?</div>
       </SectionLayout> */}
       <SectionLayout>
         <div>{stableDiffusionState?.isLoading.toString()}</div>
-        {!isConnected ? (
-          <MyButton
-            action={() => setConnected(!isConnected)}
-            name={isConnected ? 'connected' : 'connect'}
-            background={isConnected ? 'connected' : 'connect'}
-          />
+        {!walletState?.isConnected ? (
+          <WalletButton />
         ) : !stableDiffusionState?.isLoading ? (
           <UserInputLayout>
             <UserInput />

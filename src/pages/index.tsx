@@ -6,7 +6,10 @@ import {
 import CssBaseline from '@mui/material/CssBaseline';
 import { WebHeader } from '@/components';
 import { PageLayout } from '@/layouts';
-import { StableDiffusionContextProvider } from '@/context';
+import {
+  WalletContextProvider,
+  StableDiffusionContextProvider,
+} from '@/context';
 import HomePage from './HomePage';
 
 let theme = createTheme({
@@ -22,15 +25,17 @@ export default function Home() {
     //Wallet Context Provider here
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <WebHeader />
-      <PageLayout>
-        <StableDiffusionContextProvider>
-          <HomePage />
-        </StableDiffusionContextProvider>
-        {/* <main className={styles.main}>
+      <WalletContextProvider>
+        <WebHeader />
+        <PageLayout>
+          <StableDiffusionContextProvider>
+            <HomePage />
+          </StableDiffusionContextProvider>
+          {/* <main className={styles.main}>
         <div className={styles.description}>Take me home</div>
       </main> */}
-      </PageLayout>
+        </PageLayout>
+      </WalletContextProvider>
     </ThemeProvider>
   );
 }
