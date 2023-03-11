@@ -1,4 +1,4 @@
-import { FC, ReactElement, useState } from 'react';
+import { FC, ReactElement, useState, useContext } from 'react';
 import {
   Box,
   Grid,
@@ -11,6 +11,7 @@ import {
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { MyButton } from '@/components';
 import { artists } from '@/definitions/artists';
+import { StableDiffusionContext } from '@/context';
 
 // import { appUserInput } from '@/definitions/strings';
 
@@ -43,13 +44,17 @@ type UserInputProps = {};
 export const UserInput: FC<UserInputProps> = (): ReactElement => {
   const [prompt, setPrompt] = useState('');
   const [artist, setArtist] = useState('');
+  const { stableDiffusionState, runStableDiffusionJob } = useContext(
+    StableDiffusionContext
+  );
 
   const handleChange = (event: SelectChangeEvent) => {
     setArtist(event.target.value as string);
   };
 
-  const generateImages = () => {
+  const generateImages = async () => {
     console.log('run lilypad function');
+    await runStableDiffusionJob(prompt, artist);
   };
 
   const menuItems = () => {
@@ -106,7 +111,7 @@ export const UserInput: FC<UserInputProps> = (): ReactElement => {
       <MyButton
         name="Generate Images"
         action={generateImages}
-        disabled={!prompt || !artist}
+        disabled={!prompt || !artist || stableDiffusionState?.isLoading}
       />
     </Box>
   );

@@ -18,12 +18,7 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "./src"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "./src"],
   "exclude": ["node_modules", "hardhat"],
   "paths": {
     "@layouts": ["src/layouts/*"],
@@ -32,6 +27,7 @@
     "@assets": ["src/assets"],
     "@models": ["src/models/*"],
     "@definitions/*": ["src/definitions/*"],
-    "@api/*": ["src/api/*"]
+    "@api/*": ["src/api/*"],
+    "@context": ["src/context"]
   }
 }

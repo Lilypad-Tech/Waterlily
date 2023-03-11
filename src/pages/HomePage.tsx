@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import {
   HeaderLayout,
   TitleLayout,
@@ -17,10 +17,12 @@ import {
   ArtistCard,
 } from '@/components';
 import { artists } from '@/definitions/artists';
+import { StableDiffusionContext } from '@/context';
+import { CircularProgress } from '@mui/material';
 
 const HomePage = () => {
   const [isConnected, setConnected] = useState(false);
-  const [isGenerating, setGenerating] = useState(false);
+  const { stableDiffusionState } = useContext(StableDiffusionContext);
 
   return (
     <>
@@ -41,16 +43,19 @@ const HomePage = () => {
         <div>status updates? use snack?</div>
       </SectionLayout> */}
       <SectionLayout>
+        <div>{stableDiffusionState?.isLoading.toString()}</div>
         {!isConnected ? (
           <MyButton
             action={() => setConnected(!isConnected)}
             name={isConnected ? 'connected' : 'connect'}
             background={isConnected ? 'connected' : 'connect'}
           />
-        ) : (
+        ) : !stableDiffusionState?.isLoading ? (
           <UserInputLayout>
             <UserInput />
           </UserInputLayout>
+        ) : (
+          <CircularProgress />
         )}
       </SectionLayout>
       <ImageLayout>

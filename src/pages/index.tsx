@@ -6,6 +6,7 @@ import {
 import CssBaseline from '@mui/material/CssBaseline';
 import { WebHeader } from '@/components';
 import { PageLayout } from '@/layouts';
+import { StableDiffusionContextProvider } from '@/context';
 import HomePage from './HomePage';
 
 let theme = createTheme({
@@ -23,7 +24,9 @@ export default function Home() {
       <CssBaseline />
       <WebHeader />
       <PageLayout>
-        <HomePage />
+        <StableDiffusionContextProvider>
+          <HomePage />
+        </StableDiffusionContextProvider>
         {/* <main className={styles.main}>
         <div className={styles.description}>Take me home</div>
       </main> */}
