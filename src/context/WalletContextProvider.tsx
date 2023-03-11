@@ -222,11 +222,13 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
         //logic to check if disconnected accounts[] is empty
         if (accounts.length < 1) {
           //handle the locked wallet case
-          setWalletState({ ...walletState, isConnected: false });
+          setWalletState({ ...walletState, isConnected: false, web3: true });
         } else {
           setWalletState({
             ...walletState,
-            accounts,
+            accounts: accounts,
+            isConnected: true,
+            web3: true,
           });
         }
       });
