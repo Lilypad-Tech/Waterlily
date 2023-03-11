@@ -20,11 +20,6 @@ const style = {
 
 export const WalletButton: FC = () => {
   const buttonStates: any = {
-    default: {
-      name: 'Unknown',
-      action: () => connectWallet(),
-      background: `-webkit-linear-gradient(left, #858585 10%, #2a2a2a 70%);`,
-    },
     connectState: {
       name: 'Connect',
       action: () => connectWallet(),
@@ -32,9 +27,7 @@ export const WalletButton: FC = () => {
     },
     connectedState: {
       name: 'Connected',
-      action: () => {
-        console.log('disconnect wallet here');
-      },
+      action: () => disconnectWallet(),
       background: `-webkit-linear-gradient(left, #30ccff 10%, #0055ff 70%);`,
     },
     installWalletState: {
@@ -48,7 +41,8 @@ export const WalletButton: FC = () => {
       background: `-webkit-linear-gradient(left, #f8a929 10%, #f38218 70%);`,
     },
   };
-  const { walletState, connectWallet } = useContext(WalletContext);
+  const { walletState, connectWallet, disconnectWallet } =
+    useContext(WalletContext);
   const [buttonState, setButtonState] = useState<buttonStateType>(
     buttonStates.connect
   );
