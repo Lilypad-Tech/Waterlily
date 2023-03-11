@@ -237,13 +237,17 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
         console.log('chainId changed', chainId, walletState);
         if (chainId === null) {
           //handle the locked wallet case
-          setWalletState({ ...walletState, isConnected: false, web3: true });
-        } else {
-          setWalletState({
-            ...walletState,
+          setWalletState((prevState: any) => ({
+            ...prevState,
+            accounts: [],
             chainId: chainId,
-            web3: true,
-          });
+            isConnected: false,
+          }));
+        } else {
+          setWalletState((prevState: any) => ({
+            ...prevState,
+            chainId: chainId,
+          }));
         }
       });
     } else {
