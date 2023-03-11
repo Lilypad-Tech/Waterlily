@@ -147,7 +147,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
       const chainId = await fetchChainId();
       // setWalletListeners();
       setWalletState({
-        ...walletState,
+        isConnected: true,
         accounts: accounts,
         chainId: chainId,
         web3: true,
