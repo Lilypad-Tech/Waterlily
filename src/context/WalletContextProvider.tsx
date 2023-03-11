@@ -158,7 +158,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
   };
 
   const disconnectWallet = () => {
-    setWalletState(INITIAL_WALLET_STATE);
+    setWalletState({ ...INITIAL_WALLET_STATE, web3: true });
   };
 
   const checkForWalletConnection = async () => {

@@ -50,7 +50,7 @@ export const WalletButton: FC = () => {
   };
   const { walletState, connectWallet } = useContext(WalletContext);
   const [buttonState, setButtonState] = useState<buttonStateType>(
-    buttonStates.default
+    buttonStates.connect
   );
 
   useEffect(() => {
