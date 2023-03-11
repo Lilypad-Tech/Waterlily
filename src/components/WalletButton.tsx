@@ -2,11 +2,6 @@ import { FC, useContext, useState, useEffect } from 'react';
 import { Button } from '@mui/material';
 import { WalletContext } from '@/context';
 
-interface buttonStateType {
-  name: string;
-  action: () => {};
-  background: string;
-}
 const style = {
   backgroundSize: '200% 200%',
   animation: `gradient-animation 4s ease infinite`,
@@ -43,9 +38,6 @@ export const WalletButton: FC = () => {
   };
   const { walletState, connectWallet, disconnectWallet } =
     useContext(WalletContext);
-  // const [buttonState, setButtonState] = useState<buttonStateType>(
-  //   buttonStates.connect
-  // );
 
   const buttonState = !walletState?.web3
     ? buttonStates.installWalletState
@@ -53,24 +45,13 @@ export const WalletButton: FC = () => {
     ? buttonStates.connectedState
     : buttonStates.connectState;
 
-  // useEffect(() => {
-  //   console.log('button', walletState);
-  //   if (!walletState?.web3) {
-  //     setButtonState(buttonStates.installWalletState);
-  //   } else if (walletState?.isConnected) {
-  //     setButtonState(buttonStates.connectedState);
-  //   } else {
-  //     setButtonState(buttonStates.connectState);
-  //   }
-  // }, [walletState]);
-
   return (
     <Button
       variant="contained"
-      onClick={buttonState?.action}
+      onClick={buttonState?.action || console.log('inactive')}
       sx={{ ...style, background: `${buttonState?.background}` }}
     >
-      {buttonState?.name}
+      {buttonState?.name || 'Connect'}
     </Button>
   );
 };

@@ -41,7 +41,6 @@ const HomePage = () => {
         <div>status updates ? use snack?</div>
       </SectionLayout> */}
       <SectionLayout>
-        <div>{stableDiffusionState?.isLoading.toString()}</div>
         {!walletState?.isConnected ? (
           <WalletButton />
         ) : !stableDiffusionState?.isLoading ? (
@@ -49,7 +48,7 @@ const HomePage = () => {
             <UserInput />
           </UserInputLayout>
         ) : (
-          <CircularProgress />
+          <CircularProgress size={100} />
         )}
       </SectionLayout>
       <ImageLayout>
