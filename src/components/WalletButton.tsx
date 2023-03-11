@@ -43,28 +43,34 @@ export const WalletButton: FC = () => {
   };
   const { walletState, connectWallet, disconnectWallet } =
     useContext(WalletContext);
-  const [buttonState, setButtonState] = useState<buttonStateType>(
-    buttonStates.connect
-  );
+  // const [buttonState, setButtonState] = useState<buttonStateType>(
+  //   buttonStates.connect
+  // );
 
-  useEffect(() => {
-    console.log('button', walletState);
-    if (!walletState?.web3) {
-      setButtonState(buttonStates.installWalletState);
-    } else if (walletState?.isConnected) {
-      setButtonState(buttonStates.connectedState);
-    } else {
-      setButtonState(buttonStates.connectState);
-    }
-  }, [walletState]);
+  const buttonState = !walletState?.web3
+    ? buttonStates.installWalletState
+    : walletState?.isConnected
+    ? buttonStates.connectedState
+    : buttonStates.connectState;
+
+  // useEffect(() => {
+  //   console.log('button', walletState);
+  //   if (!walletState?.web3) {
+  //     setButtonState(buttonStates.installWalletState);
+  //   } else if (walletState?.isConnected) {
+  //     setButtonState(buttonStates.connectedState);
+  //   } else {
+  //     setButtonState(buttonStates.connectState);
+  //   }
+  // }, [walletState]);
 
   return (
     <Button
       variant="contained"
-      onClick={buttonState.action}
-      sx={{ ...style, background: `${buttonState.background}` }}
+      onClick={buttonState?.action}
+      sx={{ ...style, background: `${buttonState?.background}` }}
     >
-      {buttonState.name}
+      {buttonState?.name}
     </Button>
   );
 };

@@ -7,6 +7,26 @@ import {
   useEffect,
 } from 'react';
 
+const HyperspaceChainId = '0xc45';
+const HyperspaceNetworkData = {
+  chainId: '0xc45',
+  rpcUrls: [
+    'https://hyperspace.filfox.info/rpc/v1',
+    'https://filecoin-hyperspace.chainstacklabs.com/rpc/v1',
+  ],
+  chainName: 'Filecoin Hyperspace',
+  nativeCurrency: {
+    name: 'tFIL',
+    symbol: 'tFIL',
+    decimals: 18,
+  },
+  blockExplorerUrls: [
+    'https://fvm.starboard.ventures/transactions/',
+    'https://hyperspace.filscan.io/',
+    'https://beryx.zondax.chfor',
+  ],
+};
+
 interface networkType {
   chainId: string;
   rpcUrls: string[];
@@ -36,8 +56,8 @@ interface WalletContextValue {
   connectWallet: () => Promise<void>;
   // checkForWalletConnection: () => Promise<boolean | undefined>;
   checkForWalletConnection: () => Promise<void>;
-  verifyChainId: (reqChainId: string) => Promise<boolean | undefined>;
-  changeWalletChain: (reqChainId: string) => Promise<boolean | undefined>;
+  verifyChainId: (reqChainId: string) => boolean;
+  changeWalletChain: (reqChainId: string) => Promise<void>;
   addNetwork: (networkData: networkType) => Promise<void>;
   disconnectWallet: () => void;
 }
@@ -61,14 +81,12 @@ const defaultWalletState = {
   //   return false;
   // },
   checkForWalletConnection: async () => {},
-  verifyChainId: async (reqChainId: string) => {
+  verifyChainId: (reqChainId: string) => {
     return false;
   },
-  changeWalletChain: async (reqChainId: string) => {
-    return false;
-  },
+  changeWalletChain: async (reqChainId: string) => {},
   addNetwork: async () => {},
-  disconnectWallet: (): void => {},
+  disconnectWallet: () => {},
 };
 
 interface MyContextProviderProps {
@@ -145,20 +163,30 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
       console.log('Connecting to wallet...');
       const accounts: string[] = await fetchWalletAccounts();
       const chainId = await fetchChainId();
-      // setWalletListeners();
       setWalletState({
         isConnected: true,
         accounts: accounts,
         chainId: chainId,
         web3: true,
       });
+      if (!verifyChainId(HyperspaceChainId)) {
+        await changeWalletChain(HyperspaceChainId);
+      }
     } else {
       setWalletState(INITIAL_WALLET_STATE);
     }
   };
 
   const disconnectWallet = () => {
-    setWalletState({ ...INITIAL_WALLET_STATE, web3: true });
+    if (window.ethereum) {
+      setWalletState({
+        ...walletState,
+        accounts: [],
+        isConnected: false,
+      });
+    } else {
+      setWalletState(INITIAL_WALLET_STATE);
+    }
   };
 
   const checkForWalletConnection = async () => {
@@ -190,28 +218,30 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
     console.log('Setting up wallet event listeners...');
     if (window.ethereum) {
       // subscribe to provider events compatible with EIP-1193 standard.
-      window.ethereum.on('accountsChanged', (accounts: any) => {
+      window.ethereum.on('accountsChanged', (accounts: string[]) => {
         //logic to check if disconnected accounts[] is empty
         if (accounts.length < 1) {
           //handle the locked wallet case
           setWalletState({ ...walletState, isConnected: false });
         } else {
-          setWalletState((prevState: WalletState) => ({
-            ...prevState,
+          setWalletState({
+            ...walletState,
             accounts,
-          }));
+          });
         }
       });
       // Subscribe to chainId change
-      window.ethereum.on('chainChanged', (chainId: any) => {
+      window.ethereum.on('chainChanged', (chainId: string) => {
+        console.log('chainId changed', chainId, walletState);
         if (chainId === null) {
           //handle the locked wallet case
           setWalletState({ ...walletState, isConnected: false });
         } else {
-          setWalletState((prevState: WalletState) => ({
-            ...prevState,
-            chainId,
-          }));
+          setWalletState({
+            ...walletState,
+            chainId: chainId,
+            // web3: true,
+          });
         }
       });
     } else {
@@ -219,14 +249,13 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
     }
   };
 
-  const verifyChainId = async (reqChainId: string) => {
+  const verifyChainId = (reqChainId: string) => {
     console.log(`Verifying wallet chain matches ${reqChainId}...`);
     if (walletState.chainId !== reqChainId) {
       console.log('wrong chain');
       return false;
       //display a popup to change wallet?
-    }
-    return true;
+    } else return true;
   };
 
   const changeWalletChain = async (reqChainId: string) => {
@@ -245,13 +274,14 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
           console.log('Error changing chains', err);
           if (err.status === 4902) {
             // Make a request to add the chain to wallet here
-            console.log("Chain hasn't been added to the wallet yet!");
+            console.log(
+              "Chain hasn't been added to the wallet yet... trying to add"
+            );
+            addNetwork(HyperspaceNetworkData);
           }
-          return false;
         });
     } else {
       setWalletState(INITIAL_WALLET_STATE);
-      return false;
     }
   };
 
@@ -307,20 +337,3 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
     </WalletContext.Provider>
   );
 };
-
-// const MetamaskContext =
-//   createContext<MetamaskContextType>(initialMetamaskState);
-
-// const useMetamask = () => {
-//   const metamaskContext = useContext(MetamaskContext);
-
-//   if (!metamaskContext) {
-//     throw new Error(
-//       'metamaskContext has to be used within <MetamaskContext.Provider>'
-//     );
-//   }
-
-//   return metamaskContext;
-// };
-
-// export default useMetamask;
