@@ -33,6 +33,10 @@ const HomePage = () => {
   const { statusState = defaultStatusState.statusState } =
     useContext(StatusContext);
 
+  useEffect(() => {
+    console.log('status home', statusState);
+  }, [statusState]);
+
   return (
     <>
       <HeaderLayout>
@@ -50,7 +54,7 @@ const HomePage = () => {
       <SectionLayout>
         {!walletState?.isConnected ? (
           <WalletButton />
-        ) : !statusState.isLoading ? (
+        ) : !Boolean(statusState.isLoading) ? (
           <UserInputLayout>
             <UserInput />
           </UserInputLayout>

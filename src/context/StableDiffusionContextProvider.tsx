@@ -40,51 +40,6 @@ export const StableDiffusionContext =
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-// const sdTryCatch = {
-//    try {
-//       const tx = await waterlilyContract.StableDiffusion(prompt, artistid, {
-//         value: imageCost,
-//         gasLimit: gasLimit,
-//       });
-
-//       setStatusState({
-//         ...statusState,
-//         isLoading: 'Waiting for the transaction to be included in a block...',
-//         isMessage: true,
-//         message: {
-//           title: `Transaction ${tx.hash} sent.`,
-//           description:
-//             'Waiting for the transaction to be included in a block...',
-//         },
-//       });
-
-//       const receipt = await tx.wait();
-//       console.log('receipt done', receipt);
-
-//       setStatusState({
-//         ...statusState,
-//         isLoading: false,
-//         isMessage: true,
-//         message: {
-//           title: `Transaction ${tx.hash} confirmed.`,
-//           description: 'Transaction successfully mined.',
-//         },
-//       });
-//     } catch (error: any) {
-//       console.error(error);
-
-//       setStatusState({
-//         ...statusState,
-//         isLoading: false,
-//         isMessage: true,
-//         message: {
-//           title: 'Transaction failed.',
-//           description: error.message,
-//         },
-//       });
-//     }
-// }
-
 export const StableDiffusionContextProvider = ({
   children,
 }: MyContextProviderProps) => {
@@ -99,34 +54,55 @@ export const StableDiffusionContextProvider = ({
 
   useEffect(() => {
     console.log(statusState);
+    // if (statusState.isError === 'Transaction Failed') {
+    //   setStatusState({...statusState, isLoading: ''})
+    // }
   }, [statusState]);
+
+  const testNetwork = async () => {
+    // const rpcEndpointUrl = 'https://example.com/rpc';
+    // const provider = new ethers.providers.JsonRpcProvider(rpcEndpointUrl);
+
+    // provider
+    //   .getBlockNumber()
+    //   .then((blockNumber) => {
+    //     console.log(
+    //       `The latest block number on ${rpcEndpointUrl} is ${blockNumber}`
+    //     );
+    //   })
+    //   .catch((error) => {
+    //     console.error(`Failed to connect to ${rpcEndpointUrl}: ${error}`);
+    //   });
+
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const network = await provider.getNetwork();
+      console.log('network', network); // will log information about the network if connected
+      if (network) {
+        return true;
+      }
+    } else {
+      console.log('No ethereum provider detected');
+    }
+    return false;
+  };
 
   const submitJob = async (
     prompt: string,
     artistid: string,
-    // setStatusState: React.Dispatch<React.SetStateAction<StatusState>>,
     timeout: number = 60000 // default timeout of 60 seconds
   ) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    //connect to contract in write mode
     const waterlilyContract = new ethers.Contract(
       WATERLILY_CONTRACT_ADDRESS,
       WaterlilyABI.abi,
       signer
     );
 
-    const k = ethers.utils.parseUnits('0.1', 18); // Convert 100 to the appropriate unit of the token with 18 decimal places
+    const k = ethers.utils.parseUnits('0.1', 18);
     const imageCost = ethers.utils.parseEther('0.1');
-
     const gasLimit: string = ethers.utils.hexlify(9000000);
-
-    // Set up a promise that will resolve after the specified timeout
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => {
-        reject(new Error('Transaction timed out'));
-      }, timeout)
-    );
 
     try {
       setStatusState({
@@ -136,17 +112,11 @@ export const StableDiffusionContextProvider = ({
         message: { title: '', description: '' },
       });
 
-      const tx = await Promise.race([
-        waterlilyContract.StableDiffusion(prompt, artistid, {
-          value: k,
-          gasLimit: gasLimit,
-        }),
-        timeoutPromise, // wait for either the transaction to be mined or the timeout to expire
-      ]);
-
-      if (tx instanceof Error) {
-        throw tx; // if the promise was rejected due to a timeout, rethrow the error to handle it below
-      }
+      const tx = await waterlilyContract.StableDiffusion(prompt, artistid, {
+        value: k,
+        gasLimit: gasLimit,
+      });
+      console.log('tx', tx);
 
       setStatusState({
         ...statusState,
@@ -155,47 +125,80 @@ export const StableDiffusionContextProvider = ({
         message: { title: '', description: '' },
       });
 
-      const receipt: ethers.ContractReceipt = await tx.wait();
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => {
+          reject(new Error('Transaction timed out'));
+        }, timeout)
+      );
 
+      try {
+        const receipt: ethers.ContractReceipt = await Promise.race([
+          tx.wait(),
+          timeoutPromise,
+        ]);
+
+        setStatusState({
+          ...statusState,
+          isLoading: '',
+          isMessage: true,
+          message: {
+            title: `Transaction confirmed: ${receipt.transactionHash}`,
+            description: 'Your job has been submitted to the network.',
+          },
+        });
+      } catch (error: any) {
+        console.log('there was an error or timeout', error);
+        if (error?.message === 'Transaction timed out') {
+          //cancel the transaction
+          await signer.sendTransaction({
+            to: tx.to,
+            nonce: await signer.getTransactionCount(),
+            gasPrice: 0,
+            gasLimit: 21000,
+            value: 0,
+          });
+          setStatusState({
+            isError: 'Transaction timed out',
+            isLoading: '',
+            isMessage: true,
+            message: {
+              title: 'Transaction timed out',
+              description:
+                'The transaction took too long to confirm. Please try again later.',
+            },
+          });
+        } else {
+          setStatusState({
+            isError: 'Receipt: Transaction failed',
+            isLoading: '',
+            isMessage: true,
+            message: {
+              title: 'Transaction failed',
+              description:
+                'There was an error submitting your job to the network. Please try again later.',
+            },
+          });
+        }
+      }
+    } catch (error) {
+      console.log('there was an tx error', error);
       setStatusState({
-        ...statusState,
+        isError: 'TX: Transaction failed',
         isLoading: '',
         isMessage: true,
         message: {
-          title: `Transaction confirmed: ${receipt.transactionHash}`,
-          description: 'Your job has been submitted to the network.',
+          title: 'Transaction failed',
+          description:
+            'There was an error submitting getting tx from the network. Please try again later.',
         },
       });
-    } catch (error: any) {
-      if (error.message === 'Transaction timed out') {
-        setStatusState({
-          isError: 'Transaction timed out',
-          isLoading: '',
-          isMessage: true,
-          message: {
-            title: 'Transaction timed out',
-            description:
-              'The transaction took too long to confirm. Please try again later.',
-          },
-        });
-      } else {
-        setStatusState({
-          isError: 'Transaction failed',
-          isLoading: '',
-          isMessage: true,
-          message: {
-            title: 'Transaction failed',
-            description:
-              'There was an error submitting your job to the network. Please try again later.',
-          },
-        });
-      }
     }
   };
 
   const runStableDiffusionJob = async (prompt: string, artistid: string) => {
     setStatusState({
-      ...statusState,
+      ...defaultStatusState.statusState,
+      isError: '',
       isLoading: 'Connecting to Waterlily Contract..',
     });
     if (!window.ethereum) {
@@ -210,7 +213,8 @@ export const StableDiffusionContextProvider = ({
       });
       return;
     }
-    submitJob(prompt, artistid, 80000);
+
+    submitJob(prompt, artistid, 60000);
     return;
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
