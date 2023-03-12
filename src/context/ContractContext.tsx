@@ -9,9 +9,14 @@ import { networks } from '../definitions/network';
 
 const rpc = networks.filecoinHyperspace.rpc[0];
 
+enum AccessType {
+  Read = 'read',
+  Write = 'write',
+}
+
 export interface ContractState {
   isConnected: boolean;
-  mode: 'read' | 'write';
+  mode: AccessType;
 }
 
 interface ContractContextContextValue {
