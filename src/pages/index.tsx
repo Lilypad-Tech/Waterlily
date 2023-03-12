@@ -9,6 +9,7 @@ import { PageLayout } from '@/layouts';
 import {
   WalletContextProvider,
   StableDiffusionContextProvider,
+  StatusContextProvider,
 } from '@/context';
 import HomePage from './HomePage';
 
@@ -26,15 +27,17 @@ export default function Home() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <WalletContextProvider>
-        <WebHeader />
-        <PageLayout>
-          <StableDiffusionContextProvider>
-            <HomePage />
-          </StableDiffusionContextProvider>
-          {/* <main className={styles.main}>
+        <StatusContextProvider>
+          <WebHeader />
+          <PageLayout>
+            <StableDiffusionContextProvider>
+              <HomePage />
+            </StableDiffusionContextProvider>
+            {/* <main className={styles.main}>
         <div className={styles.description}>Take me home</div>
       </main> */}
-        </PageLayout>
+          </PageLayout>
+        </StatusContextProvider>
       </WalletContextProvider>
     </ThemeProvider>
   );

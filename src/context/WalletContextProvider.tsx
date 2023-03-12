@@ -1,4 +1,5 @@
 declare let window: any;
+import { addWalletNetwork } from '@/utils/wallet-helper-functions';
 import {
   createContext,
   Dispatch,
@@ -62,7 +63,7 @@ interface WalletContextValue {
   disconnectWallet: () => void;
 }
 
-const defaultWalletState = {
+export const defaultWalletState = {
   walletState: {
     accounts: [] as string[],
     chainId: '',
@@ -279,6 +280,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
         .catch((err: any) => {
           console.log('Error changing chains', err);
           if (err.status === 4902) {
+            console.log('Adding the filecoin chain to wallet');
             // Make a request to add the chain to wallet here
             console.log(
               "Chain hasn't been added to the wallet yet... trying to add"

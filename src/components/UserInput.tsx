@@ -10,8 +10,14 @@ import {
 } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { MyButton } from '@/components';
-import { artists } from '@/definitions/artists';
-import { StableDiffusionContext } from '@/context';
+import { artists, ArtistType, networks } from '@/definitions';
+import {
+  WalletContext,
+  StableDiffusionContext,
+  StatusContext,
+  defaultWalletState,
+  defaultStatusState,
+} from '@/context';
 
 // import { appUserInput } from '@/definitions/strings';
 
@@ -43,22 +49,37 @@ type UserInputProps = {};
 
 export const UserInput: FC<UserInputProps> = (): ReactElement => {
   const [prompt, setPrompt] = useState('');
-  const [artist, setArtist] = useState('');
-  const { stableDiffusionState, runStableDiffusionJob } = useContext(
-    StableDiffusionContext
+  const [artist, setArtist] = useState({ name: '', key: '' });
+  const { runStableDiffusionJob } = useContext(StableDiffusionContext);
+  const { statusState = defaultStatusState.statusState } =
+    useContext(StatusContext);
+  const { verifyChainId, changeWalletChain } = useContext(WalletContext);
+  const artistObj = artists.reduce<Record<string, ArtistType>>(
+    (acc, artist) => {
+      acc[artist.name] = artist;
+      return acc;
+    },
+    {}
   );
 
   const handleChange = (event: SelectChangeEvent) => {
-    setArtist(event.target.value as string);
+    setArtist({
+      name: event.target.value as string,
+      key: artistObj[event.target.value].artistId,
+    });
   };
 
   const generateImages = async () => {
-    console.log('run lilypad function');
-    await runStableDiffusionJob(prompt, artist);
+    console.log('run lilypad function', artist);
+    if (verifyChainId(networks.filecoinHyperspace.chainId)) {
+      await runStableDiffusionJob(prompt, artist.key); //artist should equal the artistId
+    } else {
+      changeWalletChain(networks.filecoinHyperspace.chainId);
+    }
   };
 
   const menuItems = () => {
-    return artists.map((artist) => {
+    return artists.map((artist, el) => {
       return (
         <MenuItem key={artist.name} value={artist.name}>
           {artist.name}
@@ -98,7 +119,7 @@ export const UserInput: FC<UserInputProps> = (): ReactElement => {
             <Select
               labelId="artist-select-label"
               id="artist-select"
-              value={artist}
+              value={artist.name}
               label="Artist"
               onChange={handleChange}
             >
@@ -111,7 +132,7 @@ export const UserInput: FC<UserInputProps> = (): ReactElement => {
       <MyButton
         name="Generate Images"
         action={generateImages}
-        disabled={!prompt || !artist || stableDiffusionState?.isLoading}
+        disabled={!prompt || !artist || Boolean(statusState.isLoading)}
       />
     </Box>
   );

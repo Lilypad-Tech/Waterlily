@@ -18,13 +18,20 @@ import {
   WalletButton,
 } from '@/components';
 import { artists } from '@/definitions/artists';
-import { StableDiffusionContext, WalletContext } from '@/context';
+import {
+  WalletContext,
+  defaultWalletState,
+  StatusContext,
+  defaultStatusState,
+} from '@/context';
 import { CircularProgress } from '@mui/material';
 
 const HomePage = () => {
   // const [isConnected, setConnected] = useState(false);
-  const { walletState } = useContext(WalletContext);
-  const { stableDiffusionState } = useContext(StableDiffusionContext);
+  const { walletState = defaultWalletState.walletState } =
+    useContext(WalletContext);
+  const { statusState = defaultStatusState.statusState } =
+    useContext(StatusContext);
 
   return (
     <>
@@ -43,12 +50,16 @@ const HomePage = () => {
       <SectionLayout>
         {!walletState?.isConnected ? (
           <WalletButton />
-        ) : !stableDiffusionState?.isLoading ? (
+        ) : !statusState.isLoading ? (
           <UserInputLayout>
             <UserInput />
           </UserInputLayout>
         ) : (
-          <CircularProgress size={100} />
+          <>
+            {/* TO DO BREAK OUT INTO PROPER COMPONENT */}
+            <CircularProgress size={100} />
+            <div>{statusState.isLoading}</div>
+          </>
         )}
       </SectionLayout>
       <ImageLayout>

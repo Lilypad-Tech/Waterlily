@@ -39,6 +39,8 @@ export const WalletButton: FC = () => {
   const { walletState, connectWallet, disconnectWallet } =
     useContext(WalletContext);
 
+  if (!walletState) return <></>;
+
   const buttonState = !walletState?.web3
     ? buttonStates.installWalletState
     : walletState?.isConnected
