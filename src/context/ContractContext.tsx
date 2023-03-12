@@ -25,7 +25,7 @@ interface ContractContextContextValue {
 }
 
 export const defaultContractState = {
-  contractState: { isConnected: false, mode: 'read' },
+  contractState: { isConnected: false, mode: AccessType.Read },
   setContractState: () => {},
 };
 
@@ -41,7 +41,7 @@ export const ContractContextContextProvider = ({
 }: MyContextProviderProps) => {
   const [contractState, setContractState] = useState<ContractState>({
     isConnected: false,
-    mode: 'read',
+    mode: AccessType.Read,
   });
 
   const contractContextContextValue: ContractContextContextValue = {
