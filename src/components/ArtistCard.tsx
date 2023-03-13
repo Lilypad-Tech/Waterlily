@@ -92,7 +92,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
             variant="outlined"
             onClick={onClick}
           >
-            Generate Image
+            Use This Style
           </Button>
         </CardActions>
       </Card>

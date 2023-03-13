@@ -135,6 +135,10 @@ IMAGE_COST=100 ARTIST_COMMISSION=20 \
 npx hardhat --network filecoinHyperspace run scripts/changePrice.ts
 # this wallet is a test wallet that Ally controls - we can change that later
 ARTIST=mckhallstyle ADDRESS=0x230115404c551Fcd0B6d447DE1DaD3afca230E07 npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
+ARTIST=SARAH_RICHTER ADDRESS=0x230115404c551Fcd0B6d447DE1DaD3afca230E07 npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
+ARTIST=bcistyle ADDRESS=0x230115404c551Fcd0B6d447DE1DaD3afca230E07 npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
+ARTIST=mntstyle ADDRESS=0x230115404c551Fcd0B6d447DE1DaD3afca230E07 npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
+ARTIST=btzstyle ADDRESS=0x230115404c551Fcd0B6d447DE1DaD3afca230E07 npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
 npx hardhat --network filecoinHyperspace run scripts/listArtists.ts
 ```
 
