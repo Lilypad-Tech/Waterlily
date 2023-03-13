@@ -30,12 +30,22 @@ interface ImageContextValue {
   imageState: ImageState;
   setImageState: Dispatch<SetStateAction<ImageState>>;
   imagePrompt: string;
-  imageArtist: { name?: string; key?: string; style?: string };
+  imageArtist: { name: string; key: string; style: string };
   setImagePrompt: Dispatch<SetStateAction<string>>;
-  setImageArtist: Dispatch<SetStateAction<object>>;
+  setImageArtist: React.Dispatch<React.SetStateAction<{
+    name: string;
+    key: string;
+    style: string;
+  }>>;
   imageID: number;
   setImageID: Dispatch<SetStateAction<number>>;
   quickImages: string[];
+}
+
+const IMAGE_HOST = `https://ai-art-files.cluster.world`
+
+export const getQuickImageURL = (jobID: number, imageIndex: number) => {
+  return `${IMAGE_HOST}/job/${jobID}/image_${imageIndex}.png`;
 }
 
 export const defaultImageState: ImageContextValue = {
@@ -44,7 +54,7 @@ export const defaultImageState: ImageContextValue = {
   },
   setImageState: () => {},
   imagePrompt: '',
-  imageArtist: {},
+  imageArtist: {name: '', key: '', style: ''},
   imageID: 0,
   quickImages: [],
   setImageArtist: () => {},
@@ -66,7 +76,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
   const [imageID, setImageID] = useState<number>(0);
   const [quickImages, setQuickImages] = useState<string[]>([]);
   const [imagePrompt, setImagePrompt] = useState<string>('');
-  const [imageArtist, setImageArtist] = useState<object>({});
+  const [imageArtist, setImageArtist] = useState<{ name: string; key: string; style: string }>({name: '', key: '', style: ''});
 
   useEffect(() => {
     console.log(imageState);
@@ -74,7 +84,15 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
 
   useEffect(() => {
     if (!imageID) return;
-    // start polling
+
+    // now we start polling for our images
+
+    console.log('--------------------------------------------')
+    console.log('HERE')
+    setQuickImages([
+      getQuickImageURL(54, 0)
+    ])
+
   }, [imageID]);
 
   const imageContextValue: ImageContextValue = {

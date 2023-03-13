@@ -88,7 +88,7 @@ export const ContractContextProvider = ({
   const [contractState, setContractState] = useState<ContractState>(
     defaultContractState.contractState
   );
-  const { statusState = defaultStatusState.statusState, setStatusState } =
+  const { statusState = defaultStatusState.statusState, setStatusState, setSnackbar } =
     useContext(StatusContext);
   const { imageState, setImageID, setImageState } = useContext(ImageContext);
 
@@ -131,34 +131,38 @@ export const ContractContextProvider = ({
           isComplete: image[6],
           isCancelled: image[7],
         };
-        setImageState({ generatedImages: generatedImage });
-        const customerAddress = '0xc7653D426F2EC8Bc33cdDE08b15F535E2EB2F523';
-        if (image.customer.toLowerCase() === customerAddress.toLowerCase()) {
-          console.log('ImageGenerated event received for customer:');
-          console.table(image);
 
-          setStatusState((prevState) => ({
-            ...prevState,
-            isLoading: '',
-            isMessage: true,
-            message: {
-              title: 'Bacalhau Stable Diffusion Job Success',
-              description: `See transaction on blockExplorer..`,
-            },
-          }));
-          // do something with the event - status & display
-          // call a function to do this. image context?
-        }
-        // console.log('ImageGenerated event received:', image);
-        setStatusState((prevState) => ({
-          ...prevState,
-          isLoading: '',
-          isMessage: true,
-          message: {
-            title: 'Successfully ran WaterLily Stable Diffusion Job',
-            description: 'Images: ...',
-          },
-        }));
+        console.log('--------------------------------------------')
+        console.log('generatedImage FROM EVENT')
+        console.dir(generatedImage)
+        // setImageState({ generatedImages: generatedImage });
+        // const customerAddress = '0xc7653D426F2EC8Bc33cdDE08b15F535E2EB2F523';
+        // if (image.customer.toLowerCase() === customerAddress.toLowerCase()) {
+        //   console.log('ImageGenerated event received for customer:');
+        //   console.table(image);
+
+        //   setStatusState((prevState) => ({
+        //     ...prevState,
+        //     isLoading: '',
+        //     isMessage: true,
+        //     message: {
+        //       title: 'Bacalhau Stable Diffusion Job Success',
+        //       description: `See transaction on blockExplorer..`,
+        //     },
+        //   }));
+        //   // do something with the event - status & display
+        //   // call a function to do this. image context?
+        // }
+        // // console.log('ImageGenerated event received:', image);
+        // setStatusState((prevState) => ({
+        //   ...prevState,
+        //   isLoading: '',
+        //   isMessage: true,
+        //   message: {
+        //     title: 'Successfully ran WaterLily Stable Diffusion Job',
+        //     description: 'Images: ...',
+        //   },
+        // }));
         // return image;
       }
     );
@@ -240,47 +244,59 @@ export const ContractContextProvider = ({
         },
       }));
       console.log('got tx hash', tx.hash); // Print the transaction hash
-      try {
-        const receipt = await tx.wait();
+      
+      const receipt = await tx.wait();
+      const [jobEvent] = receipt.logs.map((log: any) => connectedContract.interface.parseLog(log))
+      const jobID = jobEvent.args.job.id;
 
-        // TODO: trigger the image downloader here
-        // extract the image id from the event logs
-        // trigger the image context setImageID
-        // also setImageID(number)
-        console.log('got receipt', receipt);
-        setStatusState((prevState) => ({
-          ...prevState,
-          isLoading: 'Running Stable Diffusion Job on Bacalhau...',
-          isMessage: true,
-          message: {
-            title: `Receipt: ${tx.hash}`,
-            description: (
-              <a
-                href={`${blockExplorerRoot}${tx.hash}`}
-                target="_blank"
-                rel="no_referrer"
-              >
-                Check Status in block explorer
-              </a>
-            ), //receipt.transactionHash
-          },
-        }));
+      // TODO: trigger the image downloader here
+      // extract the image id from the event logs
+      // trigger the image context setImageID
+      // also setImageID(number)
+      console.log('got receipt', receipt);
+      console.log('got jobEvent', jobEvent);
+      console.log('got jobID', jobID);
 
-        return;
-      } catch (error) {
-        console.log('receipt err', error);
-        setStatusState((prevState) => ({
-          ...prevState,
-          isLoading: '',
-          isError: 'yep receipt error',
-        }));
+      setImageID(jobID);
+
+      setStatusState((prevState) => ({
+        ...prevState,
+        isLoading: 'Running Stable Diffusion Job on Bacalhau...',
+        isMessage: true,
+        message: {
+          title: `Receipt: ${tx.hash}`,
+          description: (
+            <a
+              href={`${blockExplorerRoot}${tx.hash}`}
+              target="_blank"
+              rel="no_referrer"
+            >
+              Check Status in block explorer
+            </a>
+          ), //receipt.transactionHash
+        },
+      }));
+    } catch (error: any) {
+      let errorMessage = error.toString()
+      if(error.error && error.error.data && error.error.data.message && error.error.data.message.includes('revert reason:')) {
+        const match = error.error.data.message.match(/revert reason: Error\((.*?)\)/)
+        errorMessage = match[1]
       }
-    } catch (error) {
-      console.log('tx error', error);
+      setSnackbar({
+        type: 'error',
+        open: true,
+        message: errorMessage
+      })
       setStatusState((prevState) => ({
         ...prevState,
         isLoading: '',
-        isError: 'yep error',
+        isError: true,
+        message: {
+          title: errorMessage,
+          description: (
+            <span>{errorMessage}</span>
+          ),
+        },
       }));
     }
   };

@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { forwardRef, useState, useContext, useEffect } from 'react';
 import {
   HeaderLayout,
   TitleLayout,
@@ -26,8 +26,17 @@ import {
   defaultStatusState,
   ImageContext,
 } from '@/context';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Box } from '@mui/material';
 import { ImageCard } from '@/components/ImageCard';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
+
+const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref,
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const ipfsRoot = 'https://ipfs.io/ipfs/';
 
@@ -35,9 +44,9 @@ const HomePage = () => {
   // const [isConnected, setConnected] = useState(false);
   const { walletState = defaultWalletState.walletState } =
     useContext(WalletContext);
-  const { statusState = defaultStatusState.statusState } =
+  const { snackbar, closeSnackbar, statusState = defaultStatusState.statusState, resetStatusState } =
     useContext(StatusContext);
-  const { imageState, quickImages } = useContext(ImageContext);
+  const { imageState, quickImages, imagePrompt, imageArtist } = useContext(ImageContext);
 
   useEffect(() => {
     console.log('status home', statusState);
@@ -114,12 +123,37 @@ const HomePage = () => {
           </ImageListLayout>
         </SectionLayout>
       )}
+      {
+        statusState.isError && (
+          <SectionLayout>
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Alert
+                onClose={resetStatusState}
+                severity="error"
+                sx={{ width: '100%', maxWidth: '400px' }}
+              >
+                <div>
+                  <div>{statusState.message?.title}</div>
+                </div>
+              </Alert>
+            </Box>
+          </SectionLayout>
+        )
+      }
       <SectionLayout>
         {!walletState?.isConnected ? (
           <WalletButton />
         ) : !Boolean(statusState.isLoading) ? (
           <UserInputLayout>
-            <UserInput />
+            <UserInput
+              initialPrompt={imagePrompt}
+              initialArtist={imageArtist}
+            />
           </UserInputLayout>
         ) : (
           <>
@@ -156,6 +190,15 @@ const HomePage = () => {
           })}
         </ArtistListLayout>
       </ArtistLayout>
+      {
+        snackbar.open && (
+          <Snackbar open={snackbar.open} autoHideDuration={10000} onClose={closeSnackbar}>
+            <Alert onClose={closeSnackbar} severity={snackbar.type as any} sx={{ width: '100%' }}>
+              {snackbar.message}
+            </Alert>
+          </Snackbar>
+        )
+      }
     </>
   );
 };

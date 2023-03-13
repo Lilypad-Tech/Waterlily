@@ -43,11 +43,21 @@ const textStyle = {
   // fontFamily: 'fantasy',
 };
 
-type UserInputProps = {};
+type UserInputProps = {
+  initialPrompt?: string;
+  initialArtist?: {
+    name: string,
+    key: string,
+    style: string,
+  };
+};
 
-export const UserInput: FC<UserInputProps> = (): ReactElement => {
-  const [prompt, setPrompt] = useState('');
-  const [artist, setArtist] = useState({ name: '', key: '', style: '' });
+export const UserInput: FC<UserInputProps> = ({
+  initialPrompt = '',
+  initialArtist = { name: '', key: '', style: '' },
+} = {}): ReactElement => {
+  const [prompt, setPrompt] = useState(initialPrompt);
+  const [artist, setArtist] = useState(initialArtist);
   // const [artist, setArtist, prompt, setPrompt] = useContext(ImageContext);
   const { runStableDiffusionJob } = useContext(ContractContext);
   const { statusState = defaultStatusState.statusState } =
