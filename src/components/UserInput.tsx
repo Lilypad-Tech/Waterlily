@@ -47,12 +47,13 @@ type UserInputProps = {};
 
 export const UserInput: FC<UserInputProps> = (): ReactElement => {
   const [prompt, setPrompt] = useState('');
-  const [artist, setArtist] = useState({ name: '', key: '' });
+  const [artist, setArtist] = useState({ name: '', key: '', style: '' });
   // const [artist, setArtist, prompt, setPrompt] = useContext(ImageContext);
   const { runStableDiffusionJob } = useContext(ContractContext);
   const { statusState = defaultStatusState.statusState } =
     useContext(StatusContext);
   const { verifyChainId, changeWalletChain } = useContext(WalletContext);
+  const { setImagePrompt, setImageArtist } = useContext(ImageContext);
   const artistObj = artists.reduce<Record<string, ArtistType>>(
     (acc, artist) => {
       acc[artist.name] = artist;
@@ -65,12 +66,15 @@ export const UserInput: FC<UserInputProps> = (): ReactElement => {
     setArtist({
       name: event.target.value as string,
       key: artistObj[event.target.value].artistId,
+      style: artistObj[event.target.value].style,
     });
   };
 
   const generateImages = async () => {
     console.log('run lilypad function', artist);
     if (verifyChainId(networks.filecoinHyperspace.chainId)) {
+      setImageArtist(artist);
+      setImagePrompt(prompt);
       await runStableDiffusionJob(prompt, artist.key); //artist should equal the artistId
     } else {
       changeWalletChain(networks.filecoinHyperspace.chainId);

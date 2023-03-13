@@ -30,9 +30,9 @@ interface ImageContextValue {
   imageState: ImageState;
   setImageState: Dispatch<SetStateAction<ImageState>>;
   imagePrompt: string;
-  imageArtist: string;
+  imageArtist: { name?: string; key?: string; style?: string };
   setImagePrompt: Dispatch<SetStateAction<string>>;
-  setImageArtist: Dispatch<SetStateAction<string>>;
+  setImageArtist: Dispatch<SetStateAction<object>>;
   imageID: number;
   setImageID: Dispatch<SetStateAction<number>>;
   quickImages: string[];
@@ -44,7 +44,7 @@ export const defaultImageState: ImageContextValue = {
   },
   setImageState: () => {},
   imagePrompt: '',
-  imageArtist: '',
+  imageArtist: {},
   imageID: 0,
   quickImages: [],
   setImageArtist: () => {},
@@ -66,7 +66,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
   const [imageID, setImageID] = useState<number>(0);
   const [quickImages, setQuickImages] = useState<string[]>([]);
   const [imagePrompt, setImagePrompt] = useState<string>('');
-  const [imageArtist, setImageArtist] = useState<string>('');
+  const [imageArtist, setImageArtist] = useState<object>({});
 
   useEffect(() => {
     console.log(imageState);
