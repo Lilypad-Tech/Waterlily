@@ -130,9 +130,9 @@ export const UserInput: FC<UserInputProps> = (): ReactElement => {
       </Grid>
       <br />
       <MyButton
-        name="Generate Images"
+        name="Coming Soon!" //"Generate Images"
         action={generateImages}
-        disabled={!prompt || !artist || Boolean(statusState.isLoading)}
+        disabled={true} //{!prompt || !artist || Boolean(statusState.isLoading)}
       />
     </Box>
   );
