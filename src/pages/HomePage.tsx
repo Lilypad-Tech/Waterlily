@@ -6,16 +6,17 @@ import {
   UserInputLayout,
   ImageLayout,
   ArtistListLayout,
+  ImageListLayout,
 } from '@/layouts';
 import {
   Logo,
   Title,
   Subtitle,
   Description,
-  MyButton,
   UserInput,
   ArtistCard,
   WalletButton,
+  ImageHeader,
 } from '@/components';
 import { artists } from '@/definitions/artists';
 import {
@@ -23,6 +24,7 @@ import {
   defaultWalletState,
   StatusContext,
   defaultStatusState,
+  ImageContext,
 } from '@/context';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { ImageCard } from '@/components/ImageCard';
@@ -33,6 +35,7 @@ const HomePage = () => {
     useContext(WalletContext);
   const { statusState = defaultStatusState.statusState } =
     useContext(StatusContext);
+  const { imageState, setImageState } = useContext(ImageContext);
 
   useEffect(() => {
     console.log('status home', statusState);
@@ -50,36 +53,13 @@ const HomePage = () => {
         <Description />
       </TitleLayout>
       <SectionLayout>
-        <Box
-          sx={{ display: 'flex', flexDirection: 'column', paddingTop: '2rem' }}
-        >
-          <Subtitle text="Generated Images" />
-          <Typography variant="h6">{'Artist Name'}</Typography>
-          <Typography variant="subtitle1">{'Artist Style'}</Typography>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ display: 'block' }}
-          >
-            {
-              'A really really long Prompt that someone has input like 2 dogs playing tennis while a rainbow unicorn adjudicates'
-            }
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            width: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+        <ImageHeader />
+        <ImageListLayout>
           <ImageCard />
           <ImageCard />
           <ImageCard />
           <ImageCard />
-        </Box>
+        </ImageListLayout>
       </SectionLayout>
       <SectionLayout>
         {!walletState?.isConnected ? (
