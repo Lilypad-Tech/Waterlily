@@ -7,6 +7,6 @@ interface Props {
 
 const style = {};
 
-export const ImageLayout = ({ children }: Props) => {
+export const ArtistLayout = ({ children }: Props) => {
   return <Box>{children}</Box>;
 };

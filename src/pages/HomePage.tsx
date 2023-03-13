@@ -4,7 +4,7 @@ import {
   TitleLayout,
   SectionLayout,
   UserInputLayout,
-  ImageLayout,
+  ArtistLayout,
   ArtistListLayout,
   ImageListLayout,
 } from '@/layouts';
@@ -29,6 +29,8 @@ import {
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { ImageCard } from '@/components/ImageCard';
 
+const ipfsRoot = 'https://ipfs.io/ipfs/';
+
 const HomePage = () => {
   // const [isConnected, setConnected] = useState(false);
   const { walletState = defaultWalletState.walletState } =
@@ -52,15 +54,49 @@ const HomePage = () => {
         <Subtitle />
         <Description />
       </TitleLayout>
-      <SectionLayout>
-        <ImageHeader />
-        <ImageListLayout>
-          <ImageCard />
-          <ImageCard />
-          <ImageCard />
-          <ImageCard />
-        </ImageListLayout>
-      </SectionLayout>
+      {imageState.generatedImages && (
+        <SectionLayout>
+          <ImageHeader />
+          <ImageListLayout>
+            <ImageCard
+              ipfs={{
+                link: `${ipfsRoot}${
+                  // 'QmbQ3FwfwTtLmN9oL1so6QKHDTK3CagJx8djsvcz7Ghnmp' ||
+                  imageState.generatedImages.ipfsResult
+                }/outputs/image_0.png`,
+                alt: 'Not seen',
+              }}
+            />
+            <ImageCard
+              ipfs={{
+                link: `${ipfsRoot}${
+                  // 'QmbQ3FwfwTtLmN9oL1so6QKHDTK3CagJx8djsvcz7Ghnmp' ||
+                  imageState.generatedImages.ipfsResult
+                }/outputs/image_1.png`,
+                alt: 'Not seen',
+              }}
+            />
+            <ImageCard
+              ipfs={{
+                link: `${ipfsRoot}${
+                  // 'QmbQ3FwfwTtLmN9oL1so6QKHDTK3CagJx8djsvcz7Ghnmp' ||
+                  imageState.generatedImages.ipfsResult
+                }/outputs/image_2.png`,
+                alt: 'Not seen',
+              }}
+            />
+            <ImageCard
+              ipfs={{
+                link: `${ipfsRoot}${
+                  // 'QmbQ3FwfwTtLmN9oL1so6QKHDTK3CagJx8djsvcz7Ghnmp' ||
+                  imageState.generatedImages.ipfsResult
+                }/outputs/image_3.png`,
+                alt: 'Not seen',
+              }}
+            />
+          </ImageListLayout>
+        </SectionLayout>
+      )}
       <SectionLayout>
         {!walletState?.isConnected ? (
           <WalletButton />
@@ -82,7 +118,7 @@ const HomePage = () => {
           </>
         )}
       </SectionLayout>
-      <ImageLayout>
+      <ArtistLayout>
         <Title
           text="Featured Artists"
           sx={{ fontSize: '3rem', paddingTop: '2rem' }}
@@ -102,7 +138,7 @@ const HomePage = () => {
             );
           })}
         </ArtistListLayout>
-      </ImageLayout>
+      </ArtistLayout>
     </>
   );
 };

@@ -2,6 +2,8 @@ import { FC, ReactElement } from 'react';
 import { Box, Card, CardMedia, Link } from '@mui/material';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 
+//ipfs.io/ipfs/{cid} should be fine?
+
 const boxStyle = {
   display: 'flex',
   justifyContent: 'center',
@@ -44,7 +46,7 @@ export const ImageCard: FC<ImageCardProps> = ({
           <CardMedia
             component="img"
             // height="200"
-            image={image?.link || './monet-water-lilies.jpeg'}
+            image={ipfs?.link || './monet-water-lilies.jpeg'}
             alt={image?.alt || 'Monet Water Lilies'}
           />
         </Card>
