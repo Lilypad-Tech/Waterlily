@@ -39,22 +39,38 @@ export const ArtistCard: FC<ArtistCardProps> = ({
         <CardHeader
           title={name || 'Artist Name'}
           subheader={style || 'Artist Style'}
+          sx={{
+            height: '120px',
+          }}
         />
-        <Link
-          href={portfolio || 'https://www.google.com'}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <Watermark text={name || 'ArtistName'}>
-            <CardMedia
-              component="img"
-              // height="250"
-              image={image?.link || './monet-water-lilies.jpeg'}
-              alt={image?.alt || 'Monet Water Lilies'}
-              sx={{ pointerEvents: 'none' }}
-            />
-          </Watermark>
-        </Link>
+        <Box sx={{
+          height: '240px',
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          //backgroundColor: '#fff',
+          mb: 2,
+        }}>
+          <Link
+            href={portfolio}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Watermark text={name || 'ArtistName'}>
+              <CardMedia
+                component="img"
+                // height="250"
+                image={image?.link || './monet-water-lilies.jpeg'}
+                alt={image?.alt || 'Monet Water Lilies'}
+                sx={{
+                  pointerEvents: 'none',
+                  border: '1px solid #fff'
+                }}
+              />
+            </Watermark>
+          </Link>
+        </Box>
         <CardContent>
           <Typography variant="body2" color="text.secondary">
             {description || 'Artist Description'}
