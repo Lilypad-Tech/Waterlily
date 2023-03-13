@@ -109,18 +109,14 @@ const HomePage = () => {
           </ImageListLayout>
         </SectionLayout>
       )}
-      {quickImages && (
+      {quickImages.length > 0 && (
         <SectionLayout>
           <ImageHeader />
           <ImageListLayout>
-            {quickImages.map((elmt, i) => {
+            {quickImages.map((elmt, idx) => {
               return (
                 <ImageCard
-                  key={elmt}
-                  ipfs={{
-                    link: elmt,
-                    alt: 'Not seen',
-                  }}
+                  key={idx}
                   image={{
                     link: elmt,
                     alt: 'Not seen',

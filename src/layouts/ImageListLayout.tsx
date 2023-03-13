@@ -1,6 +1,5 @@
 import { ReactNode, useContext } from 'react';
 import { Box } from '@mui/material';
-import { ImageContext } from '@/context';
 
 interface Props {
   // artist: string;
@@ -15,17 +14,6 @@ const style = {
   justifyContent: 'center',
 };
 
-// const style = {
-//   height: 'auto',
-//   width: '100%',
-//   padding: '20px',
-//   display: 'flex',
-//   flexFlow: 'wrap',
-//   justifyContent: 'center',
-//   overflow: 'hidden',
-//   // overflowY: 'scroll',
-// };
-
 const boxStyle = {
   display: 'flex',
   flexDirection: 'row',
@@ -35,6 +23,5 @@ const boxStyle = {
 };
 
 export const ImageListLayout = ({ children }: Props) => {
-  const { artist, prompt } = useContext(ImageContext);
   return <Box sx={boxStyle}>{children}</Box>;
 };
