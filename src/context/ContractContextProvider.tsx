@@ -93,7 +93,7 @@ export const ContractContextProvider = ({
   );
   const { statusState = defaultStatusState.statusState, setStatusState, setSnackbar } =
     useContext(StatusContext);
-  const { setImageID, setImageState, quickImages } = useContext(ImageContext);
+  const { imageID, setImageID, setImageState, quickImages } = useContext(ImageContext);
   const [ txHash, setTxHash ] = useState('')
 
   const getWriteContractConnection = () => {
@@ -112,6 +112,64 @@ export const ContractContextProvider = ({
     ); //   provider = new ethers.providers.Web3Provider(window.ethereum);
     return [waterlilyContract, lilypadEventsContract]
   };
+
+  const setContractEventListeners = () => {
+    console.log('Setting up contract event listeners...');
+
+    contractState.connectedWaterlilyContract.on(
+      'ImageGenerated',
+      (image: any) => {
+        const generatedImage = {
+          id: image[0].toString(), // convert BigNumber to string
+          customer: image[1],
+          artist: image[2],
+          prompt: image[3],
+          ipfsResult: image[4],
+          errorMessage: image[5],
+          isComplete: image[6],
+          isCancelled: image[7],
+        };
+        if(generatedImage.id != imageID.toString()) return
+        setImageState({ generatedImages: generatedImage });
+        setStatusState((prevState) => ({
+          ...prevState,
+          isLoading: '',
+          isMessage: true,
+          message: {
+            title: 'Successfully ran WaterLily Stable Diffusion Job',
+            description: 'Images: ...',
+          },
+        }));
+        setSnackbar({
+          type: 'success',
+          open: true,
+          message: 'Successfully ran WaterLily Stable Diffusion Job',
+        });
+      }
+    );
+
+    contractState.connectedWaterlilyContract.on(
+      'ImageCancelled',
+      (image: StableDiffusionImage) => {
+        console.log('ImageCancelled event received:', image);
+        // return image;
+        setStatusState((prevState) => ({
+          ...prevState,
+          isLoading: '',
+          isError: 'Error Running Bacalhau Job',
+          isMessage: true,
+          message: {
+            title: 'Error Running Bacalhau Job',
+            description: 'Check logs for more info',
+          },
+        }));
+      }
+    );
+  };
+
+  useEffect(() => {
+    setContractEventListeners();
+  }, []);
 
   useEffect(() => {
     if(quickImages.length >= IMAGE_COUNT) {
