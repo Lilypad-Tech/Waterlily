@@ -52,7 +52,7 @@ export const artists: ArtistType[] = [
     name: 'Edouard Manet',
     style: 'Modern',
     description: 'Edouard Manet was a 19th-century French artist who played a pivotal role in the development of modern art. He is considered a pivotal figure in the transition from Realism to Impressionism and is known for his innovative use of color and brushwork. His paintings often depict contemporary life in Paris, including cafes, boulevards, and social gatherings.',
-    portfolio: 'https://www.manet.org/',
+    portfolio: 'https://www.manet.org/paintings.jsp',
     image: {
       link: 'https://ai-art-files.cluster.world/artist_thumbnails/manet.png',
       alt: 'Edouard Manet',
