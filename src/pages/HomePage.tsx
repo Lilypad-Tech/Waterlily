@@ -52,6 +52,9 @@ const HomePage = () => {
     console.log('status home', statusState);
   }, [statusState]);
 
+  console.log('--------------------------------------------')
+  console.log(quickImages)
+
   return (
     <>
       <HeaderLayout>
@@ -110,9 +113,14 @@ const HomePage = () => {
         <SectionLayout>
           <ImageHeader />
           <ImageListLayout>
-            {quickImages.map((elmt) => {
+            {quickImages.map((elmt, i) => {
               return (
                 <ImageCard
+                  key={elmt}
+                  ipfs={{
+                    link: elmt,
+                    alt: 'Not seen',
+                  }}
                   image={{
                     link: elmt,
                     alt: 'Not seen',

@@ -90,6 +90,8 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     let active = true;
     let loaded = false;
     let urls: string[] = [];
+    let loadedUrls: string[] = [];
+
     for(var i=0; i<IMAGE_COUNT; i++) {
       const imageUrl = getQuickImageURL(imageID, i)
       if(!quickImages.find(url => url === imageUrl)) {
@@ -98,21 +100,13 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     }
 
     const tryImages = async () => {
-      console.log('--------------------------------------------')
-      console.log('Trying the images!!!')
       await bluebird.each(urls, async (url, i) => {
         try {
-          console.log(url)
           await fetch(url, {method: 'HEAD'})
-          setQuickImages((prev: string[]) => {
-            const newImages = [...prev]
-            newImages[i] = url
-            return newImages
-          })
-        } catch (err) {
-          console.log('--------------------------------------------')
-          console.log('failed to load image', url)
-        }
+          loadedUrls[i]  = url
+          urls = urls.filter(u => u !== url)
+          setQuickImages(loadedUrls.filter(u => !!u))
+        } catch (err) {}
       })
     }
 
