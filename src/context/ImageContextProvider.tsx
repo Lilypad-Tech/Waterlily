@@ -34,6 +34,7 @@ interface ImageContextValue {
   setImagePrompt: Dispatch<SetStateAction<string>>;
   setImageArtist: Dispatch<SetStateAction<string>>;
   imageID: number;
+  setImageID: Dispatch<SetStateAction<number>>;
   quickImages: string[];
 }
 
@@ -48,6 +49,7 @@ export const defaultImageState: ImageContextValue = {
   quickImages: [],
   setImageArtist: () => {},
   setImagePrompt: () => {},
+  setImageID: () => {},
 };
 
 interface MyContextProviderProps {
@@ -84,6 +86,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     quickImages,
     setImagePrompt,
     setImageArtist,
+    setImageID,
   };
 
   return (

@@ -32,6 +32,11 @@ const rpc =
     ? networks.filecoinHyperspace.rpc[0]
     : networks.filecoinMainnet.rpc[0];
 
+const blockExplorerRoot =
+  currentNetwork === 'testnet'
+    ? networks.filecoinHyperspace.blockExplorer[0]
+    : networks.filecoinMainnet.blockExplorer[0];
+
 /* ContractContext */
 enum AccessType {
   Read = 'read',
@@ -85,7 +90,7 @@ export const ContractContextProvider = ({
   );
   const { statusState = defaultStatusState.statusState, setStatusState } =
     useContext(StatusContext);
-  const { imageState, setImageState } = useContext(ImageContext);
+  const { imageState, setImageID, setImageState } = useContext(ImageContext);
 
   const [jobFromAddress, setjobFromAddress] = useState(
     defaultContractState.jobFromAddress
@@ -107,55 +112,6 @@ export const ContractContextProvider = ({
       signer
     ); //   provider = new ethers.providers.Web3Provider(window.ethereum);
     return waterlilyContract;
-    // let provider = null,
-    //   signer = null,
-    //   waterlilyContract = null;
-    // if (window.ethereum && walletState.accounts.length > 0) {
-    //   provider = new ethers.providers.Web3Provider(window.ethereum);
-    //   signer = provider.getSigner();
-    //   waterlilyContract = new ethers.Contract(
-    //     WATERLILY_CONTRACT_ADDRESS,
-    //     WaterlilyABI.abi,
-    //     signer
-    //   );
-    //   // waterlilyContract.connect(signer); //want to be able to change this on wallet change
-    //   setContractState({
-    //     mode: AccessType.Write,
-    //     isConnected: true,
-    //     provider,
-    //     signer,
-    //     connectedWaterlilyContract: waterlilyContract,
-    //   });
-    // } else if (window.ethereum) {
-    //   provider = new ethers.providers.Web3Provider(window.ethereum);
-    //   waterlilyContract = new ethers.Contract(
-    //     WATERLILY_CONTRACT_ADDRESS,
-    //     WaterlilyABI.abi,
-    //     provider
-    //   );
-    //   setContractState({
-    //     mode: AccessType.Read,
-
-    //     provider,
-    //     signer,
-    //     connectedWaterlilyContract: waterlilyContract,
-    //   });
-    // } else {
-    //   //READ MODE ONLY
-    //   provider = new ethers.providers.JsonRpcProvider(rpc);
-    //   waterlilyContract = new ethers.Contract(
-    //     WATERLILY_CONTRACT_ADDRESS,
-    //     WaterlilyABI.abi,
-    //     provider
-    //   );
-    //   setContractState({
-    //     mode: AccessType.Read,
-
-    //     provider,
-    //     signer,
-    //     connectedWaterlilyContract: waterlilyContract,
-    //   });
-    // }
     console.log('Connected to contract...', waterlilyContract);
   };
 
@@ -212,6 +168,16 @@ export const ContractContextProvider = ({
       (image: StableDiffusionImage) => {
         console.log('ImageCancelled event received:', image);
         // return image;
+        setStatusState((prevState) => ({
+          ...prevState,
+          isLoading: '',
+          isError: 'Error Running Bacalhau Job',
+          isMessage: true,
+          message: {
+            title: 'Error Running Bacalhau Job',
+            description: 'Check logs for more info',
+          },
+        }));
       }
     );
   };
@@ -261,25 +227,42 @@ export const ContractContextProvider = ({
           'Waiting for transaction to be included in a block on the FVM network...',
         isMessage: true,
         message: {
-          title: 'TX successful on network',
-          description: `TX: ${tx.hash}`,
+          title: `TX Hash: ${tx.hash}`,
+          description: (
+            <a
+              href={`${blockExplorerRoot}${tx.hash}`}
+              target="_blank"
+              rel="no_referrer"
+            >
+              Check Status in block explorer
+            </a>
+          ),
         },
       }));
       console.log('got tx hash', tx.hash); // Print the transaction hash
       try {
         const receipt = await tx.wait();
+
         // TODO: trigger the image downloader here
         // extract the image id from the event logs
         // trigger the image context setImageID
-        // also set imageContext.{prompt,artist}
+        // also setImageID(number)
         console.log('got receipt', receipt);
         setStatusState((prevState) => ({
           ...prevState,
           isLoading: 'Running Stable Diffusion Job on Bacalhau...',
           isMessage: true,
           message: {
-            title: 'TX successful on network',
-            description: `Receipt: ${tx.hash}`, //receipt.transactionHash
+            title: `Receipt: ${tx.hash}`,
+            description: (
+              <a
+                href={`${blockExplorerRoot}${tx.hash}`}
+                target="_blank"
+                rel="no_referrer"
+              >
+                Check Status in block explorer
+              </a>
+            ), //receipt.transactionHash
           },
         }));
 
