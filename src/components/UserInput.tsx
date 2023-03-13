@@ -16,9 +16,8 @@ import {
   ContractContext,
   StatusContext,
   defaultStatusState,
+  ImageContext,
 } from '@/context';
-
-// import { appUserInput } from '@/definitions/strings';
 
 const containerStyle = {
   display: 'flex',
@@ -49,6 +48,7 @@ type UserInputProps = {};
 export const UserInput: FC<UserInputProps> = (): ReactElement => {
   const [prompt, setPrompt] = useState('');
   const [artist, setArtist] = useState({ name: '', key: '' });
+  // const [artist, setArtist, prompt, setPrompt] = useContext(ImageContext);
   const { runStableDiffusionJob } = useContext(ContractContext);
   const { statusState = defaultStatusState.statusState } =
     useContext(StatusContext);

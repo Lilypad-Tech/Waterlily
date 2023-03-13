@@ -1,18 +1,17 @@
-import { FC, ReactElement, useState } from 'react';
-import {
-  Box,
-  Card,
-  CardHeader,
-  CardMedia,
-  CardContent,
-  Typography,
-  Link,
-} from '@mui/material';
+import { FC, ReactElement } from 'react';
+import { Box, Card, CardMedia, Link } from '@mui/material';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 
 const boxStyle = {
   display: 'flex',
   justifyContent: 'center',
   padding: '1rem',
+};
+
+const downloadStyle = {
+  position: 'absolute',
+  top: 20,
+  right: 25,
 };
 
 interface ImageCardProps {
@@ -31,29 +30,50 @@ export const ImageCard: FC<ImageCardProps> = ({
   ipfs,
 }): ReactElement => {
   return (
-    <Box sx={boxStyle}>
-      <Card sx={{ maxWidth: 300 }}>
-        <Link
-          href={ipfs?.link || 'https://www.google.com'}
-          target="_blank"
-          rel="noreferrer"
-        ></Link>
-        <CardMedia
-          component="img"
-          height="150"
-          image={image?.link || './monet-water-lilies.jpeg'}
-          alt={image?.alt || 'Monet Water Lilies'}
-        />
-        <CardContent>
-          <CardHeader
-            title={artist || 'Artist Name'}
-            subheader={style || 'Artist Style'}
+    <Box sx={{ position: 'relative' }}>
+      <Box sx={downloadStyle}>
+        <CloudDownloadIcon />
+      </Box>
+      <Box sx={boxStyle}>
+        <Card sx={{ maxWidth: 200, border: '1px solid white' }}>
+          <Link
+            href={ipfs?.link || 'https://www.google.com'}
+            target="_blank"
+            rel="noreferrer"
+          ></Link>
+          <CardMedia
+            component="img"
+            // height="200"
+            image={image?.link || './monet-water-lilies.jpeg'}
+            alt={image?.alt || 'Monet Water Lilies'}
           />
-          <Typography variant="body2" color="text.secondary">
-            {prompt || 'Prompt'}
-          </Typography>
-        </CardContent>
-      </Card>
+        </Card>
+      </Box>
     </Box>
   );
 };
+
+/*
+  async function download(url) {
+    const a = document.createElement("a");
+    a.href = await toDataURL(url);
+    a.download = "myImage.png";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  function toDataURL(url) {
+    return fetch(url)
+      .then((response) => {
+        return response.blob();
+      })
+      .then((blob) => {
+        return URL.createObjectURL(blob);
+      });
+  }
+
+  function onClick() {
+    download("https://github.githubassets.com/images/modules/profile/badge--acv-64.png");
+  }
+*/

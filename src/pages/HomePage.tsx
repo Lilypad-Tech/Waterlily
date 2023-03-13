@@ -24,7 +24,8 @@ import {
   StatusContext,
   defaultStatusState,
 } from '@/context';
-import { CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
+import { ImageCard } from '@/components/ImageCard';
 
 const HomePage = () => {
   // const [isConnected, setConnected] = useState(false);
@@ -48,9 +49,38 @@ const HomePage = () => {
         <Subtitle />
         <Description />
       </TitleLayout>
-      {/* <SectionLayout>
-        <div>status updates ? use snack?</div>
-      </SectionLayout> */}
+      <SectionLayout>
+        <Box
+          sx={{ display: 'flex', flexDirection: 'column', paddingTop: '2rem' }}
+        >
+          <Subtitle text="Generated Images" />
+          <Typography variant="h6">{'Artist Name'}</Typography>
+          <Typography variant="subtitle1">{'Artist Style'}</Typography>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: 'block' }}
+          >
+            {
+              'A really really long Prompt that someone has input like 2 dogs playing tennis while a rainbow unicorn adjudicates'
+            }
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            width: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <ImageCard />
+          <ImageCard />
+          <ImageCard />
+          <ImageCard />
+        </Box>
+      </SectionLayout>
       <SectionLayout>
         {!walletState?.isConnected ? (
           <WalletButton />
@@ -63,6 +93,12 @@ const HomePage = () => {
             {/* TO DO BREAK OUT INTO PROPER COMPONENT */}
             <CircularProgress size={100} />
             <div>{statusState.isLoading}</div>
+            {statusState.isMessage && (
+              <div>
+                <div>{statusState.message?.title}</div>
+                <div>{statusState.message?.description}</div>
+              </div>
+            )}
           </>
         )}
       </SectionLayout>
