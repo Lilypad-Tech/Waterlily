@@ -1,4 +1,4 @@
-import { FC, ReactElement, useState, useContext } from 'react';
+import { FC, ReactElement, useState, useContext, useEffect } from 'react';
 import {
   Box,
   Grid,
@@ -100,6 +100,12 @@ export const UserInput: FC<UserInputProps> = ({
       );
     });
   };
+
+  useEffect(() => {
+    setArtist(initialArtist)
+  }, [
+    initialArtist,
+  ])
 
   return (
     <Box sx={containerStyle}>

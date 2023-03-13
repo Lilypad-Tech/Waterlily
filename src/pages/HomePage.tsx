@@ -46,7 +46,7 @@ const HomePage = () => {
     useContext(WalletContext);
   const { snackbar, closeSnackbar, statusState = defaultStatusState.statusState, resetStatusState } =
     useContext(StatusContext);
-  const { imageState, quickImages, imagePrompt, imageArtist } = useContext(ImageContext);
+  const { imageState, quickImages, imagePrompt, imageArtist, setImageArtist } = useContext(ImageContext);
 
   useEffect(() => {
     console.log('status home', statusState);
@@ -145,6 +145,7 @@ const HomePage = () => {
           </SectionLayout>
         )
       }
+      <div id="justAboveTextField"></div>
       <SectionLayout>
         {!walletState?.isConnected ? (
           <WalletButton />
@@ -176,7 +177,7 @@ const HomePage = () => {
         />
         <ArtistListLayout>
           {artists.map((artist, e) => {
-            const { name, style, description, portfolio, image } = artist;
+            const { artistId, name, style, description, portfolio, image } = artist;
             return (
               <ArtistCard
                 key={e}
@@ -185,6 +186,14 @@ const HomePage = () => {
                 description={description}
                 portfolio={portfolio}
                 image={image}
+                onClick={() => {
+                  setImageArtist({
+                    name,
+                    key: artistId,
+                    style,
+                  })
+                  document.getElementById("justAboveTextField")?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" })
+                }}
               />
             );
           })}

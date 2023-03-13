@@ -6,8 +6,10 @@ import {
   CardHeader,
   CardMedia,
   CardContent,
+  CardActions,
   Typography,
   Link,
+  Button,
 } from '@mui/material';
 
 const boxStyle = {
@@ -22,6 +24,7 @@ interface ArtistCardProps {
   description?: string;
   image?: { link: string; alt: string };
   portfolio: string;
+  onClick?: () => void;
 }
 
 export const ArtistCard: FC<ArtistCardProps> = ({
@@ -30,6 +33,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
   description,
   image,
   portfolio,
+  onClick,
 }): ReactElement => {
   const [expanded, setExpanded] = useState(false);
 
@@ -71,11 +75,26 @@ export const ArtistCard: FC<ArtistCardProps> = ({
             </Watermark>
           </Link>
         </Box>
-        <CardContent>
+        <CardContent sx={{
+          height: '240px',
+        }}>
           <Typography variant="body2" color="text.secondary">
             {description || 'Artist Description'}
           </Typography>
         </CardContent>
+        <CardActions sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+        }}>
+          <Button
+            variant="outlined"
+            onClick={onClick}
+          >
+            Generate Image
+          </Button>
+        </CardActions>
       </Card>
     </Box>
   );
