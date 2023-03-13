@@ -8,8 +8,9 @@ import { WebHeader } from '@/components';
 import { PageLayout } from '@/layouts';
 import {
   WalletContextProvider,
-  StableDiffusionContextProvider,
+  ContractContextProvider,
   StatusContextProvider,
+  StableDiffusionContextProvider,
 } from '@/context';
 import HomePage from './HomePage';
 
@@ -26,19 +27,21 @@ export default function Home() {
     //Wallet Context Provider here
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <WalletContextProvider>
-        <StatusContextProvider>
-          <WebHeader />
-          <PageLayout>
-            <StableDiffusionContextProvider>
-              <HomePage />
-            </StableDiffusionContextProvider>
-            {/* <main className={styles.main}>
+      <StatusContextProvider>
+        <WalletContextProvider>
+          <ContractContextProvider>
+            <WebHeader />
+            <PageLayout>
+              <StableDiffusionContextProvider>
+                <HomePage />
+              </StableDiffusionContextProvider>
+              {/* <main className={styles.main}>
         <div className={styles.description}>Take me home</div>
       </main> */}
-          </PageLayout>
-        </StatusContextProvider>
-      </WalletContextProvider>
+            </PageLayout>
+          </ContractContextProvider>
+        </WalletContextProvider>
+      </StatusContextProvider>
     </ThemeProvider>
   );
 }

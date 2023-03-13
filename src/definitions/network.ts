@@ -1,3 +1,10 @@
+enum currentNetworkType {
+  Testnet = 'testnet',
+  Mainnet = 'mainnet',
+}
+
+export const currentNetwork: currentNetworkType = currentNetworkType.Testnet; //or 'mainnet'
+
 export interface NetworkData {
   name: string;
   chainId: string;
@@ -15,6 +22,7 @@ export const networks = {
     name: 'Filecoin Hyperspace Testnet',
     chainId: '0xc45',
     rpc: [
+      'https://rpc.ankr.com/filecoin_testnet',
       'https://api.hyperspace.node.glif.io/rpc/v1',
       'https://filecoin-hyperspace.chainstacklabs.com/rpc/v1',
     ],
@@ -32,6 +40,7 @@ export const networks = {
     name: 'Filecoin Mainnet',
     chainId: '0xc45',
     rpc: [
+      'https://rpc.ankr.com/filecoin_testnet',
       'https://api.hyperspace.node.glif.io/rpc/v1',
       'https://filecoin-hyperspace.chainstacklabs.com/rpc/v1',
     ],

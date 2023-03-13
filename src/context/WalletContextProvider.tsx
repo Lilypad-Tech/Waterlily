@@ -1,5 +1,4 @@
 declare let window: any;
-import { addWalletNetwork } from '@/utils/wallet-helper-functions';
 import {
   createContext,
   Dispatch,
@@ -98,14 +97,9 @@ export const WalletContext =
   createContext<WalletContextValue>(defaultWalletState);
 
 export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
-  const INITIAL_WALLET_STATE = {
-    accounts: [],
-    chainId: '',
-    isConnected: false,
-    web3: false,
-  };
-  const [walletState, setWalletState] =
-    useState<WalletState>(INITIAL_WALLET_STATE);
+  const [walletState, setWalletState] = useState<WalletState>(
+    defaultWalletState.walletState
+  );
 
   useEffect(() => {
     if (window.ethereum) {
@@ -118,6 +112,12 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
   useEffect(() => {
     console.log('wallet state changed', walletState);
   }, [walletState]);
+
+  // useEffect(() => {
+  //   if (!window.ethereum) {
+  //     //??
+  //   }
+  // },[window.ethereum])
 
   ///wallet action functions
   const fetchWalletAccounts = async () => {
