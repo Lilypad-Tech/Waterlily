@@ -6,7 +6,6 @@ import React, {
   useEffect,
 } from 'react';
 import bluebird from 'bluebird'
-import axios from 'axios'
 import { ethers } from 'ethers';
 
 export interface StableDiffusionImage {
@@ -102,11 +101,17 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     const tryImages = async () => {
       await bluebird.each(urls, async (url, i) => {
         try {
-          await fetch(url, {method: 'HEAD'})
-          loadedUrls[i]  = url
-          urls = urls.filter(u => u !== url)
-          setQuickImages(loadedUrls.filter(u => !!u))
-        } catch (err) {}
+          const res = await fetch(url, {method: 'GET'})
+          if(res.status == 200) {
+            loadedUrls[i]  = url
+            urls = urls.filter(u => u !== url)
+            setQuickImages(loadedUrls.filter(u => !!u))
+          } else {
+            await bluebird.delay(1000)
+          }
+        } catch (err) {
+          
+        }
       })
     }
 

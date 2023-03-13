@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-
+import bluebird from 'bluebird'
 /* contract tools */
 declare let window: any;
 import { ethers } from 'ethers';
@@ -20,8 +20,9 @@ import {
 } from '.';
 
 /* Contracts */
-import { WATERLILY_CONTRACT_ADDRESS } from '@/definitions';
+import { WATERLILY_CONTRACT_ADDRESS, LILYPAD_CONTRACT_ADDRESS } from '@/definitions';
 import WaterlilyABI from '../abi/ArtistAttribution.sol/ArtistAttribution.json';
+import LilypadEventsABI from '../abi/LilypadEvents.sol/LilypadEvents.json';
 const IMAGE_COST = '0.1';
 const GAS_LIMIT = 9000000;
 
@@ -99,7 +100,12 @@ export const ContractContextProvider = ({
       WaterlilyABI.abi,
       signer
     ); //   provider = new ethers.providers.Web3Provider(window.ethereum);
-    return waterlilyContract;
+    const lilypadEventsContract = new ethers.Contract(
+      LILYPAD_CONTRACT_ADDRESS,
+      LilypadEventsABI.abi,
+      signer
+    ); //   provider = new ethers.providers.Web3Provider(window.ethereum);
+    return [waterlilyContract, lilypadEventsContract]
   };
 
   const setContractEventListeners = () => {
@@ -175,120 +181,175 @@ export const ContractContextProvider = ({
 
   const runStableDiffusionJob = async (prompt: string, artistid: string) => {
     
-
     setImageState({ generatedImages: null });
-    setImageID(44)
-    // if (!window.ethereum) {
-    //   setStatusState({
-    //     ...statusState,
-    //     isError: 'Web3 not available',
-    //     isMessage: true,
-    //     message: {
-    //       title: 'Web3 not available',
-    //       description:
-    //         'Please install and unlock a Web3 provider in your browser to use this application.',
-    //     },
-    //   });
-    //   return;
-    // }
 
-    // const connectedContract = getWriteContractConnection();
-    // if (!connectedContract) {
-    //   setStatusState({
-    //     ...defaultStatusState.statusState,
-    //     isError: 'Something went wrong connecting to contract',
-    //   });
-    //   return;
-    // }
-    // //not updating - might need to use prevState style
-    // setStatusState({
-    //   ...defaultStatusState.statusState,
-    //   isLoading: 'Submitting Waterlily job to the FVM network ...',
-    // });
+    if (!window.ethereum) {
+      setStatusState({
+        ...statusState,
+        isError: 'Web3 not available',
+        isMessage: true,
+        message: {
+          title: 'Web3 not available',
+          description:
+            'Please install and unlock a Web3 provider in your browser to use this application.',
+        },
+      });
+      return;
+    }
 
-    // const imageCost = ethers.utils.parseEther(IMAGE_COST);
+    const [connectedContract, eventsContract] = getWriteContractConnection();
+    if (!connectedContract || !eventsContract) {
+      setStatusState({
+        ...defaultStatusState.statusState,
+        isError: 'Something went wrong connecting to contract',
+      });
+      return;
+    }
     
-    // try {
-    //   const tx = await connectedContract.StableDiffusion(artistid, prompt, {
-    //     value: imageCost,
-    //   });
-    //   setStatusState((prevState) => ({
-    //     ...prevState,
-    //     isLoading:
-    //       'Waiting for transaction to be included in a block on the FVM network...',
-    //     isMessage: true,
-    //     message: {
-    //       title: `TX Hash: ${tx.hash}`,
-    //       description: (
-    //         <a
-    //           href={`${blockExplorerRoot}${tx.hash}`}
-    //           target="_blank"
-    //           rel="no_referrer"
-    //         >
-    //           Check Status in block explorer
-    //         </a>
-    //       ),
-    //     },
-    //   }));
-    //   console.log('got tx hash', tx.hash); // Print the transaction hash
+    //not updating - might need to use prevState style
+    setStatusState({
+      ...defaultStatusState.statusState,
+      isLoading: 'Submitting Waterlily job to the FVM network ...',
+    });
+
+    const imageCost = ethers.utils.parseEther(IMAGE_COST);
+    
+    try {
+      const currentJobID = await eventsContract.currentJobID()
+      const nextJobID = currentJobID.add(1)
+      const tx = await connectedContract.StableDiffusion(artistid, prompt, {
+        value: imageCost,
+      });
       
-    //   const receipt = await tx.wait();
+      setStatusState((prevState) => ({
+        ...prevState,
+        isLoading:
+          'Waiting for transaction to be included in a block on the FVM network...',
+        isMessage: true,
+        message: {
+          title: `TX Hash: ${tx.hash}`,
+          description: (
+            <a
+              href={`${blockExplorerRoot}${tx.hash}`}
+              target="_blank"
+              rel="no_referrer"
+            >
+              Check Status in block explorer
+            </a>
+          ),
+        },
+      }));
+      console.log('got tx hash', tx.hash); // Print the transaction hash
+      setSnackbar({
+        type: 'info',
+        open: true,
+        message: `Transaction submitted to the FVM network: ${tx.hash}...`,
+      })
+      const receipt = await tx.wait();
 
-    //   const [
-    //     imageID,
-    //   ] = ethers.utils.defaultAbiCoder.decode(
-    //     [ 'uint256', 'address', 'string', 'string', 'string', 'string', 'bool', 'bool' ],
-    //     receipt.logs[0].data,
-    //   );
+      setSnackbar({
+        type: 'success',
+        open: true,
+        message: `Transaction included ib block - running stable diffusion on bacalhau...`,
+      })
 
-    //   console.log('got image id', imageID.toString()); // Print the imageID
+      console.log('--------------------------------------------')
+      console.log(JSON.stringify(receipt, null, 4))
+      console.dir(receipt)
+
+      const imageID = nextJobID
       
-    //   setImageID(imageID.toNumber());
+      console.log('got image id', imageID.toString()); // Print the imageID
+      
+      setImageID(imageID.toNumber());
 
-    //   setStatusState((prevState) => ({
-    //     ...prevState,
-    //     isLoading: 'Running Stable Diffusion Job on Bacalhau...',
-    //     isMessage: true,
-    //     message: {
-    //       title: `Receipt: ${tx.hash}`,
-    //       description: (
-    //         <a
-    //           href={`${blockExplorerRoot}${tx.hash}`}
-    //           target="_blank"
-    //           rel="no_referrer"
-    //         >
-    //           Check Status in block explorer
-    //         </a>
-    //       ), //receipt.transactionHash
-    //     },
-    //   }));
-    // } catch (error: any) {
-    //   console.error(error)
-    //   let errorMessage = error.toString()
-    //   if(error.error && error.error.data && error.error.data.message && error.error.data.message.includes('revert reason:')) {
-    //     const match = error.error.data.message.match(/revert reason: Error\((.*?)\)/)
-    //     errorMessage = match[1]
-    //   }
-    //   if(errorMessage.length > 64) {
-    //     errorMessage = errorMessage.substring(0, 64) + '...'
-    //   }
-    //   setSnackbar({
-    //     type: 'error',
-    //     open: true,
-    //     message: errorMessage
-    //   })
-    //   setStatusState((prevState) => ({
-    //     ...prevState,
-    //     isLoading: '',
-    //     isError: true,
-    //     message: {
-    //       title: errorMessage,
-    //       description: (
-    //         <span>{errorMessage}</span>
-    //       ),
-    //     },
-    //   }));
-    // }
+      setStatusState((prevState) => ({
+        ...prevState,
+        isLoading: 'Running Stable Diffusion Job on Bacalhau...',
+        isMessage: true,
+        message: {
+          title: `Receipt: ${tx.hash}`,
+          description: (
+            <a
+              href={`${blockExplorerRoot}${tx.hash}`}
+              target="_blank"
+              rel="no_referrer"
+            >
+              Check Status in block explorer
+            </a>
+          ), //receipt.transactionHash
+        },
+      }));
+
+      let isComplete = false
+      let isCancelled = false
+
+      const checkJob = async () => {
+        console.log('--------------------------------------------')
+        console.log('checkJob')
+        const job = await connectedContract.getImage(imageID)
+        
+        console.dir(job)
+        return false
+      }
+
+      while(!isComplete && !isCancelled) {
+         await checkJob()
+        if(isComplete || isCancelled) break
+        await bluebird.delay(1000)
+      }
+
+      if(isComplete) {
+        setStatusState((prevState) => ({
+          ...prevState,
+          isLoading: '',
+          isMessage: true,
+          message: {
+            title: 'Successfully ran WaterLily Stable Diffusion Job',
+            description: 'Images: ...',
+          },
+        }));
+      } else if(isCancelled) {
+        setStatusState((prevState) => ({
+          ...prevState,
+          isLoading: '',
+          isError: 'Error Running Bacalhau Job',
+          isMessage: true,
+          message: {
+            title: 'Error Running Bacalhau Job',
+            description: 'Check logs for more info',
+          },
+        }));
+      }
+      
+
+    } catch (error: any) {
+      console.error(error)
+      let errorMessage = error.toString()
+      if(error.error && error.error.data && error.error.data.message && error.error.data.message.includes('revert reason:')) {
+        const match = error.error.data.message.match(/revert reason: Error\((.*?)\)/)
+        errorMessage = match[1]
+      }
+      if(errorMessage.length > 64) {
+        errorMessage = errorMessage.substring(0, 64) + '...'
+      }
+      setSnackbar({
+        type: 'error',
+        open: true,
+        message: errorMessage
+      })
+      setStatusState((prevState) => ({
+        ...prevState,
+        isLoading: '',
+        isError: true,
+        message: {
+          title: errorMessage,
+          description: (
+            <span>{errorMessage}</span>
+          ),
+        },
+      }));
+    }
   };
 
   //THESE GO LAST
