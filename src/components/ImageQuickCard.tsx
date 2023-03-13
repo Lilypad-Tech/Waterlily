@@ -18,17 +18,11 @@ const downloadStyle = {
 };
 
 interface ImageCardProps {
-  artist?: string;
-  style?: string;
-  prompt?: string;
   image?: { link: string; alt: string };
   ipfs?: { link: string; alt: string };
 }
 
-export const ImageCard: FC<ImageCardProps> = ({
-  artist,
-  style,
-  prompt,
+export const ImageQuickCard: FC<ImageCardProps> = ({
   image,
   ipfs,
 }): ReactElement => {
@@ -40,14 +34,14 @@ export const ImageCard: FC<ImageCardProps> = ({
       <Box sx={boxStyle}>
         <Card sx={{ maxWidth: 200, border: '1px solid white' }}>
           <Link
-            href={ipfs?.link || 'https://www.google.com'}
+            href={image?.link || 'https://www.google.com'}
             target="_blank"
             rel="noreferrer"
           ></Link>
           <CardMedia
             component="img"
             // height="200"
-            image={ipfs?.link || './monet-water-lilies.jpeg'}
+            image={image?.link || './monet-water-lilies.jpeg'}
             alt={image?.alt || 'Monet Water Lilies'}
           />
         </Card>
@@ -55,28 +49,3 @@ export const ImageCard: FC<ImageCardProps> = ({
     </Box>
   );
 };
-
-/*
-  async function download(url) {
-    const a = document.createElement("a");
-    a.href = await toDataURL(url);
-    a.download = "myImage.png";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  }
-
-  function toDataURL(url) {
-    return fetch(url)
-      .then((response) => {
-        return response.blob();
-      })
-      .then((blob) => {
-        return URL.createObjectURL(blob);
-      });
-  }
-
-  function onClick() {
-    download("https://github.githubassets.com/images/modules/profile/badge--acv-64.png");
-  }
-*/
