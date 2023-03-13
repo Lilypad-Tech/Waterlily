@@ -29,21 +29,25 @@ export interface ImageState {
 interface ImageContextValue {
   imageState: ImageState;
   setImageState: Dispatch<SetStateAction<ImageState>>;
-  prompt: string;
-  artist: string;
+  imagePrompt: string;
+  imageArtist: string;
+  setImagePrompt: Dispatch<SetStateAction<string>>;
+  setImageArtist: Dispatch<SetStateAction<string>>;
   imageID: number;
-  quickImage: string;
+  quickImages: string[];
 }
 
-export const defaultImageState = {
+export const defaultImageState: ImageContextValue = {
   imageState: {
     generatedImages: null,
   },
   setImageState: () => {},
-  prompt: '',
-  artist: '',
+  imagePrompt: '',
+  imageArtist: '',
   imageID: 0,
-  quickImage: '',
+  quickImages: [],
+  setImageArtist: () => {},
+  setImagePrompt: () => {},
 };
 
 interface MyContextProviderProps {
@@ -57,31 +61,29 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     defaultImageState.imageState
   );
 
-  const [ imageID, setImageID ] = useState<number>(0);
-  const [ quickImage, setQuickImage ] = useState<string>('');
-  const [ prompt, setPrompt ] = useState<string>('');
-  const [ artist, setArtist ] = useState<string>('');
-  
-  // 
+  const [imageID, setImageID] = useState<number>(0);
+  const [quickImages, setQuickImages] = useState<string[]>([]);
+  const [imagePrompt, setImagePrompt] = useState<string>('');
+  const [imageArtist, setImageArtist] = useState<string>('');
 
   useEffect(() => {
     console.log(imageState);
   }, [imageState]);
 
   useEffect(() => {
-    if(!imageID) return
+    if (!imageID) return;
     // start polling
-  }, [
-    imageID,
-  ])
+  }, [imageID]);
 
   const imageContextValue: ImageContextValue = {
     imageState,
     setImageState,
-    prompt,
-    artist,
+    imagePrompt,
+    imageArtist,
     imageID,
-    quickImage,
+    quickImages,
+    setImagePrompt,
+    setImageArtist,
   };
 
   return (

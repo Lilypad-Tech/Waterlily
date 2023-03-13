@@ -219,7 +219,7 @@ export const ContractContextProvider = ({
   const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
   const runStableDiffusionJob = async (prompt: string, artistid: string) => {
-    setImageState({ ...imageState, generatedImages: null });
+    setImageState({ generatedImages: null });
     if (!window.ethereum) {
       setStatusState({
         ...statusState,

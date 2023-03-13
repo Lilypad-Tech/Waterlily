@@ -13,13 +13,14 @@ export interface ArtistType {
 export const artists: ArtistType[] = [
   {
     artistId: 'mckhallstyle',
-    name: 'PaintLys',
-    style: 'Digital Art',
-    description: 'PainLys has been designing art since the turn of the century',
-    portfolio: 'https://www.docs.bacalhau.org',
+    name: 'McKenney and Hall',
+    style: 'Oil Works 1836-1844',
+    description:
+      'Aya N.I. Thomas McKenney and James Hall are the authors of The History of the Indian Tribes of North America, a three-volume collection of Native American biographies and accompanying lithograph portraits. It was originally published in the United States from 1836 to 1844.',
+    portfolio: 'https://americanart.si.edu/art',
     image: {
       link: 'https://bafybeif75wwnmix624lh4szhg6jjmexdctpni5chk5tfw3cmc4yk5eblau.ipfs.nftstorage.link/blob',
-      alt: 'Monet Water Lilies',
+      alt: 'McKenney and Hall',
     },
   },
   {
