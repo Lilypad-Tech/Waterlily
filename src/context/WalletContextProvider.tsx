@@ -174,7 +174,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
         await changeWalletChain(HyperspaceChainId);
       }
     } else {
-      setWalletState(INITIAL_WALLET_STATE);
+      setWalletState(defaultWalletState.walletState);
     }
   };
 
@@ -186,7 +186,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
         isConnected: false,
       });
     } else {
-      setWalletState(INITIAL_WALLET_STATE);
+      setWalletState(defaultWalletState.walletState);
     }
   };
 
@@ -211,7 +211,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
         });
     } else {
       console.log('no web3');
-      setWalletState(INITIAL_WALLET_STATE);
+      setWalletState(defaultWalletState.walletState);
     }
   };
 
@@ -252,7 +252,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
         }
       });
     } else {
-      setWalletState(INITIAL_WALLET_STATE);
+      setWalletState(defaultWalletState.walletState);
     }
   };
 
@@ -289,7 +289,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
           }
         });
     } else {
-      setWalletState(INITIAL_WALLET_STATE);
+      setWalletState(defaultWalletState.walletState);
     }
   };
 
@@ -322,7 +322,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
           console.log(`Error adding ${chainName} network`, err);
         });
     } else {
-      setWalletState(INITIAL_WALLET_STATE);
+      setWalletState(defaultWalletState.walletState);
     }
   };
 
