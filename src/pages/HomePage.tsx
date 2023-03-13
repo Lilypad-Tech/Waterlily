@@ -101,9 +101,10 @@ const HomePage = () => {
         <SectionLayout>
           <ImageHeader />
           <ImageListLayout>
-            {quickImages.map((elmt) => {
+            {quickImages.map((elmt, idx) => {
               return (
                 <ImageCard
+                  key={idx}
                   image={{
                     link: elmt,
                     alt: 'Not seen',
