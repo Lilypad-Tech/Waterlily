@@ -29,6 +29,10 @@ export interface ImageState {
 interface ImageContextValue {
   imageState: ImageState;
   setImageState: Dispatch<SetStateAction<ImageState>>;
+  prompt: string;
+  artist: string;
+  imageID: number;
+  quickImage: string;
 }
 
 export const defaultImageState = {
@@ -36,6 +40,10 @@ export const defaultImageState = {
     generatedImages: null,
   },
   setImageState: () => {},
+  prompt: '',
+  artist: '',
+  imageID: 0,
+  quickImage: '',
 };
 
 interface MyContextProviderProps {
@@ -49,13 +57,31 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     defaultImageState.imageState
   );
 
+  const [ imageID, setImageID ] = useState<number>(0);
+  const [ quickImage, setQuickImage ] = useState<string>('');
+  const [ prompt, setPrompt ] = useState<string>('');
+  const [ artist, setArtist ] = useState<string>('');
+  
+  // 
+
   useEffect(() => {
     console.log(imageState);
   }, [imageState]);
 
+  useEffect(() => {
+    if(!imageID) return
+    // start polling
+  }, [
+    imageID,
+  ])
+
   const imageContextValue: ImageContextValue = {
     imageState,
     setImageState,
+    prompt,
+    artist,
+    imageID,
+    quickImage,
   };
 
   return (

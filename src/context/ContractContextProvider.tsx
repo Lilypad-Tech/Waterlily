@@ -268,6 +268,10 @@ export const ContractContextProvider = ({
       console.log('got tx hash', tx.hash); // Print the transaction hash
       try {
         const receipt = await tx.wait();
+        // TODO: trigger the image downloader here
+        // extract the image id from the event logs
+        // trigger the image context setImageID
+        // also set imageContext.{prompt,artist}
         console.log('got receipt', receipt);
         setStatusState((prevState) => ({
           ...prevState,
