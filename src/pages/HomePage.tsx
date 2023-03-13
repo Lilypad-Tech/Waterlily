@@ -26,7 +26,7 @@ import {
   defaultStatusState,
   ImageContext,
 } from '@/context';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import { ImageCard } from '@/components/ImageCard';
 
 const ipfsRoot = 'https://ipfs.io/ipfs/';
@@ -37,7 +37,7 @@ const HomePage = () => {
     useContext(WalletContext);
   const { statusState = defaultStatusState.statusState } =
     useContext(StatusContext);
-  const { imageState, setImageState } = useContext(ImageContext);
+  const { imageState, quickImages } = useContext(ImageContext);
 
   useEffect(() => {
     console.log('status home', statusState);
@@ -94,6 +94,23 @@ const HomePage = () => {
                 alt: 'Not seen',
               }}
             />
+          </ImageListLayout>
+        </SectionLayout>
+      )}
+      {quickImages && (
+        <SectionLayout>
+          <ImageHeader />
+          <ImageListLayout>
+            {quickImages.map((elmt) => {
+              return (
+                <ImageCard
+                  image={{
+                    link: elmt,
+                    alt: 'Not seen',
+                  }}
+                />
+              );
+            })}
           </ImageListLayout>
         </SectionLayout>
       )}
