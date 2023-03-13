@@ -32,6 +32,14 @@ export const ImageCard: FC<ImageCardProps> = ({
   image,
   ipfs,
 }): ReactElement => {
+
+  if(!ipfs?.link) {
+    return (
+      <div>
+        no link given
+      </div>
+    )
+  }
   return (
     <Box sx={{ position: 'relative' }}>
       <Box sx={downloadStyle}>
@@ -47,7 +55,7 @@ export const ImageCard: FC<ImageCardProps> = ({
           <CardMedia
             component="img"
             // height="200"
-            image={ipfs?.link || './monet-water-lilies.jpeg'}
+            image={ipfs?.link}
             alt={image?.alt || 'Monet Water Lilies'}
           />
         </Card>

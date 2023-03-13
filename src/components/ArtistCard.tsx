@@ -22,6 +22,7 @@ interface ArtistCardProps {
   name?: string;
   style?: string;
   description?: string;
+  disabled?: boolean;
   image?: { link: string; alt: string };
   portfolio: string;
   onClick?: () => void;
@@ -31,6 +32,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
   name,
   style,
   description,
+  disabled = false,
   image,
   portfolio,
   onClick,
@@ -90,6 +92,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
         }}>
           <Button
             variant="outlined"
+            disabled={disabled}
             onClick={onClick}
           >
             Use This Style

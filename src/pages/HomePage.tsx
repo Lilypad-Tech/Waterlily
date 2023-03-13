@@ -52,9 +52,6 @@ const HomePage = () => {
     console.log('status home', statusState);
   }, [statusState]);
 
-  console.log('--------------------------------------------')
-  console.log(quickImages)
-
   return (
     <>
       <HeaderLayout>
@@ -66,7 +63,7 @@ const HomePage = () => {
         <Subtitle />
         <Description />
       </TitleLayout>
-      {imageState.generatedImages && (
+      {/* {imageState.generatedImages && (
         <SectionLayout>
           <ImageHeader />
           <ImageListLayout>
@@ -108,17 +105,17 @@ const HomePage = () => {
             />
           </ImageListLayout>
         </SectionLayout>
-      )}
+      )} */}
       {quickImages.length > 0 && (
         <SectionLayout>
           <ImageHeader />
           <ImageListLayout>
-            {quickImages.map((elmt, idx) => {
+            {quickImages.map((quickImageURL, idx) => {
               return (
                 <ImageCard
                   key={idx}
-                  image={{
-                    link: elmt,
+                  ipfs={{
+                    link: quickImageURL,
                     alt: 'Not seen',
                   }}
                 />
@@ -190,6 +187,7 @@ const HomePage = () => {
                 description={description}
                 portfolio={portfolio}
                 image={image}
+                disabled={ statusState.isLoading ? true : false }
                 onClick={() => {
                   setImageArtist({
                     name,
@@ -207,7 +205,14 @@ const HomePage = () => {
         snackbar.open && (
           <Snackbar open={snackbar.open} autoHideDuration={10000} onClose={closeSnackbar}>
             <Alert onClose={closeSnackbar} severity={snackbar.type as any} sx={{ width: '100%' }}>
-              {snackbar.message}
+              <Box
+                sx={{
+                  color: '#fff'
+                }}
+              >
+                {snackbar.message}
+              </Box>
+              
             </Alert>
           </Snackbar>
         )

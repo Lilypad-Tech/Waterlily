@@ -19,6 +19,10 @@ import {
   StableDiffusionImage,
 } from '.';
 
+import {
+  IMAGE_COUNT,
+} from './ImageContextProvider';
+
 /* Contracts */
 import { WATERLILY_CONTRACT_ADDRESS, LILYPAD_CONTRACT_ADDRESS } from '@/definitions';
 import WaterlilyABI from '../abi/ArtistAttribution.sol/ArtistAttribution.json';
@@ -89,7 +93,8 @@ export const ContractContextProvider = ({
   );
   const { statusState = defaultStatusState.statusState, setStatusState, setSnackbar } =
     useContext(StatusContext);
-  const { imageID, setImageID, setImageState } = useContext(ImageContext);
+  const { setImageID, setImageState, quickImages } = useContext(ImageContext);
+  const [ txHash, setTxHash ] = useState('')
 
   const getWriteContractConnection = () => {
     console.log('Connecting to contract...');
@@ -108,76 +113,34 @@ export const ContractContextProvider = ({
     return [waterlilyContract, lilypadEventsContract]
   };
 
-  const setContractEventListeners = () => {
-    console.log('Setting up contract event listeners...');
-
-    // contractState.connectedWaterlilyContract.on(
-    //   'ImageGenerated',
-    //   (image: any) => {
-    //     const generatedImage = {
-    //       id: image[0].toString(), // convert BigNumber to string
-    //       customer: image[1],
-    //       artist: image[2],
-    //       prompt: image[3],
-    //       ipfsResult: image[4],
-    //       errorMessage: image[5],
-    //       isComplete: image[6],
-    //       isCancelled: image[7],
-    //     };
-
-    //     console.log('--------------------------------------------')
-    //     console.log('generatedImage FROM EVENT')
-    //     console.dir(generatedImage)
-    //     // setImageState({ generatedImages: generatedImage });
-    //     // const customerAddress = '0xc7653D426F2EC8Bc33cdDE08b15F535E2EB2F523';
-    //     // if (image.customer.toLowerCase() === customerAddress.toLowerCase()) {
-    //     //   console.log('ImageGenerated event received for customer:');
-    //     //   console.table(image);
-
-    //     //   setStatusState((prevState) => ({
-    //     //     ...prevState,
-    //     //     isLoading: '',
-    //     //     isMessage: true,
-    //     //     message: {
-    //     //       title: 'Bacalhau Stable Diffusion Job Success',
-    //     //       description: `See transaction on blockExplorer..`,
-    //     //     },
-    //     //   }));
-    //     //   // do something with the event - status & display
-    //     //   // call a function to do this. image context?
-    //     // }
-    //     // // console.log('ImageGenerated event received:', image);
-    //     // setStatusState((prevState) => ({
-    //     //   ...prevState,
-    //     //   isLoading: '',
-    //     //   isMessage: true,
-    //     //   message: {
-    //     //     title: 'Successfully ran WaterLily Stable Diffusion Job',
-    //     //     description: 'Images: ...',
-    //     //   },
-    //     // }));
-    //     // return image;
-    //   }
-    // );
-
-    // contractState.connectedWaterlilyContract.on(
-    //   'ImageCancelled',
-    //   (image: StableDiffusionImage) => {
-    //     console.log('ImageCancelled event received:', image);
-    //     // return image;
-    //     setStatusState((prevState) => ({
-    //       ...prevState,
-    //       isLoading: '',
-    //       isError: 'Error Running Bacalhau Job',
-    //       isMessage: true,
-    //       message: {
-    //         title: 'Error Running Bacalhau Job',
-    //         description: 'Check logs for more info',
-    //       },
-    //     }));
-    //   }
-    // );
-  };
+  useEffect(() => {
+    if(quickImages.length >= IMAGE_COUNT) {
+      setSnackbar({
+        type: 'success',
+        open: true,
+        message: `Images have been generated - finalizing transaction...`,
+      })
+      setStatusState((prevState) => ({
+        ...prevState,
+        isLoading: 'Finalizing transaction on FVM...',
+        isMessage: true,
+        message: {
+          title: `Receipt: ${txHash}`,
+          description: (
+            <a
+              href={`${blockExplorerRoot}${txHash}`}
+              target="_blank"
+              rel="no_referrer"
+            >
+              Check Status in block explorer
+            </a>
+          ), //receipt.transactionHash
+        },
+      }));
+    }
+  }, [
+    quickImages,
+  ])
 
   const runStableDiffusionJob = async (prompt: string, artistid: string) => {
     
@@ -240,8 +203,9 @@ export const ContractContextProvider = ({
         },
       }));
       console.log('got tx hash', tx.hash); // Print the transaction hash
+      setTxHash(tx.hash);
       setSnackbar({
-        type: 'info',
+        type: 'success',
         open: true,
         message: `Transaction submitted to the FVM network: ${tx.hash}...`,
       })
@@ -250,7 +214,7 @@ export const ContractContextProvider = ({
       setSnackbar({
         type: 'success',
         open: true,
-        message: `Transaction included ib block - running stable diffusion on bacalhau...`,
+        message: `Transaction included in block - running stable diffusion on bacalhau...`,
       })
 
       console.log('--------------------------------------------')
@@ -285,16 +249,17 @@ export const ContractContextProvider = ({
       let isCancelled = false
 
       const checkJob = async () => {
-        console.log('--------------------------------------------')
-        console.log('checkJob')
         const job = await connectedContract.getImage(imageID)
-        
-        console.dir(job)
-        return false
+        console.log(`checking job: complete: ${job.isComplete}, cancelled: ${job.isCancelled}`)
+        if(job.isComplete) {
+          isComplete = true
+        } else if(job.isCancelled) {
+          isCancelled = true
+        }
       }
 
       while(!isComplete && !isCancelled) {
-         await checkJob()
+        await checkJob()
         if(isComplete || isCancelled) break
         await bluebird.delay(1000)
       }
@@ -309,6 +274,11 @@ export const ContractContextProvider = ({
             description: 'Images: ...',
           },
         }));
+        setSnackbar({
+          type: 'success',
+          open: true,
+          message: 'Successfully ran WaterLily Stable Diffusion Job',
+        })
       } else if(isCancelled) {
         setStatusState((prevState) => ({
           ...prevState,
@@ -320,6 +290,11 @@ export const ContractContextProvider = ({
             description: 'Check logs for more info',
           },
         }));
+        setSnackbar({
+          type: 'error',
+          open: true,
+          message: 'Error Running Bacalhau Job',
+        })
       }
       
 

@@ -43,8 +43,8 @@ interface ImageContextValue {
   quickImages: string[];
 }
 
-const IMAGE_HOST = `https://ai-art-files.cluster.world`
-const IMAGE_COUNT = 4
+export const IMAGE_HOST = `https://ai-art-files.cluster.world`
+export const IMAGE_COUNT = 4
 
 export const getQuickImageURL = (jobID: number, imageIndex: number) => {
   return `${IMAGE_HOST}/job/${jobID}/image_${imageIndex}.png`;
@@ -70,6 +70,15 @@ interface MyContextProviderProps {
 
 export const ImageContext = createContext<ImageContextValue>(defaultImageState);
 
+export const convertBlobToBase64 = (blob: any) => new Promise((resolve, reject) => {
+    const reader = new FileReader;
+    reader.onerror = reject;
+    reader.onload = () => {
+        resolve(reader.result);
+    };
+    reader.readAsDataURL(blob);
+});
+
 export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
   const [imageState, setImageState] = useState<ImageState>(
     defaultImageState.imageState
@@ -89,7 +98,6 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     let active = true;
     let loaded = false;
     let urls: string[] = [];
-    let loadedUrls: string[] = [];
 
     for(var i=0; i<IMAGE_COUNT; i++) {
       const imageUrl = getQuickImageURL(imageID, i)
@@ -98,27 +106,23 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
       }
     }
 
-    const tryImages = async () => {
-      await bluebird.each(urls, async (url, i) => {
-        try {
-          const res = await fetch(url, {method: 'GET'})
-          if(res.status == 200) {
-            loadedUrls[i]  = url
-            urls = urls.filter(u => u !== url)
-            setQuickImages(loadedUrls.filter(u => !!u))
-          } else {
-            await bluebird.delay(1000)
-          }
-        } catch (err) {
-          
-        }
-      })
-    }
-
     const doAsync = async () => {
-      while(!loaded && active) {
-        await tryImages()
-        if(quickImages.length >= IMAGE_COUNT) {
+      while(!loaded) {
+        const newURLs = await bluebird.map(urls, async (url, i) => {
+          try {
+            const res = await fetch(url)
+            console.log(`url: ${url} ${res.status}`)
+            if(res.status != 200) return ''
+            return url
+          } catch (err) {
+            return ''
+          }
+        }) as string[]
+
+        const filteredURLs = newURLs.filter(u => u)
+
+        if(filteredURLs.length >= IMAGE_COUNT) {
+          setQuickImages(filteredURLs)
           loaded = true
           break
         }
