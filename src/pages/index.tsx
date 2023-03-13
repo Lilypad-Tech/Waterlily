@@ -10,7 +10,7 @@ import {
   WalletContextProvider,
   ContractContextProvider,
   StatusContextProvider,
-  StableDiffusionContextProvider,
+  ImageContextProvider,
 } from '@/context';
 import HomePage from './HomePage';
 
@@ -29,17 +29,14 @@ export default function Home() {
       <CssBaseline />
       <StatusContextProvider>
         <WalletContextProvider>
-          <ContractContextProvider>
-            <WebHeader />
-            <PageLayout>
-              <StableDiffusionContextProvider>
+          <ImageContextProvider>
+            <ContractContextProvider>
+              <WebHeader />
+              <PageLayout>
                 <HomePage />
-              </StableDiffusionContextProvider>
-              {/* <main className={styles.main}>
-        <div className={styles.description}>Take me home</div>
-      </main> */}
-            </PageLayout>
-          </ContractContextProvider>
+              </PageLayout>
+            </ContractContextProvider>
+          </ImageContextProvider>
         </WalletContextProvider>
       </StatusContextProvider>
     </ThemeProvider>

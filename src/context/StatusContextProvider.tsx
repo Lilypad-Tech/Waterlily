@@ -39,12 +39,9 @@ export const StatusContext =
   createContext<StatusContextValue>(defaultStatusState);
 
 export const StatusContextProvider = ({ children }: MyContextProviderProps) => {
-  const [statusState, setStatusState] = useState<StatusState>({
-    isLoading: '',
-    isError: '',
-    isMessage: false,
-    message: null,
-  });
+  const [statusState, setStatusState] = useState<StatusState>(
+    defaultStatusState.statusState
+  );
 
   const statusContextValue: StatusContextValue = {
     statusState,

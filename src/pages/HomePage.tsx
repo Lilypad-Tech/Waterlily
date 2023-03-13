@@ -67,7 +67,10 @@ const HomePage = () => {
         )}
       </SectionLayout>
       <ImageLayout>
-        <Title text="Artists" sx={{ fontSize: '3rem', paddingTop: '2rem' }} />
+        <Title
+          text="Featured Artists"
+          sx={{ fontSize: '3rem', paddingTop: '2rem' }}
+        />
         <ArtistListLayout>
           {artists.map((artist, e) => {
             const { name, style, description, portfolio, image } = artist;
