@@ -181,6 +181,8 @@ docker push $FILESTORE_IMAGE
 cat filestore-deploy/04-deployment.yaml | envsubst | kubectl apply -f -
 ```
 
+The image store is deployed to https://ai-art-files.cluster.world/
+
 ## changing the bacalhau job spec
 
 The smart contract issues a JSON packet to the bridge with a `_lilypad_template` field.
@@ -188,3 +190,21 @@ The smart contract issues a JSON packet to the bridge with a `_lilypad_template`
 This runs the functions in `lilypad/pkg/bridge/spec_templates.go`.
 
 To change the job spec that is run on bacalhau - change the spec in `spec_templates.go` and re-deploy the bridge.
+
+
+## pulling docker images
+
+We have a cluster of machines running on https://cloud.lambdalabs.com/
+
+To prepare the bacalhau nodes we want to pull all of the docker images beforehand:
+
+Login to LambdaLabs and click the "IDE" button on each of the instances:
+
+```bash
+sudo docker pull algoveraai/sdprojectv2:mckhallstyle
+sudo docker pull algoveraai/sdprojectv2:SARAH_RICHTER
+sudo docker pull algoveraai/sdprojectv2:bcistyle
+sudo docker pull algoveraai/sdprojectv2:mntstyle
+sudo docker pull algoveraai/sdprojectv2:btzstyle
+sudo docker pull algoveraai/sdprojectv2:cecnstyle
+```
