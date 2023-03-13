@@ -22,6 +22,8 @@ import {
 /* Contracts */
 import { WATERLILY_CONTRACT_ADDRESS } from '@/definitions';
 import WaterlilyABI from '../abi/ArtistAttribution.sol/ArtistAttribution.json';
+const IMAGE_COST = '0.1';
+const GAS_LIMIT = 9000000;
 
 /* Networks */
 import { currentNetwork, networks } from '../definitions/network';
@@ -41,12 +43,13 @@ export interface ContractState {
   mode: AccessType;
   provider: ethers.providers.Provider | null;
   signer: ethers.Signer | null;
-  connectedWaterlilyContract: ethers.Contract | null;
+  connectedWaterlilyContract: ethers.Contract;
 }
 
 interface ContractContextValue {
   contractState?: ContractState;
   setContractState: Dispatch<SetStateAction<ContractState>>;
+  runStableDiffusionJob: (prompt: string, artistId: string) => Promise<void>;
 }
 
 export const defaultContractState = {
@@ -55,9 +58,14 @@ export const defaultContractState = {
     mode: AccessType.Read,
     provider: new ethers.providers.JsonRpcProvider(rpc),
     signer: null,
-    connectedWaterlilyContract: null,
+    connectedWaterlilyContract: new ethers.Contract(
+      WATERLILY_CONTRACT_ADDRESS,
+      WaterlilyABI.abi,
+      new ethers.providers.JsonRpcProvider(rpc)
+    ),
   },
   setContractState: () => {},
+  runStableDiffusionJob: async () => {},
 };
 
 interface MyContextProviderProps {
@@ -99,13 +107,13 @@ export const ContractContextProvider = ({
       waterlilyContract = null;
     if (window.ethereum) {
       provider = new ethers.providers.Web3Provider(window.ethereum);
+      signer = provider.getSigner();
       waterlilyContract = new ethers.Contract(
         WATERLILY_CONTRACT_ADDRESS,
         WaterlilyABI.abi,
-        provider
+        signer
       );
-      signer = provider.getSigner();
-      waterlilyContract.connect(signer); //want to be able to change this on wallet change
+      // waterlilyContract.connect(signer); //want to be able to change this on wallet change
       setContractState({
         mode: AccessType.Write,
         isConnected: true,
@@ -161,10 +169,88 @@ export const ContractContextProvider = ({
     });
   };
 
+  const runStableDiffusionJob = async (prompt: string, artistid: string) => {
+    if (!window.ethereum) {
+      setStatusState({
+        ...statusState,
+        isError: 'Web3 not available',
+        isMessage: true,
+        message: {
+          title: 'Web3 not available',
+          description:
+            'Please install and unlock a Web3 provider in your browser to use this application.',
+        },
+      });
+      return;
+    }
+    //not updating - might need to use prevState style
+    setStatusState({
+      ...defaultStatusState.statusState,
+      isLoading: 'Submitting Waterlily job to the FVM network ...',
+    });
+
+    const imageCost = ethers.utils.parseEther(IMAGE_COST);
+    const gasLimit: string = ethers.utils.hexlify(GAS_LIMIT);
+
+    try {
+      const tx = await contractState.connectedWaterlilyContract.StableDiffusion(
+        artistid,
+        prompt,
+        {
+          value: imageCost,
+        }
+      );
+      setStatusState((prevState) => ({
+        ...prevState,
+        isLoading:
+          'Waiting for transaction to be included in a block on the network...',
+        isMessage: true,
+        message: {
+          title: 'TX successful on network',
+          description: `TX: ${tx.hash}`,
+        },
+      }));
+      console.log('got tx hash', tx.hash); // Print the transaction hash
+      try {
+        const receipt = await tx.wait();
+        console.log('got receipt', receipt);
+        setStatusState((prevState) => ({
+          ...prevState,
+          isLoading: '',
+          isMessage: true,
+          message: {
+            title: 'TX successful on network',
+            description: `Receipt:`,
+          },
+        }));
+        return;
+      } catch (error) {
+        console.log('receipt err', error);
+        setStatusState((prevState) => ({
+          ...prevState,
+          isLoading: '',
+          isError: 'yep receipt error',
+        }));
+      }
+    } catch (error) {
+      console.log('tx error', error);
+      setStatusState((prevState) => ({
+        ...prevState,
+        isLoading: '',
+        isError: 'yep error',
+      }));
+    }
+  };
+
+  const fetchAllImages = async () => {
+    /*listImages*/
+  };
+
   //THESE GO LAST
   const contractContextValue: ContractContextValue = {
     contractState,
     setContractState,
+    runStableDiffusionJob,
   };
 
   return (

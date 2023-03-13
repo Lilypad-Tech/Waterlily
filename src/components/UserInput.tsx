@@ -13,9 +13,8 @@ import { MyButton } from '@/components';
 import { artists, ArtistType, networks } from '@/definitions';
 import {
   WalletContext,
-  StableDiffusionContext,
+  ContractContext,
   StatusContext,
-  defaultWalletState,
   defaultStatusState,
 } from '@/context';
 
@@ -50,7 +49,7 @@ type UserInputProps = {};
 export const UserInput: FC<UserInputProps> = (): ReactElement => {
   const [prompt, setPrompt] = useState('');
   const [artist, setArtist] = useState({ name: '', key: '' });
-  const { runStableDiffusionJob } = useContext(StableDiffusionContext);
+  const { runStableDiffusionJob } = useContext(ContractContext);
   const { statusState = defaultStatusState.statusState } =
     useContext(StatusContext);
   const { verifyChainId, changeWalletChain } = useContext(WalletContext);
@@ -130,7 +129,7 @@ export const UserInput: FC<UserInputProps> = (): ReactElement => {
       </Grid>
       <br />
       <MyButton
-        name="Coming Soon!" //"Generate Images"
+        name="Coming Soon" //"Generate Images"
         action={generateImages}
         disabled={true} //{!prompt || !artist || Boolean(statusState.isLoading)}
       />
