@@ -97,7 +97,7 @@ const HomePage = () => {
           </ImageListLayout>
         </SectionLayout>
       )}
-      {quickImages && (
+      {quickImages.length > 0 && (
         <SectionLayout>
           <ImageHeader />
           <ImageListLayout>
