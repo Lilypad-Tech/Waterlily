@@ -17,6 +17,7 @@ const path = require('path');
 const os = require('os');
 const express = require('express')
 const ecstatic = require('ecstatic')
+var cors = require('cors')
 let port = process.env.PORT || 8080;
 let disableAutoPort = !!process.env.DISABLE_AUTO_PORT;
 let uploadDir = process.env.UPLOAD_DIR || process.cwd();
@@ -258,6 +259,7 @@ app.post('/upload', (req, res) => {
 
 })
 
+app.use(cors())
 app.use(ecstatic({
   root: `/data`,
   showdir: true,

@@ -5,6 +5,8 @@ import React, {
   useState,
   useEffect,
 } from 'react';
+import bluebird from 'bluebird'
+import axios from 'axios'
 import { ethers } from 'ethers';
 
 export interface StableDiffusionImage {
@@ -43,6 +45,7 @@ interface ImageContextValue {
 }
 
 const IMAGE_HOST = `https://ai-art-files.cluster.world`
+const IMAGE_COUNT = 4
 
 export const getQuickImageURL = (jobID: number, imageIndex: number) => {
   return `${IMAGE_HOST}/job/${jobID}/image_${imageIndex}.png`;
@@ -84,15 +87,51 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
 
   useEffect(() => {
     if (!imageID) return;
+    let active = true;
+    let loaded = false;
+    let urls: string[] = [];
+    for(var i=0; i<IMAGE_COUNT; i++) {
+      const imageUrl = getQuickImageURL(imageID, i)
+      if(!quickImages.find(url => url === imageUrl)) {
+        urls.push(imageUrl)
+      }
+    }
 
-    // now we start polling for our images
+    const tryImages = async () => {
+      console.log('--------------------------------------------')
+      console.log('Trying the images!!!')
+      await bluebird.each(urls, async (url, i) => {
+        try {
+          console.log(url)
+          await fetch(url, {method: 'HEAD'})
+          setQuickImages((prev: string[]) => {
+            const newImages = [...prev]
+            newImages[i] = url
+            return newImages
+          })
+        } catch (err) {
+          console.log('--------------------------------------------')
+          console.log('failed to load image', url)
+        }
+      })
+    }
 
-    console.log('--------------------------------------------')
-    console.log('HERE')
-    setQuickImages([
-      getQuickImageURL(54, 0)
-    ])
+    const doAsync = async () => {
+      while(!loaded && active) {
+        await tryImages()
+        if(quickImages.length >= IMAGE_COUNT) {
+          loaded = true
+          break
+        }
+        await bluebird.delay(1000)
+      }
+    }
 
+    doAsync()
+
+    return () => {
+      active = false;
+    }
   }, [imageID]);
 
   const imageContextValue: ImageContextValue = {

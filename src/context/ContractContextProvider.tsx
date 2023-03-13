@@ -88,7 +88,7 @@ export const ContractContextProvider = ({
   );
   const { statusState = defaultStatusState.statusState, setStatusState, setSnackbar } =
     useContext(StatusContext);
-  const { imageState, setImageID, setImageState } = useContext(ImageContext);
+  const { imageID, setImageID, setImageState } = useContext(ImageContext);
 
   const getWriteContractConnection = () => {
     console.log('Connecting to contract...');
@@ -174,124 +174,121 @@ export const ContractContextProvider = ({
   };
 
   const runStableDiffusionJob = async (prompt: string, artistid: string) => {
-    setImageState({ generatedImages: null });
-    if (!window.ethereum) {
-      setStatusState({
-        ...statusState,
-        isError: 'Web3 not available',
-        isMessage: true,
-        message: {
-          title: 'Web3 not available',
-          description:
-            'Please install and unlock a Web3 provider in your browser to use this application.',
-        },
-      });
-      return;
-    }
-
-    const connectedContract = getWriteContractConnection();
-    if (!connectedContract) {
-      setStatusState({
-        ...defaultStatusState.statusState,
-        isError: 'Something went wrong connecting to contract',
-      });
-      return;
-    }
-    //not updating - might need to use prevState style
-    setStatusState({
-      ...defaultStatusState.statusState,
-      isLoading: 'Submitting Waterlily job to the FVM network ...',
-    });
-
-    const imageCost = ethers.utils.parseEther(IMAGE_COST);
     
-    try {
-      const tx = await connectedContract.StableDiffusion(artistid, prompt, {
-        value: imageCost,
-      });
-      setStatusState((prevState) => ({
-        ...prevState,
-        isLoading:
-          'Waiting for transaction to be included in a block on the FVM network...',
-        isMessage: true,
-        message: {
-          title: `TX Hash: ${tx.hash}`,
-          description: (
-            <a
-              href={`${blockExplorerRoot}${tx.hash}`}
-              target="_blank"
-              rel="no_referrer"
-            >
-              Check Status in block explorer
-            </a>
-          ),
-        },
-      }));
-      console.log('got tx hash', tx.hash); // Print the transaction hash
+
+    setImageState({ generatedImages: null });
+    setImageID(44)
+    // if (!window.ethereum) {
+    //   setStatusState({
+    //     ...statusState,
+    //     isError: 'Web3 not available',
+    //     isMessage: true,
+    //     message: {
+    //       title: 'Web3 not available',
+    //       description:
+    //         'Please install and unlock a Web3 provider in your browser to use this application.',
+    //     },
+    //   });
+    //   return;
+    // }
+
+    // const connectedContract = getWriteContractConnection();
+    // if (!connectedContract) {
+    //   setStatusState({
+    //     ...defaultStatusState.statusState,
+    //     isError: 'Something went wrong connecting to contract',
+    //   });
+    //   return;
+    // }
+    // //not updating - might need to use prevState style
+    // setStatusState({
+    //   ...defaultStatusState.statusState,
+    //   isLoading: 'Submitting Waterlily job to the FVM network ...',
+    // });
+
+    // const imageCost = ethers.utils.parseEther(IMAGE_COST);
+    
+    // try {
+    //   const tx = await connectedContract.StableDiffusion(artistid, prompt, {
+    //     value: imageCost,
+    //   });
+    //   setStatusState((prevState) => ({
+    //     ...prevState,
+    //     isLoading:
+    //       'Waiting for transaction to be included in a block on the FVM network...',
+    //     isMessage: true,
+    //     message: {
+    //       title: `TX Hash: ${tx.hash}`,
+    //       description: (
+    //         <a
+    //           href={`${blockExplorerRoot}${tx.hash}`}
+    //           target="_blank"
+    //           rel="no_referrer"
+    //         >
+    //           Check Status in block explorer
+    //         </a>
+    //       ),
+    //     },
+    //   }));
+    //   console.log('got tx hash', tx.hash); // Print the transaction hash
       
-      const receipt = await tx.wait();
+    //   const receipt = await tx.wait();
 
-      console.log('--------------------------------------------')
-      console.dir(receipt)
-      console.log(JSON.stringify(receipt, null, 4))
-      const results = receipt.logs.map((log: any) => connectedContract.interface.parseLog(log))
-      // const [jobEvent] = receipt.logs.map((log: any) => connectedContract.interface.parseLog(log))
-      // const jobID = jobEvent.args.job.id;
+    //   const [
+    //     imageID,
+    //   ] = ethers.utils.defaultAbiCoder.decode(
+    //     [ 'uint256', 'address', 'string', 'string', 'string', 'string', 'bool', 'bool' ],
+    //     receipt.logs[0].data,
+    //   );
 
-      // TODO: trigger the image downloader here
-      // extract the image id from the event logs
-      // trigger the image context setImageID
-      // also setImageID(number)
-      console.log('got receipt', receipt);
-      // console.log('got jobEvent', jobEvent);
-      // console.log('got jobID', jobID);
+    //   console.log('got image id', imageID.toString()); // Print the imageID
+      
+    //   setImageID(imageID.toNumber());
 
-      // setImageID(jobID);
-
-      setStatusState((prevState) => ({
-        ...prevState,
-        isLoading: 'Running Stable Diffusion Job on Bacalhau...',
-        isMessage: true,
-        message: {
-          title: `Receipt: ${tx.hash}`,
-          description: (
-            <a
-              href={`${blockExplorerRoot}${tx.hash}`}
-              target="_blank"
-              rel="no_referrer"
-            >
-              Check Status in block explorer
-            </a>
-          ), //receipt.transactionHash
-        },
-      }));
-    } catch (error: any) {
-      console.error(error)
-      let errorMessage = error.toString()
-      if(error.error && error.error.data && error.error.data.message && error.error.data.message.includes('revert reason:')) {
-        const match = error.error.data.message.match(/revert reason: Error\((.*?)\)/)
-        errorMessage = match[1]
-      }
-      if(errorMessage.length > 64) {
-        errorMessage = errorMessage.substring(0, 64) + '...'
-      }
-      setSnackbar({
-        type: 'error',
-        open: true,
-        message: errorMessage
-      })
-      setStatusState((prevState) => ({
-        ...prevState,
-        isLoading: '',
-        isError: true,
-        message: {
-          title: errorMessage,
-          description: (
-            <span>{errorMessage}</span>
-          ),
-        },
-      }));
-    }
+    //   setStatusState((prevState) => ({
+    //     ...prevState,
+    //     isLoading: 'Running Stable Diffusion Job on Bacalhau...',
+    //     isMessage: true,
+    //     message: {
+    //       title: `Receipt: ${tx.hash}`,
+    //       description: (
+    //         <a
+    //           href={`${blockExplorerRoot}${tx.hash}`}
+    //           target="_blank"
+    //           rel="no_referrer"
+    //         >
+    //           Check Status in block explorer
+    //         </a>
+    //       ), //receipt.transactionHash
+    //     },
+    //   }));
+    // } catch (error: any) {
+    //   console.error(error)
+    //   let errorMessage = error.toString()
+    //   if(error.error && error.error.data && error.error.data.message && error.error.data.message.includes('revert reason:')) {
+    //     const match = error.error.data.message.match(/revert reason: Error\((.*?)\)/)
+    //     errorMessage = match[1]
+    //   }
+    //   if(errorMessage.length > 64) {
+    //     errorMessage = errorMessage.substring(0, 64) + '...'
+    //   }
+    //   setSnackbar({
+    //     type: 'error',
+    //     open: true,
+    //     message: errorMessage
+    //   })
+    //   setStatusState((prevState) => ({
+    //     ...prevState,
+    //     isLoading: '',
+    //     isError: true,
+    //     message: {
+    //       title: errorMessage,
+    //       description: (
+    //         <span>{errorMessage}</span>
+    //       ),
+    //     },
+    //   }));
+    // }
   };
 
   //THESE GO LAST
