@@ -11,14 +11,17 @@ export const ImageHeader = () => {
       sx={{ display: 'flex', flexDirection: 'column', paddingTop: '2rem' }}
     >
       <Subtitle text="Generated Images" />
-      <Typography variant="h6">{imageArtist.name}</Typography>
-      <Typography variant="subtitle1">{imageArtist.style}</Typography>
+      <Typography
+        variant="h6"
+        sx={{ paddingTop: '1rem' }}
+      >{`${imagePrompt}`}</Typography>
+      <Typography variant="subtitle1">{`${imageArtist.name}`}</Typography>
       <Typography
         variant="body1"
         color="text.secondary"
         sx={{ display: 'block', fontWeight: 'bold' }}
       >
-        {imagePrompt}
+        {`${imageArtist.style}`}
       </Typography>
     </Box>
   );

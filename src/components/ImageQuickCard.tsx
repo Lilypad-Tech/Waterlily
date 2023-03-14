@@ -9,12 +9,14 @@ const boxStyle = {
   display: 'flex',
   justifyContent: 'center',
   padding: '1rem',
+  cursor: 'pointer',
 };
 
 const downloadStyle = {
   position: 'absolute',
   top: 20,
   right: 25,
+  cursor: 'pointer',
 };
 
 interface ImageCardProps {

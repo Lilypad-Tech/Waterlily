@@ -308,11 +308,12 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
           console.log('Error changing chains', err);
           if (err.status === 4902) {
             console.log('Adding the filecoin chain to wallet');
+            addNetwork(HyperspaceNetworkData);
             // Make a request to add the chain to wallet here
             console.log(
               "Chain hasn't been added to the wallet yet... trying to add"
             );
-            addNetwork(HyperspaceNetworkData);
+            // addNetwork(HyperspaceNetworkData);
           }
         });
     } else {

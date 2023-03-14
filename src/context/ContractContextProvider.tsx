@@ -97,7 +97,7 @@ export const ContractContextProvider = ({
     setStatusState,
     setSnackbar,
   } = useContext(StatusContext);
-  const { imageID, setImageID, setImageState, quickImages } =
+  const { imageID, setImageID, setImageState, quickImages, setQuickImages } =
     useContext(ImageContext);
   const [txHash, setTxHash] = useState('');
 
@@ -206,6 +206,7 @@ export const ContractContextProvider = ({
 
   const runStableDiffusionJob = async (prompt: string, artistid: string) => {
     setImageState({ generatedImages: null });
+    setQuickImages([]);
 
     if (!window.ethereum) {
       setStatusState({
@@ -309,7 +310,7 @@ export const ContractContextProvider = ({
       let isComplete = false;
       let isCancelled = false;
 
-      // What is this doing?
+      // What is this doing? Events I assume? It was never completing :(
       // const checkJob = async () => {
       //   const job = await connectedContract.getImage(imageID);
       //   console.log(

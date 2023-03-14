@@ -27,10 +27,12 @@ import {
   defaultStatusState,
   ImageContext,
 } from '@/context';
-import { CircularProgress, Box, Typography } from '@mui/material';
 import { ImageQuickCard } from '@/components';
+import { CircularProgress, Box, Typography } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import Link from '@mui/material/Link';
+import TwitterIcon from '@mui/icons-material/Twitter';
 
 const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -51,12 +53,14 @@ const HomePage = () => {
     statusState = defaultStatusState.statusState,
     resetStatusState,
   } = useContext(StatusContext);
-  const { imageState, quickImages, imagePrompt, imageArtist, setImageArtist } =
-    useContext(ImageContext);
-
-  // useEffect(() => {
-  //   console.log('status home', statusState);
-  // }, [statusState]);
+  const {
+    imageState,
+    quickImages,
+    imagePrompt,
+    imageArtist,
+    setImageArtist,
+    twitterLink,
+  } = useContext(ImageContext);
 
   return (
     <>
@@ -129,6 +133,28 @@ const HomePage = () => {
               );
             })}
           </ImageListLayout>
+          {Boolean(twitterLink) && (
+            <Link
+              href={twitterLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ textDecoration: 'none' }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <TwitterIcon />
+                <Typography color="white" sx={{ paddingLeft: '10px' }}>
+                  Share on Twitter
+                </Typography>
+              </Box>
+            </Link>
+          )}
         </SectionLayout>
       )}
       {statusState.isError && (

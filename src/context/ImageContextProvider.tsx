@@ -44,8 +44,10 @@ interface ImageContextValue {
     }>
   >;
   imageID: number;
+  twitterLink: any;
   setImageID: Dispatch<SetStateAction<number>>;
   quickImages: string[];
+  setQuickImages: Dispatch<SetStateAction<string[]>>;
   downloadImage: (imageUrl: string, folderName: string, fileName: string) => {};
 }
 
@@ -65,9 +67,11 @@ export const defaultImageState: ImageContextValue = {
   imageArtist: { name: '', key: '', style: '' },
   imageID: 0,
   quickImages: [],
+  twitterLink: '',
   setImageArtist: () => {},
   setImagePrompt: () => {},
   setImageID: () => {},
+  setQuickImages: () => {},
   downloadImage: async () => {},
 };
 
@@ -100,6 +104,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     key: string;
     style: string;
   }>({ name: '', key: '', style: '' });
+  const [twitterLink, setTwitterLink] = useState<string>('');
 
   const { setStatusState } = useContext(StatusContext);
 
@@ -138,6 +143,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
         if (filteredURLs.length >= IMAGE_COUNT) {
           setQuickImages(filteredURLs);
           loaded = true;
+          createTwitterLink();
           setStatusState({
             isLoading: '',
             isError: '',
@@ -160,6 +166,43 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     };
   }, [imageID]);
 
+  // const createTwitterLink = async () => {
+  //   const tweetText = `Check out the ethical AI art I created on waterlily.ai! \n\n✍️ ${imagePrompt} \n\n🎨 ${imageArtist.name} \n\n`;
+  //   const response = await fetch(quickImages[0]);
+  //   const imageBlob = await response.blob();
+  //   const reader = new FileReader();
+  //   reader.readAsArrayBuffer(imageBlob);
+  //   return new Promise((resolve) => {
+  //     reader.onloadend = () => {
+  //       const buf = reader.result as ArrayBuffer;
+  //       const base64String = buf ? Buffer.from(buf).toString('base64') : '';
+  //       const tweetImageUrl = `https://example.com/images/my-image.jpg`;
+  //       const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+  //         tweetText
+  //       )}&url=${encodeURIComponent(tweetImageUrl)}`;
+  //       resolve(tweetUrl);
+  //     };
+  //   }).then((tweetUrl) => {
+  //     const url = tweetUrl as string;
+  //     setTwitterLink(url);
+  //   });
+  // };
+
+  const createTwitterLink = async () => {
+    const tweetText = `Check out the ethical AI art I created on waterlily.ai! \n\n✍️ ${imagePrompt} \n\n🎨 ${imageArtist.name} \n\n`;
+    // const response = await fetch(quickImages[2]);
+    // const imageBlob = await response.blob();
+    // const base64String = await convertBlobToBase64(imageBlob);
+    // const tweetImageUrl = `data:${imageBlob.type};base64,${base64String}`;
+    // const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    //   tweetText
+    // )}&url=${encodeURIComponent(tweetImageUrl)}`;
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+      tweetText
+    )}&url=${quickImages[1]}`;
+    setTwitterLink(tweetUrl);
+  };
+
   const downloadImage = async (
     imageUrl: string | undefined,
     fileName: string,
@@ -178,6 +221,10 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
       });
   };
 
+  const resetAll = () => {
+    //reset all vars here needed
+  };
+
   const imageContextValue: ImageContextValue = {
     imageState,
     setImageState,
@@ -185,10 +232,12 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     imageArtist,
     imageID,
     quickImages,
+    setQuickImages,
     setImagePrompt,
     setImageArtist,
     setImageID,
     downloadImage,
+    twitterLink,
   };
 
   return (
