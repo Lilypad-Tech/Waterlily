@@ -275,7 +275,7 @@ const HomePage = () => {
                     {
                       IMAGE_NUMBER_ARRAY.map(imageNumber => {
                         return (
-                          <Card sx={{
+                          <Card key={ imageNumber } sx={{
                             maxWidth: 250,
                             border: '1px solid white',
                             ml: 1,
