@@ -69,6 +69,7 @@ const HomePage = () => {
         <Subtitle />
         <Description />
       </TitleLayout>
+
       {/* {imageState.generatedImages && (
         <SectionLayout>
           <ImageHeader />
@@ -184,6 +185,12 @@ const HomePage = () => {
           text="Featured Artists"
           sx={{ fontSize: '3rem', paddingTop: '2rem' }}
         />
+        <CalloutMessage
+          text="Become a Featured Artist! [click me]"
+          onClick={() => {
+            window.open('https://bit.ly/AI-Art-Attribution-Form', '_blank');
+          }}
+        />
         <ArtistListLayout>
           {artists.map((artist, e) => {
             const { artistId, name, style, description, portfolio, image } =
@@ -215,12 +222,6 @@ const HomePage = () => {
             );
           })}
         </ArtistListLayout>
-        <CalloutMessage
-          text="Become a Featured Artist! Click here"
-          onClick={() => {
-            window.open('https://bit.ly/AI-Art-Attribution-Form', '_blank');
-          }}
-        />
       </ArtistLayout>
       <SectionLayout>
         <Title

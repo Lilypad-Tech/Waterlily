@@ -45,10 +45,10 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
             alt={image?.alt || 'Monet Water Lilies'}
           />
         </Card>
-        <Button onClick={() => alert('Feature coming soon!')}>
-          Mint as NFT
-        </Button>
       </Box>
+      <Button variant="outlined" onClick={() => alert('Feature coming soon!')}>
+        Mint as NFT
+      </Button>
     </Box>
   );
 };
