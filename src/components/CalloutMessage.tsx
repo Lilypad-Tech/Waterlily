@@ -1,15 +1,17 @@
-import { FC, ReactNode } from 'react';
+import { Dispatch, FC, ReactNode, SetStateAction } from 'react';
 import { Box, Typography } from '@mui/material';
-import TipsAndUpdatesOutlinedIcon from '@mui/icons-material/TipsAndUpdatesOutlined';
-import BrushOutlinedIcon from '@mui/icons-material/BrushOutlined';
+// import TipsAndUpdatesOutlinedIcon from '@mui/icons-material/TipsAndUpdatesOutlined';
+// import BrushOutlinedIcon from '@mui/icons-material/BrushOutlined';
 import PaletteOutlinedIcon from '@mui/icons-material/PaletteOutlined';
-import NearMeOutlinedIcon from '@mui/icons-material/NearMeOutlined';
-import MouseOutlinedIcon from '@mui/icons-material/MouseOutlined';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+// import NearMeOutlinedIcon from '@mui/icons-material/NearMeOutlined';
+// import MouseOutlinedIcon from '@mui/icons-material/MouseOutlined';
 
 type CalloutMessageProps = {
   children?: ReactNode;
   text: string;
   onClick: any;
+  setCallout: Dispatch<SetStateAction<boolean>>;
 };
 
 const calloutStyle = {
@@ -48,7 +50,7 @@ const contentStyle = {
   MozBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   MozTextFillColor: 'transparent',
-  cursor: 'pointer',
+  position: 'relative',
   '&:hover': {
     background:
       '-webkit-linear-gradient(right, #30ccff 10%, #30ccff, #0055ff 70%)',
@@ -60,6 +62,7 @@ const contentStyle = {
     MozTextFillColor: 'transparent',
     border: '1px solid #b583ff',
     color: '#f53ebb',
+    cursor: 'pointer',
   },
 };
 
@@ -78,6 +81,7 @@ export const CalloutMessage: FC<CalloutMessageProps> = ({
   text,
   children,
   onClick,
+  setCallout,
 }) => {
   return (
     //<Box sx={{ height: (theme) => theme.spacing(10) }} />
@@ -85,6 +89,13 @@ export const CalloutMessage: FC<CalloutMessageProps> = ({
       <Box component="button" sx={contentStyle}>
         <PaletteOutlinedIcon sx={iconStyle} />
         <Typography>{text}</Typography>
+        {/* <CloseRoundedIcon
+          sx={{
+            position: 'absolute',
+            right: '1rem',
+          }}
+          onClick={() => setCallout(false)}
+        /> */}
       </Box>
       {children}
     </Box>

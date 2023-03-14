@@ -42,7 +42,7 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
 const ipfsRoot = 'https://ipfs.io/ipfs/';
 
 const HomePage = () => {
-  // const [isConnected, setConnected] = useState(false);
+  const [isCallout, setCallout] = useState(true);
   const { walletState = defaultWalletState.walletState } =
     useContext(WalletContext);
   const {
@@ -120,6 +120,7 @@ const HomePage = () => {
               return (
                 <ImageQuickCard
                   key={idx}
+                  idx={idx}
                   image={{
                     link: quickImageURL,
                     alt: 'Not found',
@@ -140,10 +141,27 @@ const HomePage = () => {
               justifyContent: 'center',
             }}
           >
+            <div style={{ paddingTop: '1rem' }}>
+              <Typography variant="h5">{statusState.isError}</Typography>
+            </div>
+          </Box>
+        </SectionLayout>
+      )}
+      {/* this shows up with really in your face styling. just using snackbar instead...*/}
+      {/* {statusState.isError && (
+        <SectionLayout>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <Alert
               onClose={resetStatusState}
               severity="error"
-              sx={{ width: '100%', maxWidth: '400px' }}
+              sx={{ width: '100%' }}
             >
               <div style={{ paddingTop: '1rem' }}>
                 <Typography variant="h5">
@@ -153,7 +171,7 @@ const HomePage = () => {
             </Alert>
           </Box>
         </SectionLayout>
-      )}
+      )} */}
       <div id="justAboveTextField"></div>
       <SectionLayout>
         {!walletState?.isConnected ? (
@@ -184,12 +202,15 @@ const HomePage = () => {
           text="Featured Artists"
           sx={{ fontSize: '3rem', paddingTop: '2rem' }}
         />
-        <CalloutMessage
-          text="Become a Featured Artist! "
-          onClick={() => {
-            window.open('https://bit.ly/AI-Art-Attribution-Form', '_blank');
-          }}
-        />
+        {isCallout && (
+          <CalloutMessage
+            text="Become a Featured Artist! "
+            onClick={() => {
+              window.open('https://bit.ly/AI-Art-Attribution-Form', '_blank');
+            }}
+            setCallout={setCallout}
+          />
+        )}
         <ArtistListLayout>
           {artists.map((artist, e) => {
             const { artistId, name, style, description, portfolio, image } =
