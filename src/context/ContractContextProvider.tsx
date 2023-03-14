@@ -101,6 +101,37 @@ export const ContractContextProvider = ({
     useContext(ImageContext);
   const [txHash, setTxHash] = useState('');
 
+  useEffect(() => {
+    setContractEventListeners();
+  }, []);
+
+  useEffect(() => {
+    if (quickImages.length >= IMAGE_COUNT) {
+      setSnackbar({
+        type: 'success',
+        open: true,
+        message: `Images have been generated - finalizing transaction...`,
+      });
+      setStatusState((prevState) => ({
+        ...prevState,
+        isLoading: '',
+        isMessage: true,
+        message: {
+          title: `Receipt: ${txHash}`,
+          description: (
+            <a
+              href={`${blockExplorerRoot}${txHash}`}
+              target="_blank"
+              rel="no_referrer"
+            >
+              Check Status in block explorer
+            </a>
+          ), //receipt.transactionHash
+        },
+      }));
+    }
+  }, [quickImages]);
+
   const getWriteContractConnection = () => {
     console.log('Connecting to contract...');
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -172,37 +203,6 @@ export const ContractContextProvider = ({
       }
     );
   };
-
-  useEffect(() => {
-    setContractEventListeners();
-  }, []);
-
-  useEffect(() => {
-    if (quickImages.length >= IMAGE_COUNT) {
-      setSnackbar({
-        type: 'success',
-        open: true,
-        message: `Images have been generated - finalizing transaction...`,
-      });
-      setStatusState((prevState) => ({
-        ...prevState,
-        isLoading: '',
-        isMessage: true,
-        message: {
-          title: `Receipt: ${txHash}`,
-          description: (
-            <a
-              href={`${blockExplorerRoot}${txHash}`}
-              target="_blank"
-              rel="no_referrer"
-            >
-              Check Status in block explorer
-            </a>
-          ), //receipt.transactionHash
-        },
-      }));
-    }
-  }, [quickImages]);
 
   const runStableDiffusionJob = async (prompt: string, artistid: string) => {
     setImageState({ generatedImages: null });

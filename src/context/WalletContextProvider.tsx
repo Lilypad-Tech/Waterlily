@@ -256,6 +256,8 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
     }
   };
 
+  const checkBalance = () => {};
+
   const verifyChainId = (reqChainId: string) => {
     console.log(`Verifying wallet chain matches ${reqChainId}...`);
     if (walletState.chainId !== reqChainId) {

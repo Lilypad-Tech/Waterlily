@@ -121,7 +121,7 @@ const HomePage = () => {
                   key={idx}
                   image={{
                     link: quickImageURL,
-                    alt: 'Not seen',
+                    alt: 'Not found',
                   }}
                 />
               );
