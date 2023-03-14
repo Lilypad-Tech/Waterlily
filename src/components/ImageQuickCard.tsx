@@ -1,7 +1,6 @@
 import { FC, ReactElement, useContext } from 'react';
 import { Box, Button, Card, CardMedia, Link } from '@mui/material';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
-import * as FileSaver from 'file-saver';
 import { ImageContext } from '@/context';
 
 //ipfs.io/ipfs/{cid} should be fine?
@@ -19,7 +18,7 @@ const downloadStyle = {
 };
 
 interface ImageCardProps {
-  image?: { link: string; alt: string };
+  image: { link: string; alt: string };
   ipfs?: { link: string; alt: string };
   idx: number | string;
 }
@@ -29,30 +28,33 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
   ipfs,
   idx,
 }): ReactElement => {
-  const { imageArtist, imagePrompt } = useContext(ImageContext);
+  const { imageArtist, imagePrompt, downloadImage } = useContext(ImageContext);
   let noSpacePrompt = imagePrompt.replace(/\s+/g, '').trim();
   // let artistName = imageArtist.name.replace(/\s+/g, '').trim();
   const fileName = `${noSpacePrompt.slice(0, 20)}-Image_${idx}`;
   const folderName = imageArtist.name.replace(/\s+/g, '').trim();
 
-  const downloadImage = (imageUrl: string | undefined) => {
-    if (!imageUrl) return;
-    fetch(imageUrl)
-      .then((response) => {
-        return response.blob();
-      })
-      .then((blob) => {
-        // FileSaver.saveAs(blob, fileName);
-        FileSaver.saveAs(blob, `WaterlilyAI_${folderName}_${fileName}`);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
+  // const downloadImage = (imageUrl: string | undefined) => {
+  //   if (!imageUrl) return;
+  //   fetch(imageUrl)
+  //     .then((response) => {
+  //       return response.blob();
+  //     })
+  //     .then((blob) => {
+  //       // FileSaver.saveAs(blob, fileName);
+  //       FileSaver.saveAs(blob, `WaterlilyAI_${folderName}_${fileName}`);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  // };
 
   return (
     <Box sx={{ position: 'relative' }}>
-      <Box sx={downloadStyle} onClick={() => downloadImage(image?.link)}>
+      <Box
+        sx={downloadStyle}
+        onClick={() => downloadImage(image.link, folderName, fileName)}
+      >
         <CloudDownloadIcon />
       </Box>
       <Box sx={boxStyle}>

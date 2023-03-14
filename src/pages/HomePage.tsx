@@ -54,9 +54,9 @@ const HomePage = () => {
   const { imageState, quickImages, imagePrompt, imageArtist, setImageArtist } =
     useContext(ImageContext);
 
-  useEffect(() => {
-    console.log('status home', statusState);
-  }, [statusState]);
+  // useEffect(() => {
+  //   console.log('status home', statusState);
+  // }, [statusState]);
 
   return (
     <>

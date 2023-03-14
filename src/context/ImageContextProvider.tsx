@@ -46,6 +46,7 @@ interface ImageContextValue {
   imageID: number;
   setImageID: Dispatch<SetStateAction<number>>;
   quickImages: string[];
+  downloadImage: (imageUrl: string, folderName: string, fileName: string) => {};
 }
 
 export const IMAGE_HOST = `https://ai-art-files.cluster.world`;
@@ -67,6 +68,7 @@ export const defaultImageState: ImageContextValue = {
   setImageArtist: () => {},
   setImagePrompt: () => {},
   setImageID: () => {},
+  downloadImage: async () => {},
 };
 
 interface MyContextProviderProps {
@@ -158,7 +160,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     };
   }, [imageID]);
 
-  const downloadImage = (
+  const downloadImage = async (
     imageUrl: string | undefined,
     fileName: string,
     folderName?: string
@@ -169,10 +171,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
         return response.blob();
       })
       .then((blob) => {
-        // let promptWithoutSpaces = imagePrompt.replace(/\s+/g, '').trim();
-        // let shortenedPrompt = promptWithoutSpaces.slice(0, 20);
-        // FileSaver.saveAs(blob, `${shortenedPrompt}-Image_${idx}`);
-        FileSaver.saveAs(blob, `${folderName}/${fileName}`);
+        FileSaver.saveAs(blob, `WaterlilyAI_${folderName}_${fileName}`);
       })
       .catch((error) => {
         console.error(error);
@@ -189,6 +188,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     setImagePrompt,
     setImageArtist,
     setImageID,
+    downloadImage,
   };
 
   return (
