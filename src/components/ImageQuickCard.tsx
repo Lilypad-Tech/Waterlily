@@ -1,5 +1,6 @@
 import { FC, ReactElement, useContext } from 'react';
 import { Box, Button, Card, CardMedia, Link } from '@mui/material';
+import { SxProps } from '@mui/system'
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import { ImageContext } from '@/context';
 
@@ -23,12 +24,14 @@ interface ImageCardProps {
   image: { link: string; alt: string };
   ipfs?: { link: string; alt: string };
   idx: number | string;
+  sx?: SxProps;
 }
 
 export const ImageQuickCard: FC<ImageCardProps> = ({
   image,
   ipfs,
   idx,
+  sx = {},
 }): ReactElement => {
   const { imageArtist, imagePrompt, downloadImage } = useContext(ImageContext);
   let noSpacePrompt = imagePrompt.replace(/\s+/g, '').trim();
@@ -60,7 +63,7 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
         <CloudDownloadIcon />
       </Box>
       <Box sx={boxStyle}>
-        <Card sx={{ maxWidth: 200, border: '1px solid white' }}>
+        <Card sx={ sx }>
           <Link
             href={image?.link || 'https://twitter.com/DeveloperAlly'}
             target="_blank"

@@ -78,7 +78,7 @@ const HomePage = () => {
         <SectionLayout>
           <ImageHeader />
           <ImageListLayout>
-            {quickImages.map((quickImageURL, idx) => {
+            {quickImages.filter(i => i.indexOf('combined') > 0 ? false : true).map((quickImageURL, idx) => {
               return (
                 <ImageQuickCard
                   key={idx}
@@ -86,6 +86,28 @@ const HomePage = () => {
                   image={{
                     link: quickImageURL,
                     alt: 'Not found',
+                  }}
+                  sx={{
+                    maxWidth: 250,
+                    border: '1px solid white',
+                  }}
+                />
+              );
+            })}
+          </ImageListLayout>
+          <ImageListLayout>
+            {quickImages.filter(i => i.indexOf('combined') > 0 ? true : false).map((quickImageURL, idx) => {
+              return (
+                <ImageQuickCard
+                  key={idx}
+                  idx={idx}
+                  image={{
+                    link: quickImageURL,
+                    alt: 'Not found',
+                  }}
+                  sx={{
+                    maxWHeight: 250,
+                    border: '1px solid white',
                   }}
                 />
               );

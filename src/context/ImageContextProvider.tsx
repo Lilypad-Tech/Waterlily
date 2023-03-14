@@ -56,6 +56,7 @@ export const IMAGE_HOST = `https://ai-art-files.cluster.world`;
 export const IMAGE_COUNT = 4;
 
 export const getQuickImageURL = (jobID: number, imageIndex: number) => {
+  if(imageIndex < 0) return `${IMAGE_HOST}/job/${jobID}/combined.jpg`;
   return `${IMAGE_HOST}/job/${jobID}/image_${imageIndex}.png`;
 };
 
@@ -126,6 +127,8 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
         urls.push(imageUrl);
       }
     }
+
+    urls.push(getQuickImageURL(imageID, -1))
 
     const doAsync = async () => {
       while (!loaded) {
