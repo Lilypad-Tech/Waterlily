@@ -22,14 +22,19 @@ import {
 } from '@/components';
 import { artists } from '@/definitions/artists';
 import {
+  ContractContext,
   WalletContext,
   defaultWalletState,
   StatusContext,
   defaultStatusState,
   ImageContext,
 } from '@/context';
+import {
+  IMAGE_NUMBER_ARRAY,
+  getQuickImageURL,
+} from '../context/ImageContextProvider'
 import { ImageQuickCard } from '@/components';
-import { CircularProgress, Box, Typography } from '@mui/material';
+import { CircularProgress, Box, Typography, Card, CardMedia } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Link from '@mui/material/Link';
@@ -44,8 +49,14 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
 
 const ipfsRoot = 'https://ipfs.io/ipfs/';
 
+
+
 const HomePage = () => {
   const [isCallout, setCallout] = useState(true);
+  const {
+    customerImages,
+  } = useContext(ContractContext)
+
   const { walletState = defaultWalletState.walletState } =
     useContext(WalletContext);
   const {
@@ -224,11 +235,68 @@ const HomePage = () => {
         </ArtistListLayout>
       </ArtistLayout>
       <SectionLayout>
-        <Title
-          text="Your Generated Images"
-          sx={{ fontSize: '3rem', paddingTop: '2rem' }}
-        />
-        <Description text="Coming soon..." />
+        <>
+          <Title
+            text="Your Generated Images"
+            sx={{ fontSize: '3rem', paddingTop: '2rem' }}
+          />
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+          {
+            customerImages.map((image) => {
+              const artist = artists.find(a => a.artistId === image.artist)
+              return (
+                <Box
+                  key={ image.id.toString() }
+                  sx={{
+                    mt: 2,
+                    pt: 2,
+                    borderTop: 'solid 1px #fff',
+                    width: '800px',
+                    maxWidth: '800px',
+                  }}
+                >
+                  <Typography gutterBottom variant="h6">{image.prompt}</Typography>
+                  <Typography gutterBottom>{artist?.name}</Typography>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      mt: 2,
+                    }}
+                  >
+                    {
+                      IMAGE_NUMBER_ARRAY.map(imageNumber => {
+                        return (
+                          <Card sx={{
+                            maxWidth: 250,
+                            border: '1px solid white',
+                            ml: 1,
+                            mr: 1,
+                          }}>
+                            <CardMedia
+                              component="img"
+                              image={ getQuickImageURL(image.id.toNumber(), imageNumber) }
+                            />
+                          </Card>
+                        )
+                      }) 
+                    }
+                  </Box>
+                </Box>
+              )
+              
+            })
+          }
+          </Box>
+        </>
       </SectionLayout>
       {snackbar.open && (
         <Snackbar

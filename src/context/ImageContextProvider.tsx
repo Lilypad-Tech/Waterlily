@@ -54,6 +54,7 @@ interface ImageContextValue {
 
 export const IMAGE_HOST = `https://ai-art-files.cluster.world`;
 export const IMAGE_COUNT = 4;
+export const IMAGE_NUMBER_ARRAY: number[] = [0,1,2,3]
 
 export const getQuickImageURL = (jobID: number, imageIndex: number) => {
   if(imageIndex < 0) return `${IMAGE_HOST}/job/${jobID}/combined.jpg`;

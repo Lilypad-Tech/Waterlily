@@ -59,6 +59,7 @@ export interface ContractState {
 interface ContractContextValue {
   contractState?: ContractState;
   setContractState: Dispatch<SetStateAction<ContractState>>;
+  customerImages: any[];
   runStableDiffusionJob: (prompt: string, artistId: string) => Promise<void>;
 }
 
@@ -75,6 +76,7 @@ export const defaultContractState = {
       pr
     ),
   },
+  customerImages: [],
   setContractState: () => {},
   runStableDiffusionJob: async () => {},
 };
@@ -92,6 +94,7 @@ export const ContractContextProvider = ({
   const [contractState, setContractState] = useState<ContractState>(
     defaultContractState.contractState
   );
+  const [customerImages, setCustomerImages] = useState<any[]>([]);
   const {
     statusState = defaultStatusState.statusState,
     setStatusState,
@@ -107,13 +110,13 @@ export const ContractContextProvider = ({
 
     const doAsync = async () => {
       const address = walletState.accounts[0]
-      console.log(`loading for ${address}`)
-      const [connectedContract, eventsContract] = getWriteContractConnection();
-      const imageIDs = await eventsContract.fetchJobsByAddress(address)
-
-      console.log('--------------------------------------------')
-      console.log('--------------------------------------------')
-      console.dir(imageIDs)
+      const [connectedContract] = getWriteContractConnection();
+      const imageIDs = await connectedContract.getCustomerImages(address)
+      const images = await bluebird.map(imageIDs, async (id: any) => {
+        const image = await connectedContract.getImage(id)
+        return image
+      })
+      setCustomerImages(images)
     }
 
     doAsync()
@@ -357,6 +360,7 @@ export const ContractContextProvider = ({
   const contractContextValue: ContractContextValue = {
     contractState,
     setContractState,
+    customerImages,
     runStableDiffusionJob,
   };
 
