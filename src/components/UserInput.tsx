@@ -19,6 +19,8 @@ import {
   ImageContext,
 } from '@/context';
 
+const MIN_BALANCE = 0.15;
+
 const containerStyle = {
   display: 'flex',
   flexDirection: 'column',
@@ -46,9 +48,9 @@ const textStyle = {
 type UserInputProps = {
   initialPrompt?: string;
   initialArtist?: {
-    name: string,
-    key: string,
-    style: string,
+    name: string;
+    key: string;
+    style: string;
   };
 };
 
@@ -60,10 +62,15 @@ export const UserInput: FC<UserInputProps> = ({
   const [artist, setArtist] = useState(initialArtist);
   // const [artist, setArtist, prompt, setPrompt] = useContext(ImageContext);
   const { runStableDiffusionJob } = useContext(ContractContext);
-  const { statusState = defaultStatusState.statusState } =
-    useContext(StatusContext);
-  const { verifyChainId, changeWalletChain } = useContext(WalletContext);
-  const { setImagePrompt, setImageArtist } = useContext(ImageContext);
+  const {
+    statusState = defaultStatusState.statusState,
+    setStatusState,
+    setSnackbar,
+  } = useContext(StatusContext);
+  const { verifyChainId, changeWalletChain, checkBalance } =
+    useContext(WalletContext);
+  const { setImagePrompt, setImageArtist, resetAllImageContext } =
+    useContext(ImageContext);
   const artistObj = artists.reduce<Record<string, ArtistType>>(
     (acc, artist) => {
       acc[artist.name] = artist;
@@ -83,6 +90,17 @@ export const UserInput: FC<UserInputProps> = ({
   const generateImages = async () => {
     console.log('run lilypad function', artist);
     if (verifyChainId(networks.filecoinHyperspace.chainId)) {
+      let balance = await checkBalance();
+      console.log('balance', balance);
+      if (!balance || balance < MIN_BALANCE) {
+        setSnackbar({
+          open: true,
+          type: 'warning',
+          message: "Sorry, you don't have enough FIL for this transaction :(",
+        });
+        return;
+      }
+      resetAllImageContext();
       setImageArtist(artist);
       setImagePrompt(prompt);
       await runStableDiffusionJob(prompt, artist.key); //artist should equal the artistId
@@ -102,10 +120,8 @@ export const UserInput: FC<UserInputProps> = ({
   };
 
   useEffect(() => {
-    setArtist(initialArtist)
-  }, [
-    initialArtist,
-  ])
+    setArtist(initialArtist);
+  }, [initialArtist]);
 
   return (
     <Box sx={containerStyle}>

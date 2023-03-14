@@ -1,4 +1,4 @@
-import { FC, ReactElement, useState } from 'react';
+import { FC, ReactElement, useState, useContext } from 'react';
 import { Watermark } from '@hirohe/react-watermark';
 import {
   Box,
@@ -11,6 +11,7 @@ import {
   Link,
   Button,
 } from '@mui/material';
+import { WalletContext } from '@/context';
 
 const boxStyle = {
   display: 'flex',
@@ -38,6 +39,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
   onClick,
 }): ReactElement => {
   const [expanded, setExpanded] = useState(false);
+  const { walletState } = useContext(WalletContext);
 
   return (
     <Box sx={boxStyle}>
@@ -49,20 +51,18 @@ export const ArtistCard: FC<ArtistCardProps> = ({
             height: '120px',
           }}
         />
-        <Box sx={{
-          height: '240px',
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          //backgroundColor: '#fff',
-          mb: 2,
-        }}>
-          <Link
-            href={portfolio}
-            target="_blank"
-            rel="noreferrer"
-          >
+        <Box
+          sx={{
+            height: '240px',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            //backgroundColor: '#fff',
+            mb: 2,
+          }}
+        >
+          <Link href={portfolio} target="_blank" rel="noreferrer">
             <Watermark text={name || 'ArtistName'}>
               <CardMedia
                 component="img"
@@ -71,32 +71,34 @@ export const ArtistCard: FC<ArtistCardProps> = ({
                 alt={image?.alt || 'Monet Water Lilies'}
                 sx={{
                   pointerEvents: 'none',
-                  border: '1px solid #fff'
+                  border: '1px solid #fff',
                 }}
               />
             </Watermark>
           </Link>
         </Box>
-        <CardContent sx={{
-          height: '240px',
-        }}>
+        <CardContent
+          sx={{
+            height: '240px',
+          }}
+        >
           <Typography variant="body2" color="text.secondary">
             {description || 'Artist Description'}
           </Typography>
         </CardContent>
-        <CardActions sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-        }}>
-          <Button
-            variant="outlined"
-            disabled={disabled}
-            onClick={onClick}
-          >
-            Use This Style
-          </Button>
+        <CardActions
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+          }}
+        >
+          {walletState?.isConnected && (
+            <Button variant="outlined" disabled={disabled} onClick={onClick}>
+              Use This Style
+            </Button>
+          )}
         </CardActions>
       </Card>
     </Box>

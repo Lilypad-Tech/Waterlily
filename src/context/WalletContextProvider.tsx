@@ -5,7 +5,16 @@ import {
   SetStateAction,
   useState,
   useEffect,
+  useContext,
 } from 'react';
+import { ethers } from 'ethers';
+import { ImageContext } from '.';
+
+import { currentNetwork, networks } from '../definitions/network';
+const rpc =
+  currentNetwork === 'testnet'
+    ? networks.filecoinHyperspace.rpc[0]
+    : networks.filecoinMainnet.rpc[0];
 
 const HyperspaceChainId = '0xc45';
 const HyperspaceNetworkData = {
@@ -60,6 +69,7 @@ interface WalletContextValue {
   changeWalletChain: (reqChainId: string) => Promise<void>;
   addNetwork: (networkData: networkType) => Promise<void>;
   disconnectWallet: () => void;
+  checkBalance: () => Promise<number | null> | null;
 }
 
 export const defaultWalletState = {
@@ -87,6 +97,9 @@ export const defaultWalletState = {
   changeWalletChain: async (reqChainId: string) => {},
   addNetwork: async () => {},
   disconnectWallet: () => {},
+  checkBalance: () => {
+    return null;
+  },
 };
 
 interface MyContextProviderProps {
@@ -100,6 +113,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
   const [walletState, setWalletState] = useState<WalletState>(
     defaultWalletState.walletState
   );
+  const { resetAllImageContext } = useContext(ImageContext);
 
   useEffect(() => {
     if (window.ethereum) {
@@ -179,6 +193,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
   };
 
   const disconnectWallet = () => {
+    resetAllImageContext();
     if (window.ethereum) {
       setWalletState({
         ...walletState,
@@ -256,6 +271,22 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
     }
   };
 
+  const checkBalance = async () => {
+    if (!window.ethereum || !walletState.accounts[0]) {
+      return null;
+    }
+    const provider = new ethers.providers.JsonRpcProvider(rpc);
+    try {
+      const balance = await provider.getBalance(walletState.accounts[0]);
+      const formattedBalance = ethers.utils.formatEther(balance);
+      const balanceNumber = parseFloat(formattedBalance);
+      return balanceNumber;
+    } catch (error) {
+      console.log('error getting balance', error);
+      return null;
+    }
+  };
+
   const verifyChainId = (reqChainId: string) => {
     console.log(`Verifying wallet chain matches ${reqChainId}...`);
     if (walletState.chainId !== reqChainId) {
@@ -281,11 +312,12 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
           console.log('Error changing chains', err);
           if (err.status === 4902) {
             console.log('Adding the filecoin chain to wallet');
+            addNetwork(HyperspaceNetworkData);
             // Make a request to add the chain to wallet here
             console.log(
               "Chain hasn't been added to the wallet yet... trying to add"
             );
-            addNetwork(HyperspaceNetworkData);
+            // addNetwork(HyperspaceNetworkData);
           }
         });
     } else {
@@ -337,6 +369,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
     changeWalletChain,
     addNetwork,
     disconnectWallet,
+    checkBalance,
   };
 
   return (

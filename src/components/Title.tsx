@@ -1,6 +1,16 @@
 import { FC, ReactElement } from 'react';
-import { Box } from '@mui/material';
+import { Box, SxProps } from '@mui/material';
 import { appTitle } from '@/definitions/strings';
+import { keyframes } from '@emotion/react';
+
+const animatedText = keyframes`
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+`;
 
 const titleStyle = {
   background:
@@ -13,13 +23,19 @@ const titleStyle = {
   MozBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   MozTextFillColor: 'transparent',
+  backgroundRepeat: 'repeat',
+  animation: `${animatedText} 2s linear infinite`,
 };
 
 type TitleProps = {
   text?: string;
-  sx?: object;
+  sx?: SxProps;
 };
 
 export const Title: FC<TitleProps> = ({ text, sx }): ReactElement => {
-  return <Box sx={{ ...titleStyle, ...sx }}>{text || appTitle}</Box>;
+  return (
+    <Box component="div" sx={{ ...titleStyle, ...sx }}>
+      {text || appTitle}
+    </Box>
+  );
 };

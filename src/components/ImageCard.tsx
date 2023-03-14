@@ -32,19 +32,14 @@ export const ImageCard: FC<ImageCardProps> = ({
   image,
   ipfs,
 }): ReactElement => {
-
-  if(!ipfs?.link) {
-    return (
-      <div>
-        no link given
-      </div>
-    )
+  if (!ipfs?.link) {
+    return <div>no link given</div>;
   }
   return (
     <Box sx={{ position: 'relative' }}>
-      <Box sx={downloadStyle}>
+      {/* <Box sx={downloadStyle}>
         <CloudDownloadIcon />
-      </Box>
+      </Box> */}
       <Box sx={boxStyle}>
         <Card sx={{ maxWidth: 200, border: '1px solid white' }}>
           <Link

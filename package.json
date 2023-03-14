@@ -25,6 +25,7 @@
     "eslint": "8.35.0",
     "eslint-config-next": "13.2.3",
     "ethers": "^5.7.2",
+    "file-saver": "^2.0.5",
     "multiformats": "^11.0.2",
     "next": "13.2.3",
     "nft.storage": "^7.0.3",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "@types/file-saver": "^2.0.5",
     "hardhat": "^2.13.0"
   }
 }

@@ -17,6 +17,7 @@ import {
   ArtistCard,
   WalletButton,
   ImageHeader,
+  CalloutMessage,
 } from '@/components';
 import { artists } from '@/definitions/artists';
 import {
@@ -26,14 +27,16 @@ import {
   defaultStatusState,
   ImageContext,
 } from '@/context';
-import { CircularProgress, Box } from '@mui/material';
-import { ImageCard } from '@/components/ImageCard';
+import { ImageQuickCard } from '@/components';
+import { CircularProgress, Box, Typography } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import Link from '@mui/material/Link';
+import TwitterIcon from '@mui/icons-material/Twitter';
 
 const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
-  ref,
+  ref
 ) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -41,16 +44,23 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
 const ipfsRoot = 'https://ipfs.io/ipfs/';
 
 const HomePage = () => {
-  // const [isConnected, setConnected] = useState(false);
+  const [isCallout, setCallout] = useState(true);
   const { walletState = defaultWalletState.walletState } =
     useContext(WalletContext);
-  const { snackbar, closeSnackbar, statusState = defaultStatusState.statusState, resetStatusState } =
-    useContext(StatusContext);
-  const { imageState, quickImages, imagePrompt, imageArtist, setImageArtist } = useContext(ImageContext);
-
-  useEffect(() => {
-    console.log('status home', statusState);
-  }, [statusState]);
+  const {
+    snackbar,
+    closeSnackbar,
+    statusState = defaultStatusState.statusState,
+    resetStatusState,
+  } = useContext(StatusContext);
+  const {
+    imageState,
+    quickImages,
+    imagePrompt,
+    imageArtist,
+    setImageArtist,
+    twitterLink,
+  } = useContext(ImageContext);
 
   return (
     <>
@@ -112,40 +122,82 @@ const HomePage = () => {
           <ImageListLayout>
             {quickImages.map((quickImageURL, idx) => {
               return (
-                <ImageCard
+                <ImageQuickCard
                   key={idx}
-                  ipfs={{
+                  idx={idx}
+                  image={{
                     link: quickImageURL,
-                    alt: 'Not seen',
+                    alt: 'Not found',
                   }}
                 />
               );
             })}
           </ImageListLayout>
+          {Boolean(twitterLink) && (
+            <Link
+              href={twitterLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ textDecoration: 'none' }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <TwitterIcon />
+                <Typography color="white" sx={{ paddingLeft: '10px' }}>
+                  Share on Twitter
+                </Typography>
+              </Box>
+            </Link>
+          )}
         </SectionLayout>
       )}
-      {
-        statusState.isError && (
-          <SectionLayout>
-            <Box sx={{
+      {statusState.isError && (
+        <SectionLayout>
+          <Box
+            sx={{
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-            }}>
-              <Alert
-                onClose={resetStatusState}
-                severity="error"
-                sx={{ width: '100%', maxWidth: '400px' }}
-              >
-                <div>
-                  <div>{statusState.message?.title}</div>
-                </div>
-              </Alert>
-            </Box>
-          </SectionLayout>
-        )
-      }
+            }}
+          >
+            <div style={{ paddingTop: '1rem' }}>
+              <Typography variant="h5">{statusState.isError}</Typography>
+            </div>
+          </Box>
+        </SectionLayout>
+      )}
+      {/* this shows up with really in your face styling. just using snackbar instead...*/}
+      {/* {statusState.isError && (
+        <SectionLayout>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Alert
+              onClose={resetStatusState}
+              severity="error"
+              sx={{ width: '100%' }}
+            >
+              <div style={{ paddingTop: '1rem' }}>
+                <Typography variant="h5">
+                  {statusState.message?.title}
+                </Typography>
+              </div>
+            </Alert>
+          </Box>
+        </SectionLayout>
+      )} */}
       <div id="justAboveTextField"></div>
       <SectionLayout>
         {!walletState?.isConnected ? (
@@ -176,9 +228,19 @@ const HomePage = () => {
           text="Featured Artists"
           sx={{ fontSize: '3rem', paddingTop: '2rem' }}
         />
+        {isCallout && (
+          <CalloutMessage
+            text="Become a Featured Artist! "
+            onClick={() => {
+              window.open('https://bit.ly/AI-Art-Attribution-Form', '_blank');
+            }}
+            setCallout={setCallout}
+          />
+        )}
         <ArtistListLayout>
           {artists.map((artist, e) => {
-            const { artistId, name, style, description, portfolio, image } = artist;
+            const { artistId, name, style, description, portfolio, image } =
+              artist;
             return (
               <ArtistCard
                 key={e}
@@ -187,36 +249,54 @@ const HomePage = () => {
                 description={description}
                 portfolio={portfolio}
                 image={image}
-                disabled={ statusState.isLoading ? true : false }
+                disabled={statusState.isLoading ? true : false}
                 onClick={() => {
                   setImageArtist({
                     name,
                     key: artistId,
                     style,
-                  })
-                  document.getElementById("justAboveTextField")?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" })
+                  });
+                  document
+                    .getElementById('justAboveTextField')
+                    ?.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'end',
+                      inline: 'nearest',
+                    });
                 }}
               />
             );
           })}
         </ArtistListLayout>
       </ArtistLayout>
-      {
-        snackbar.open && (
-          <Snackbar open={snackbar.open} autoHideDuration={10000} onClose={closeSnackbar}>
-            <Alert onClose={closeSnackbar} severity={snackbar.type as any} sx={{ width: '100%' }}>
-              <Box
-                sx={{
-                  color: '#fff'
-                }}
-              >
-                {snackbar.message}
-              </Box>
-              
-            </Alert>
-          </Snackbar>
-        )
-      }
+      <SectionLayout>
+        <Title
+          text="Your Generated Images"
+          sx={{ fontSize: '3rem', paddingTop: '2rem' }}
+        />
+        <Description text="Coming soon..." />
+      </SectionLayout>
+      {snackbar.open && (
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={10000}
+          onClose={closeSnackbar}
+        >
+          <Alert
+            onClose={closeSnackbar}
+            severity={snackbar.type as any}
+            sx={{ width: '100%' }}
+          >
+            <Box
+              sx={{
+                color: '#fff',
+              }}
+            >
+              {snackbar.message}
+            </Box>
+          </Alert>
+        </Snackbar>
+      )}
     </>
   );
 };
