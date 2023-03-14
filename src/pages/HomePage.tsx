@@ -186,7 +186,7 @@ const HomePage = () => {
           sx={{ fontSize: '3rem', paddingTop: '2rem' }}
         />
         <CalloutMessage
-          text="Become a Featured Artist! [click me]"
+          text="Become a Featured Artist! "
           onClick={() => {
             window.open('https://bit.ly/AI-Art-Attribution-Form', '_blank');
           }}

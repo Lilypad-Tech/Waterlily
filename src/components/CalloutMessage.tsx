@@ -3,6 +3,8 @@ import { Box, Typography } from '@mui/material';
 import TipsAndUpdatesOutlinedIcon from '@mui/icons-material/TipsAndUpdatesOutlined';
 import BrushOutlinedIcon from '@mui/icons-material/BrushOutlined';
 import PaletteOutlinedIcon from '@mui/icons-material/PaletteOutlined';
+import NearMeOutlinedIcon from '@mui/icons-material/NearMeOutlined';
+import MouseOutlinedIcon from '@mui/icons-material/MouseOutlined';
 
 type CalloutMessageProps = {
   children?: ReactNode;
@@ -27,6 +29,7 @@ const calloutStyle = {
 };
 
 const contentStyle = {
+  color: 'white',
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
@@ -45,6 +48,7 @@ const contentStyle = {
   MozBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   MozTextFillColor: 'transparent',
+  cursor: 'pointer',
 };
 
 export const CalloutMessage: FC<CalloutMessageProps> = ({
@@ -54,7 +58,7 @@ export const CalloutMessage: FC<CalloutMessageProps> = ({
 }) => {
   return (
     <Box onClick={onClick} sx={calloutStyle}>
-      <Box sx={contentStyle}>
+      <Box component="button" sx={contentStyle}>
         <PaletteOutlinedIcon sx={{ marginRight: '1rem' }} />
         <Typography>{text}</Typography>
       </Box>
