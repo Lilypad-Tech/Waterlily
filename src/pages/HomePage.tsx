@@ -18,6 +18,7 @@ import {
   WalletButton,
   ImageHeader,
   CalloutMessage,
+  ParrotLoader,
 } from '@/components';
 import { artists } from '@/definitions/artists';
 import {
@@ -73,49 +74,6 @@ const HomePage = () => {
         <Subtitle />
         <Description />
       </TitleLayout>
-      {/* {imageState.generatedImages && (
-        <SectionLayout>
-          <ImageHeader />
-          <ImageListLayout>
-            <ImageCard
-              ipfs={{
-                link: `${ipfsRoot}${
-                  // 'QmbQ3FwfwTtLmN9oL1so6QKHDTK3CagJx8djsvcz7Ghnmp' ||
-                  imageState.generatedImages.ipfsResult
-                }/outputs/image_0.png`,
-                alt: 'Not seen',
-              }}
-            />
-            <ImageCard
-              ipfs={{
-                link: `${ipfsRoot}${
-                  // 'QmbQ3FwfwTtLmN9oL1so6QKHDTK3CagJx8djsvcz7Ghnmp' ||
-                  imageState.generatedImages.ipfsResult
-                }/outputs/image_1.png`,
-                alt: 'Not seen',
-              }}
-            />
-            <ImageCard
-              ipfs={{
-                link: `${ipfsRoot}${
-                  // 'QmbQ3FwfwTtLmN9oL1so6QKHDTK3CagJx8djsvcz7Ghnmp' ||
-                  imageState.generatedImages.ipfsResult
-                }/outputs/image_2.png`,
-                alt: 'Not seen',
-              }}
-            />
-            <ImageCard
-              ipfs={{
-                link: `${ipfsRoot}${
-                  // 'QmbQ3FwfwTtLmN9oL1so6QKHDTK3CagJx8djsvcz7Ghnmp' ||
-                  imageState.generatedImages.ipfsResult
-                }/outputs/image_3.png`,
-                alt: 'Not seen',
-              }}
-            />
-          </ImageListLayout>
-        </SectionLayout>
-      )} */}
       {quickImages.length > 0 && (
         <SectionLayout>
           <ImageHeader />
@@ -173,31 +131,6 @@ const HomePage = () => {
           </Box>
         </SectionLayout>
       )}
-      {/* this shows up with really in your face styling. just using snackbar instead...*/}
-      {/* {statusState.isError && (
-        <SectionLayout>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Alert
-              onClose={resetStatusState}
-              severity="error"
-              sx={{ width: '100%' }}
-            >
-              <div style={{ paddingTop: '1rem' }}>
-                <Typography variant="h5">
-                  {statusState.message?.title}
-                </Typography>
-              </div>
-            </Alert>
-          </Box>
-        </SectionLayout>
-      )} */}
       <div id="justAboveTextField"></div>
       <SectionLayout>
         {!walletState?.isConnected ? (
@@ -211,8 +144,7 @@ const HomePage = () => {
           </UserInputLayout>
         ) : (
           <>
-            {/* TO DO BREAK OUT INTO PROPER COMPONENT */}
-            <CircularProgress size={100} />
+            <ParrotLoader />
             <div>{statusState.isLoading}</div>
             {statusState.isMessage && (
               <div>

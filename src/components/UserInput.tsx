@@ -89,6 +89,10 @@ export const UserInput: FC<UserInputProps> = ({
 
   const generateImages = async () => {
     console.log('run lilypad function', artist);
+    setStatusState({
+      ...defaultStatusState.statusState,
+      isLoading: 'Submitting Waterlily job to the FVM network ...',
+    });
     if (verifyChainId(networks.filecoinHyperspace.chainId)) {
       let balance = await checkBalance();
       console.log('balance', balance);
@@ -105,6 +109,10 @@ export const UserInput: FC<UserInputProps> = ({
       setImagePrompt(prompt);
       await runStableDiffusionJob(prompt, artist.key); //artist should equal the artistId
     } else {
+      setStatusState({
+        ...defaultStatusState.statusState,
+        isLoading: '',
+      });
       changeWalletChain(networks.filecoinHyperspace.chainId);
     }
   };

@@ -20,3 +20,4 @@ export * from './ImageCard';
 export * from './ImageQuickCard';
 export * from './ImageHeader';
 export * from './CalloutMessage';
+export * from './ParrotLoader';

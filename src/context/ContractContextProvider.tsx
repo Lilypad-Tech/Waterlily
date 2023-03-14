@@ -145,64 +145,6 @@ export const ContractContextProvider = ({
     return [waterlilyContract, lilypadEventsContract];
   };
 
-  // TODO: plugin the events once we can get them back from the network
-  // useEffect(() => {
-  //   setContractEventListeners();
-  // }, []);
-  // const setContractEventListeners = () => {
-  //   console.log('Setting up contract event listeners...');
-
-  //   contractState.connectedWaterlilyContract.on(
-  //     'ImageGenerated',
-  //     (image: any) => {
-  //       const generatedImage = {
-  //         id: image[0].toString(), // convert BigNumber to string
-  //         customer: image[1],
-  //         artist: image[2],
-  //         prompt: image[3],
-  //         ipfsResult: image[4],
-  //         errorMessage: image[5],
-  //         isComplete: image[6],
-  //         isCancelled: image[7],
-  //       };
-  //       // if (generatedImage.id != imageID.toString()) return;
-  //       console.log('event returned', image);
-  //       setImageState({ generatedImages: generatedImage });
-  //       setStatusState((prevState) => ({
-  //         ...prevState,
-  //         isLoading: '',
-  //         isMessage: true,
-  //         message: {
-  //           title: 'Successfully ran WaterLily Stable Diffusion Job',
-  //           description: 'Images: ...',
-  //         },
-  //       }));
-  //       setSnackbar({
-  //         type: 'success',
-  //         open: true,
-  //         message: 'Successfully ran WaterLily Stable Diffusion Job',
-  //       });
-  //     }
-  //   );
-
-  //   contractState.connectedWaterlilyContract.on(
-  //     'ImageCancelled',
-  //     (image: StableDiffusionImage) => {
-  //       console.log('ImageCancelled event received:', image);
-  //       // return image;
-  //       setStatusState((prevState) => ({
-  //         ...prevState,
-  //         isLoading: '',
-  //         isError: 'Error Running Bacalhau Job',
-  //         isMessage: true,
-  //         message: {
-  //           title: 'Error Running Bacalhau Job',
-  //           description: 'Check logs for more info',
-  //         },
-  //       }));
-  //     }
-  //   );
-  // };
 
   const runStableDiffusionJob = async (prompt: string, artistid: string) => {
     if (!window.ethereum) {
@@ -219,6 +161,11 @@ export const ContractContextProvider = ({
       return;
     }
 
+    setStatusState({
+      ...defaultStatusState.statusState,
+      isLoading: 'Submitting Waterlily job to the FVM network ...',
+    });
+
     const [connectedContract, eventsContract] = getWriteContractConnection();
     if (!connectedContract || !eventsContract) {
       setStatusState({
@@ -227,12 +174,6 @@ export const ContractContextProvider = ({
       });
       return;
     }
-
-    //not updating - might need to use prevState style
-    setStatusState({
-      ...defaultStatusState.statusState,
-      isLoading: 'Submitting Waterlily job to the FVM network ...',
-    });
 
     const imageCost = ethers.utils.parseEther(IMAGE_COST);
 
