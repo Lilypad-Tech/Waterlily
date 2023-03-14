@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import bluebird from 'bluebird';
 import { ethers } from 'ethers';
+import * as FileSaver from 'file-saver';
 import { StatusContext } from '.';
 
 export interface StableDiffusionImage {
@@ -156,6 +157,27 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
       active = false;
     };
   }, [imageID]);
+
+  const downloadImage = (
+    imageUrl: string | undefined,
+    fileName: string,
+    folderName?: string
+  ) => {
+    if (!imageUrl) return;
+    fetch(imageUrl)
+      .then((response) => {
+        return response.blob();
+      })
+      .then((blob) => {
+        // let promptWithoutSpaces = imagePrompt.replace(/\s+/g, '').trim();
+        // let shortenedPrompt = promptWithoutSpaces.slice(0, 20);
+        // FileSaver.saveAs(blob, `${shortenedPrompt}-Image_${idx}`);
+        FileSaver.saveAs(blob, `${folderName}/${fileName}`);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   const imageContextValue: ImageContextValue = {
     imageState,
