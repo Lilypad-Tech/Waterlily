@@ -97,8 +97,13 @@ export const ContractContextProvider = ({
     setStatusState,
     setSnackbar,
   } = useContext(StatusContext);
-  const { imageID, setImageID, setImageState, quickImages, setQuickImages } =
-    useContext(ImageContext);
+  const {
+    imageID,
+    setImageID,
+    setImageState,
+    quickImages,
+    resetAllImageContext,
+  } = useContext(ImageContext);
   const [txHash, setTxHash] = useState('');
 
   useEffect(() => {
@@ -205,8 +210,7 @@ export const ContractContextProvider = ({
   };
 
   const runStableDiffusionJob = async (prompt: string, artistid: string) => {
-    setImageState({ generatedImages: null });
-    setQuickImages([]);
+    resetAllImageContext();
 
     if (!window.ethereum) {
       setStatusState({

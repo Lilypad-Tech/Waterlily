@@ -49,6 +49,7 @@ interface ImageContextValue {
   quickImages: string[];
   setQuickImages: Dispatch<SetStateAction<string[]>>;
   downloadImage: (imageUrl: string, folderName: string, fileName: string) => {};
+  resetAllImageContext: () => void;
 }
 
 export const IMAGE_HOST = `https://ai-art-files.cluster.world`;
@@ -73,6 +74,7 @@ export const defaultImageState: ImageContextValue = {
   setImageID: () => {},
   setQuickImages: () => {},
   downloadImage: async () => {},
+  resetAllImageContext: () => {},
 };
 
 interface MyContextProviderProps {
@@ -143,7 +145,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
         if (filteredURLs.length >= IMAGE_COUNT) {
           setQuickImages(filteredURLs);
           loaded = true;
-          createTwitterLink();
+          createTwitterLink(filteredURLs[2]);
           setStatusState({
             isLoading: '',
             isError: '',
@@ -188,7 +190,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
   //   });
   // };
 
-  const createTwitterLink = async () => {
+  const createTwitterLink = async (url: string) => {
     const tweetText = `Check out the ethical AI art I created on waterlily.ai! \n\n✍️ ${imagePrompt} \n\n🎨 ${imageArtist.name} \n\n`;
     // const response = await fetch(quickImages[2]);
     // const imageBlob = await response.blob();
@@ -199,7 +201,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     // )}&url=${encodeURIComponent(tweetImageUrl)}`;
     const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
       tweetText
-    )}&url=${quickImages[1]}`;
+    )}&url=${encodeURIComponent(url)}`;
     setTwitterLink(tweetUrl);
   };
 
@@ -221,8 +223,14 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
       });
   };
 
-  const resetAll = () => {
+  const resetAllImageContext = () => {
     //reset all vars here needed
+    setImageState(defaultImageState.imageState);
+    setImageID(0);
+    setQuickImages([]);
+    setImagePrompt('');
+    setImageArtist({ name: '', key: '', style: '' });
+    setTwitterLink('');
   };
 
   const imageContextValue: ImageContextValue = {
@@ -238,6 +246,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     setImageID,
     downloadImage,
     twitterLink,
+    resetAllImageContext,
   };
 
   return (

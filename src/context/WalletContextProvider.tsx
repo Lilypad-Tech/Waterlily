@@ -5,8 +5,10 @@ import {
   SetStateAction,
   useState,
   useEffect,
+  useContext,
 } from 'react';
 import { ethers } from 'ethers';
+import { ImageContext } from '.';
 
 import { currentNetwork, networks } from '../definitions/network';
 const rpc =
@@ -111,6 +113,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
   const [walletState, setWalletState] = useState<WalletState>(
     defaultWalletState.walletState
   );
+  const { resetAllImageContext } = useContext(ImageContext);
 
   useEffect(() => {
     if (window.ethereum) {
@@ -190,6 +193,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
   };
 
   const disconnectWallet = () => {
+    resetAllImageContext();
     if (window.ethereum) {
       setWalletState({
         ...walletState,
