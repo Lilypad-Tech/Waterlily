@@ -228,8 +228,8 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     setImageState(defaultImageState.imageState);
     setImageID(0);
     setQuickImages([]);
-    setImagePrompt('');
-    setImageArtist({ name: '', key: '', style: '' });
+    // setImagePrompt('');
+    // setImageArtist({ name: '', key: '', style: '' });
     setTwitterLink('');
   };
 
