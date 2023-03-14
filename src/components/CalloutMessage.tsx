@@ -37,7 +37,7 @@ const contentStyle = {
   padding: '1rem',
   border: '1px solid white',
   borderRadius: '10px',
-  width: '40%',
+  width: '50%',
   fontSize: '4rem',
   fontWeight: 'bold',
   background:
@@ -49,6 +49,29 @@ const contentStyle = {
   WebkitTextFillColor: 'transparent',
   MozTextFillColor: 'transparent',
   cursor: 'pointer',
+  '&:hover': {
+    background:
+      '-webkit-linear-gradient(right, #30ccff 10%, #30ccff, #0055ff 70%)',
+    backgroundSize: '100%',
+    backgroundClip: 'text',
+    WebkitBackgroundClip: 'text',
+    MozBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    MozTextFillColor: 'transparent',
+    border: '1px solid #b583ff',
+    color: '#f53ebb',
+  },
+};
+
+const iconStyle = {
+  color: '-webkit-linear-gradient(right, #30ccff 10%, #30ccff, #0055ff 70%)',
+  // backgroundSize: '100%',
+  // backgroundClip: 'text',
+  // WebkitBackgroundClip: 'text',
+  // MozBackgroundClip: 'text',
+  // WebkitTextFillColor: 'transparent',
+  // MozTextFillColor: 'transparent',
+  marginRight: '1rem',
 };
 
 export const CalloutMessage: FC<CalloutMessageProps> = ({
@@ -57,9 +80,10 @@ export const CalloutMessage: FC<CalloutMessageProps> = ({
   onClick,
 }) => {
   return (
+    //<Box sx={{ height: (theme) => theme.spacing(10) }} />
     <Box onClick={onClick} sx={calloutStyle}>
       <Box component="button" sx={contentStyle}>
-        <PaletteOutlinedIcon sx={{ marginRight: '1rem' }} />
+        <PaletteOutlinedIcon sx={iconStyle} />
         <Typography>{text}</Typography>
       </Box>
       {children}
