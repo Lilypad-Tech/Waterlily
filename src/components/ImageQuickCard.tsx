@@ -28,9 +28,9 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
 }): ReactElement => {
   return (
     <Box sx={{ position: 'relative' }}>
-      <Box sx={downloadStyle}>
+      {/* <Box sx={downloadStyle}>
         <CloudDownloadIcon />
-      </Box>
+      </Box> */}
       <Box sx={boxStyle}>
         <Card sx={{ maxWidth: 200, border: '1px solid white' }}>
           <Link

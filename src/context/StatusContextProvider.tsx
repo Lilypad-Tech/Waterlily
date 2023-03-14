@@ -58,7 +58,6 @@ export const StatusContext =
   createContext<StatusContextValue>(defaultStatusState);
 
 export const StatusContextProvider = ({ children }: MyContextProviderProps) => {
-
   const [statusState, setStatusState] = useState<StatusState>(
     defaultStatusState.statusState
   );
@@ -74,22 +73,22 @@ export const StatusContextProvider = ({ children }: MyContextProviderProps) => {
       open: false,
       type: '',
       message: '',
-    })
-  }, [])
+    });
+  }, []);
 
   const resetStatusState = useCallback(() => {
     setSnackbar({
       open: false,
       type: '',
       message: '',
-    })
+    });
     setStatusState({
       isLoading: '',
       isError: '',
       isMessage: false,
       message: null,
-    })
-  }, [])
+    });
+  }, []);
 
   const statusContextValue: StatusContextValue = {
     statusState,

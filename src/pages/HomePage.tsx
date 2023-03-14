@@ -26,14 +26,14 @@ import {
   defaultStatusState,
   ImageContext,
 } from '@/context';
-import { CircularProgress, Box } from '@mui/material';
-import { ImageCard } from '@/components/ImageCard';
+import { CircularProgress, Box, Typography } from '@mui/material';
+import { ImageQuickCard } from '@/components';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
 const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
-  ref,
+  ref
 ) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -44,9 +44,14 @@ const HomePage = () => {
   // const [isConnected, setConnected] = useState(false);
   const { walletState = defaultWalletState.walletState } =
     useContext(WalletContext);
-  const { snackbar, closeSnackbar, statusState = defaultStatusState.statusState, resetStatusState } =
-    useContext(StatusContext);
-  const { imageState, quickImages, imagePrompt, imageArtist, setImageArtist } = useContext(ImageContext);
+  const {
+    snackbar,
+    closeSnackbar,
+    statusState = defaultStatusState.statusState,
+    resetStatusState,
+  } = useContext(StatusContext);
+  const { imageState, quickImages, imagePrompt, imageArtist, setImageArtist } =
+    useContext(ImageContext);
 
   useEffect(() => {
     console.log('status home', statusState);
@@ -112,9 +117,9 @@ const HomePage = () => {
           <ImageListLayout>
             {quickImages.map((quickImageURL, idx) => {
               return (
-                <ImageCard
+                <ImageQuickCard
                   key={idx}
-                  ipfs={{
+                  image={{
                     link: quickImageURL,
                     alt: 'Not seen',
                   }}
@@ -124,28 +129,30 @@ const HomePage = () => {
           </ImageListLayout>
         </SectionLayout>
       )}
-      {
-        statusState.isError && (
-          <SectionLayout>
-            <Box sx={{
+      {statusState.isError && (
+        <SectionLayout>
+          <Box
+            sx={{
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-            }}>
-              <Alert
-                onClose={resetStatusState}
-                severity="error"
-                sx={{ width: '100%', maxWidth: '400px' }}
-              >
-                <div>
-                  <div>{statusState.message?.title}</div>
-                </div>
-              </Alert>
-            </Box>
-          </SectionLayout>
-        )
-      }
+            }}
+          >
+            <Alert
+              onClose={resetStatusState}
+              severity="error"
+              sx={{ width: '100%', maxWidth: '400px' }}
+            >
+              <div style={{ paddingTop: '1rem' }}>
+                <Typography variant="h5">
+                  {statusState.message?.title}
+                </Typography>
+              </div>
+            </Alert>
+          </Box>
+        </SectionLayout>
+      )}
       <div id="justAboveTextField"></div>
       <SectionLayout>
         {!walletState?.isConnected ? (
@@ -178,7 +185,8 @@ const HomePage = () => {
         />
         <ArtistListLayout>
           {artists.map((artist, e) => {
-            const { artistId, name, style, description, portfolio, image } = artist;
+            const { artistId, name, style, description, portfolio, image } =
+              artist;
             return (
               <ArtistCard
                 key={e}
@@ -187,36 +195,47 @@ const HomePage = () => {
                 description={description}
                 portfolio={portfolio}
                 image={image}
-                disabled={ statusState.isLoading ? true : false }
+                disabled={statusState.isLoading ? true : false}
                 onClick={() => {
                   setImageArtist({
                     name,
                     key: artistId,
                     style,
-                  })
-                  document.getElementById("justAboveTextField")?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" })
+                  });
+                  document
+                    .getElementById('justAboveTextField')
+                    ?.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'end',
+                      inline: 'nearest',
+                    });
                 }}
               />
             );
           })}
         </ArtistListLayout>
       </ArtistLayout>
-      {
-        snackbar.open && (
-          <Snackbar open={snackbar.open} autoHideDuration={10000} onClose={closeSnackbar}>
-            <Alert onClose={closeSnackbar} severity={snackbar.type as any} sx={{ width: '100%' }}>
-              <Box
-                sx={{
-                  color: '#fff'
-                }}
-              >
-                {snackbar.message}
-              </Box>
-              
-            </Alert>
-          </Snackbar>
-        )
-      }
+      {snackbar.open && (
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={10000}
+          onClose={closeSnackbar}
+        >
+          <Alert
+            onClose={closeSnackbar}
+            severity={snackbar.type as any}
+            sx={{ width: '100%' }}
+          >
+            <Box
+              sx={{
+                color: '#fff',
+              }}
+            >
+              {snackbar.message}
+            </Box>
+          </Alert>
+        </Snackbar>
+      )}
     </>
   );
 };

@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import bluebird from 'bluebird'
+import bluebird from 'bluebird';
 /* contract tools */
 declare let window: any;
 import { ethers } from 'ethers';
@@ -19,12 +19,13 @@ import {
   StableDiffusionImage,
 } from '.';
 
-import {
-  IMAGE_COUNT,
-} from './ImageContextProvider';
+import { IMAGE_COUNT } from './ImageContextProvider';
 
 /* Contracts */
-import { WATERLILY_CONTRACT_ADDRESS, LILYPAD_CONTRACT_ADDRESS } from '@/definitions';
+import {
+  WATERLILY_CONTRACT_ADDRESS,
+  LILYPAD_CONTRACT_ADDRESS,
+} from '@/definitions';
 import WaterlilyABI from '../abi/ArtistAttribution.sol/ArtistAttribution.json';
 import LilypadEventsABI from '../abi/LilypadEvents.sol/LilypadEvents.json';
 const IMAGE_COST = '0.1';
@@ -91,10 +92,14 @@ export const ContractContextProvider = ({
   const [contractState, setContractState] = useState<ContractState>(
     defaultContractState.contractState
   );
-  const { statusState = defaultStatusState.statusState, setStatusState, setSnackbar } =
-    useContext(StatusContext);
-  const { imageID, setImageID, setImageState, quickImages } = useContext(ImageContext);
-  const [ txHash, setTxHash ] = useState('')
+  const {
+    statusState = defaultStatusState.statusState,
+    setStatusState,
+    setSnackbar,
+  } = useContext(StatusContext);
+  const { imageID, setImageID, setImageState, quickImages } =
+    useContext(ImageContext);
+  const [txHash, setTxHash] = useState('');
 
   const getWriteContractConnection = () => {
     console.log('Connecting to contract...');
@@ -110,7 +115,7 @@ export const ContractContextProvider = ({
       LilypadEventsABI.abi,
       signer
     ); //   provider = new ethers.providers.Web3Provider(window.ethereum);
-    return [waterlilyContract, lilypadEventsContract]
+    return [waterlilyContract, lilypadEventsContract];
   };
 
   const setContractEventListeners = () => {
@@ -129,7 +134,8 @@ export const ContractContextProvider = ({
           isComplete: image[6],
           isCancelled: image[7],
         };
-        if(generatedImage.id != imageID.toString()) return
+        // if (generatedImage.id != imageID.toString()) return;
+        console.log('event returned', image);
         setImageState({ generatedImages: generatedImage });
         setStatusState((prevState) => ({
           ...prevState,
@@ -172,15 +178,15 @@ export const ContractContextProvider = ({
   }, []);
 
   useEffect(() => {
-    if(quickImages.length >= IMAGE_COUNT) {
+    if (quickImages.length >= IMAGE_COUNT) {
       setSnackbar({
         type: 'success',
         open: true,
         message: `Images have been generated - finalizing transaction...`,
-      })
+      });
       setStatusState((prevState) => ({
         ...prevState,
-        isLoading: 'Finalizing transaction on FVM...',
+        isLoading: '',
         isMessage: true,
         message: {
           title: `Receipt: ${txHash}`,
@@ -196,12 +202,9 @@ export const ContractContextProvider = ({
         },
       }));
     }
-  }, [
-    quickImages,
-  ])
+  }, [quickImages]);
 
   const runStableDiffusionJob = async (prompt: string, artistid: string) => {
-    
     setImageState({ generatedImages: null });
 
     if (!window.ethereum) {
@@ -226,7 +229,7 @@ export const ContractContextProvider = ({
       });
       return;
     }
-    
+
     //not updating - might need to use prevState style
     setStatusState({
       ...defaultStatusState.statusState,
@@ -234,14 +237,14 @@ export const ContractContextProvider = ({
     });
 
     const imageCost = ethers.utils.parseEther(IMAGE_COST);
-    
+
     try {
-      const currentJobID = await eventsContract.currentJobID()
-      const nextJobID = currentJobID.add(1)
+      const currentJobID = await eventsContract.currentJobID();
+      const nextJobID = currentJobID.add(1);
       const tx = await connectedContract.StableDiffusion(artistid, prompt, {
         value: imageCost,
       });
-      
+
       setStatusState((prevState) => ({
         ...prevState,
         isLoading:
@@ -266,28 +269,28 @@ export const ContractContextProvider = ({
         type: 'success',
         open: true,
         message: `Transaction submitted to the FVM network: ${tx.hash}...`,
-      })
+      });
       const receipt = await tx.wait();
 
       setSnackbar({
         type: 'success',
         open: true,
-        message: `Transaction included in block - running stable diffusion on bacalhau...`,
-      })
+        message: `Transaction included in block - creating images...!`,
+      });
 
-      console.log('--------------------------------------------')
-      console.log(JSON.stringify(receipt, null, 4))
-      console.dir(receipt)
+      console.log('--------------------------------------------');
+      console.log(JSON.stringify(receipt, null, 4));
+      console.dir(receipt);
 
-      const imageID = nextJobID
-      
+      const imageID = nextJobID;
+
       console.log('got image id', imageID.toString()); // Print the imageID
-      
+
       setImageID(imageID.toNumber());
 
       setStatusState((prevState) => ({
         ...prevState,
-        isLoading: 'Running Stable Diffusion Job on Bacalhau...',
+        isLoading: 'Generating your unique images on Bacalhau...!',
         isMessage: true,
         message: {
           title: `Receipt: ${tx.hash}`,
@@ -303,26 +306,29 @@ export const ContractContextProvider = ({
         },
       }));
 
-      let isComplete = false
-      let isCancelled = false
+      let isComplete = false;
+      let isCancelled = false;
 
-      const checkJob = async () => {
-        const job = await connectedContract.getImage(imageID)
-        console.log(`checking job: complete: ${job.isComplete}, cancelled: ${job.isCancelled}`)
-        if(job.isComplete) {
-          isComplete = true
-        } else if(job.isCancelled) {
-          isCancelled = true
-        }
-      }
+      // What is this doing?
+      // const checkJob = async () => {
+      //   const job = await connectedContract.getImage(imageID);
+      //   console.log(
+      //     `checking job: complete: ${job.isComplete}, cancelled: ${job.isCancelled}`
+      //   );
+      //   if (job.isComplete) {
+      //     isComplete = true;
+      //   } else if (job.isCancelled) {
+      //     isCancelled = true;
+      //   }
+      // };
 
-      while(!isComplete && !isCancelled) {
-        await checkJob()
-        if(isComplete || isCancelled) break
-        await bluebird.delay(1000)
-      }
+      // while (!isComplete && !isCancelled) {
+      //   await checkJob();
+      //   if (isComplete || isCancelled) break;
+      //   await bluebird.delay(1000);
+      // }
 
-      if(isComplete) {
+      if (isComplete) {
         setStatusState((prevState) => ({
           ...prevState,
           isLoading: '',
@@ -336,8 +342,8 @@ export const ContractContextProvider = ({
           type: 'success',
           open: true,
           message: 'Successfully ran WaterLily Stable Diffusion Job',
-        })
-      } else if(isCancelled) {
+        });
+      } else if (isCancelled) {
         setStatusState((prevState) => ({
           ...prevState,
           isLoading: '',
@@ -352,34 +358,37 @@ export const ContractContextProvider = ({
           type: 'error',
           open: true,
           message: 'Error Running Bacalhau Job',
-        })
+        });
       }
-      
-
     } catch (error: any) {
-      console.error(error)
-      let errorMessage = error.toString()
-      if(error.error && error.error.data && error.error.data.message && error.error.data.message.includes('revert reason:')) {
-        const match = error.error.data.message.match(/revert reason: Error\((.*?)\)/)
-        errorMessage = match[1]
+      console.error(error);
+      let errorMessage = error.toString();
+      if (
+        error.error &&
+        error.error.data &&
+        error.error.data.message &&
+        error.error.data.message.includes('revert reason:')
+      ) {
+        const match = error.error.data.message.match(
+          /revert reason: Error\((.*?)\)/
+        );
+        errorMessage = match[1];
       }
-      if(errorMessage.length > 64) {
-        errorMessage = errorMessage.substring(0, 64) + '...'
+      if (errorMessage.length > 64) {
+        errorMessage = errorMessage.substring(0, 64) + '...';
       }
       setSnackbar({
         type: 'error',
         open: true,
-        message: errorMessage
-      })
+        message: errorMessage,
+      });
       setStatusState((prevState) => ({
         ...prevState,
         isLoading: '',
         isError: true,
         message: {
           title: errorMessage,
-          description: (
-            <span>{errorMessage}</span>
-          ),
+          description: <span>{errorMessage}</span>,
         },
       }));
     }
