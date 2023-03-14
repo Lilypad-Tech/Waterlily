@@ -243,7 +243,7 @@ const HomePage = () => {
           <Box
             sx={{
               display: 'flex',
-              flexDirection: 'row',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
             }}
