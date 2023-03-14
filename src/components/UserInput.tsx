@@ -69,7 +69,8 @@ export const UserInput: FC<UserInputProps> = ({
   } = useContext(StatusContext);
   const { verifyChainId, changeWalletChain, checkBalance } =
     useContext(WalletContext);
-  const { setImagePrompt, setImageArtist } = useContext(ImageContext);
+  const { setImagePrompt, setImageArtist, resetAllImageContext } =
+    useContext(ImageContext);
   const artistObj = artists.reduce<Record<string, ArtistType>>(
     (acc, artist) => {
       acc[artist.name] = artist;
@@ -99,6 +100,7 @@ export const UserInput: FC<UserInputProps> = ({
         });
         return;
       }
+      resetAllImageContext();
       setImageArtist(artist);
       setImagePrompt(prompt);
       await runStableDiffusionJob(prompt, artist.key); //artist should equal the artistId
