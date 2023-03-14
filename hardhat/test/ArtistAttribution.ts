@@ -211,6 +211,11 @@ describe("ArtistAttribution", function () {
       expect(image.isCancelled).to.equal(false)
     })
 
+    it("Should have the image id in our customer specific list", async function () {
+      const { artistContract, customerAccount } = await loadFixture(deployAndPostImage())
+      expect(await artistContract.getCustomerImages(customerAccount.address)).to.deep.equal([BigNumber.from(1)])
+    })
+
     it("Should emit BacalhauJobResultsReturned", async function () {
       const { owner, eventsContract, artistContract } = await loadFixture(deployAndPostImage())
       await expect(eventsContract.connect(owner).returnBacalhauResults(

@@ -16,7 +16,7 @@ import {
   StatusContext,
   defaultStatusState,
   ImageContext,
-  StableDiffusionImage,
+  WalletContext,
 } from '.';
 
 import { IMAGE_COUNT } from './ImageContextProvider';
@@ -99,7 +99,27 @@ export const ContractContextProvider = ({
   } = useContext(StatusContext);
   const { imageID, setImageID, setImageState, quickImages } =
     useContext(ImageContext);
+  const {walletState} = useContext(WalletContext)
   const [txHash, setTxHash] = useState('');
+
+  useEffect(() => {
+    if(!walletState || !walletState.isConnected || walletState.accounts.length <= 0) return
+
+    const doAsync = async () => {
+      const address = walletState.accounts[0]
+      console.log(`loading for ${address}`)
+      const [connectedContract, eventsContract] = getWriteContractConnection();
+      const imageIDs = await eventsContract.fetchJobsByAddress(address)
+
+      console.log('--------------------------------------------')
+      console.log('--------------------------------------------')
+      console.dir(imageIDs)
+    }
+
+    doAsync()
+  }, [
+    walletState,
+  ])
 
   useEffect(() => {
     if (quickImages.length >= IMAGE_COUNT) {

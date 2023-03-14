@@ -65,6 +65,9 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
     // we need this so we can itetate over the artists
     string[] artistIDs;
 
+    // a map of customer address onto images they have submitted
+    mapping (address => uint[]) customerImages;
+
     event ImageGenerated(StableDiffusionImage image);
     event ImageCancelled(StableDiffusionImage image);
 
@@ -104,6 +107,8 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
             isCancelled: false
         });
         imageIDs.push(id);
+        customerImages[msg.sender].push(id);
+        
         // if they have paid too much then refund the difference
         uint excess = msg.value - imageCost;
         if (excess > 0) {
@@ -134,6 +139,10 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
 
     function getImage(uint id) public view returns (StableDiffusionImage memory) {
         return images[id];
+    }
+
+    function getCustomerImages(address customerAddress) public view returns (uint[] memory) {
+        return customerImages[customerAddress];
     }
 
     function updateCost(uint256 _imageCost, uint256 _artistCommission) public onlyOwner {
