@@ -1,5 +1,5 @@
 import { FC, ReactElement } from 'react';
-import { Box, Card, CardMedia, Link } from '@mui/material';
+import { Box, Button, Card, CardMedia, Link } from '@mui/material';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import { artists } from '@/definitions';
 
@@ -45,6 +45,9 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
             alt={image?.alt || 'Monet Water Lilies'}
           />
         </Card>
+        <Button onClick={() => alert('Feature coming soon!')}>
+          Mint as NFT
+        </Button>
       </Box>
     </Box>
   );

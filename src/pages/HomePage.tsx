@@ -17,6 +17,7 @@ import {
   ArtistCard,
   WalletButton,
   ImageHeader,
+  CalloutMessage,
 } from '@/components';
 import { artists } from '@/definitions/artists';
 import {
@@ -214,7 +215,20 @@ const HomePage = () => {
             );
           })}
         </ArtistListLayout>
+        <CalloutMessage
+          text="Become a Featured Artist! Click here"
+          onClick={() => {
+            window.open('https://bit.ly/AI-Art-Attribution-Form', '_blank');
+          }}
+        />
       </ArtistLayout>
+      <SectionLayout>
+        <Title
+          text="Your Generated Images"
+          sx={{ fontSize: '3rem', paddingTop: '2rem' }}
+        />
+        <Description text="Coming soon..." />
+      </SectionLayout>
       {snackbar.open && (
         <Snackbar
           open={snackbar.open}
