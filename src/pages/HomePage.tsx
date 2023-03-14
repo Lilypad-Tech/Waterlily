@@ -69,7 +69,6 @@ const HomePage = () => {
         <Subtitle />
         <Description />
       </TitleLayout>
-
       {/* {imageState.generatedImages && (
         <SectionLayout>
           <ImageHeader />
