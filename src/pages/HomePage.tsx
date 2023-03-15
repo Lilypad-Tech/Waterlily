@@ -190,15 +190,7 @@ const HomePage = () => {
             );
           })}
         </ArtistListLayout>
-        {isCallout && (
-          <CalloutMessage
-            text="Become a Featured Artist! "
-            onClick={() => {
-              window.open('https://bit.ly/AI-Art-Attribution-Form', '_blank');
-            }}
-            setCallout={setCallout}
-          />
-        )}
+        {isCallout && <CalloutMessage />}
       </ArtistLayout>
       <SectionLayout>
         <>
