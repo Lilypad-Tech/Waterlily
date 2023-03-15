@@ -4,7 +4,7 @@
   "scripts": {
     "node": "hardhat node --network hardhat",
     "compile": "hardhat compile",
-    "postcompile": "cp -r ./artifacts/contracts ../src/abi"
+    "postcompile": "cp -r ./artifacts/contracts/* ../src/abi"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.1",
