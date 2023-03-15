@@ -214,6 +214,9 @@ const HomePage = () => {
               justifyContent: 'center',
             }}
           >
+            {customerImages.length < 1 && (
+              <Typography>No Images yet!</Typography>
+            )}
             {customerImages.map((image) => {
               const artist = artists.find((a) => a.artistId === image.artist);
               return (
