@@ -22,3 +22,5 @@ export * from './ImageHeader';
 export * from './CalloutMessage';
 export * from './ParrotLoader';
 export * from './TwitterLink';
+export * from './StatusMessage';
+export * from './GeneratedImages';

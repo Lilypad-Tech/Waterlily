@@ -18,8 +18,11 @@ import {
   WalletButton,
   ImageHeader,
   CalloutMessage,
-  ParrotLoader,
+  ImageQuickCard,
   TwitterLink,
+  StatusMessage,
+  GeneratedImages,
+  // ParrotLoader,
 } from '@/components';
 import { artists } from '@/definitions/artists';
 import {
@@ -30,20 +33,7 @@ import {
   defaultStatusState,
   ImageContext,
 } from '@/context';
-import {
-  IMAGE_NUMBER_ARRAY,
-  getQuickImageURL,
-} from '../context/ImageContextProvider';
-import { ImageQuickCard } from '@/components';
-import {
-  CircularProgress,
-  Box,
-  Typography,
-  Card,
-  CardMedia,
-  Button,
-} from '@mui/material';
-import Snackbar from '@mui/material/Snackbar';
+import { Box, Typography, Button, Snackbar } from '@mui/material';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { KeyboardDoubleArrowUpRounded } from '@mui/icons-material';
 
@@ -141,16 +131,7 @@ const HomePage = () => {
             />
           </UserInputLayout>
         ) : (
-          <Box sx={{ padding: '0 1rem' }}>
-            <CircularProgress size={80} />
-            <div>{statusState.isLoading}</div>
-            {statusState.isMessage && (
-              <div>
-                <div>{statusState.message?.title}</div>
-                <div>{statusState.message?.description}</div>
-              </div>
-            )}
-          </Box>
+          <StatusMessage />
         )}
       </SectionLayout>
       <ArtistLayout>
@@ -199,60 +180,11 @@ const HomePage = () => {
               justifyContent: 'center',
             }}
           >
-            {customerImages.length < 1 && (
+            {customerImages.length < 1 ? (
               <Typography onClick={goToTop}>Generate an Image!</Typography>
+            ) : (
+              <GeneratedImages />
             )}
-            {/* MOVE TO COMPONENT */}
-            {customerImages.map((image) => {
-              const artist = artists.find((a) => a.artistId === image.artist);
-              return (
-                <Box
-                  key={image.id.toString()}
-                  sx={{
-                    mt: 2,
-                    pt: 2,
-                    borderTop: 'solid 1px #fff',
-                    width: '800px',
-                    maxWidth: '800px',
-                  }}
-                >
-                  <Typography gutterBottom variant="h6">
-                    {image.prompt}
-                  </Typography>
-                  <Typography gutterBottom>{artist?.name}</Typography>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      mt: 2,
-                    }}
-                  >
-                    {IMAGE_NUMBER_ARRAY.map((imageNumber) => {
-                      return (
-                        <Card
-                          key={imageNumber}
-                          sx={{
-                            maxWidth: 250,
-                            border: '1px solid white',
-                            ml: 1,
-                            mr: 1,
-                          }}
-                        >
-                          <CardMedia
-                            component="img"
-                            image={getQuickImageURL(
-                              image.id.toNumber(),
-                              imageNumber
-                            )}
-                          />
-                        </Card>
-                      );
-                    })}
-                  </Box>
-                </Box>
-              );
-            })}
             <Box sx={{ padding: '1rem 0' }}>
               <Button
                 onClick={goToTop}
