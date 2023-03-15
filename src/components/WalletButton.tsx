@@ -26,14 +26,14 @@ export const WalletButton: FC = () => {
       background: `-webkit-linear-gradient(left, #30ccff 10%, #0055ff 70%);`,
     },
     installWalletState: {
-      name: 'Install Metamask! 🦊',
+      name: 'Install Wallet',
       action: () =>
         window.open(
           'https://metamask.io/download.html',
           '_blank',
           'noreferrer'
         ),
-      background: `-webkit-linear-gradient(left, #f8a929 10%, #f38218 70%);`,
+      // background: `-webkit-linear-gradient(left, #f8a929 10%, #f38218 70%);`,
     },
   };
   const { walletState, connectWallet, disconnectWallet } =
@@ -49,7 +49,7 @@ export const WalletButton: FC = () => {
 
   return (
     <Button
-      variant="contained"
+      variant={walletState.web3 ? 'contained' : 'outlined'}
       onClick={buttonState?.action || console.log('inactive')}
       sx={{ ...style, background: `${buttonState?.background}` }}
     >

@@ -16,7 +16,7 @@ type CalloutMessageProps = {
 
 const calloutStyle = {
   width: '100%',
-  display: 'flex',
+  display: 'inline-flex',
   padding: '1rem',
   alignItems: 'center',
   justifyContent: 'center',
@@ -39,7 +39,7 @@ const contentStyle = {
   padding: '1rem',
   border: '1px solid white',
   borderRadius: '10px',
-  width: '50%',
+  // width: '50%',
   fontSize: '4rem',
   fontWeight: 'bold',
   background:
@@ -51,6 +51,7 @@ const contentStyle = {
   WebkitTextFillColor: 'transparent',
   MozTextFillColor: 'transparent',
   position: 'relative',
+  color: '#30ccff',
   '&:hover': {
     background:
       '-webkit-linear-gradient(right, #30ccff 10%, #30ccff, #0055ff 70%)',

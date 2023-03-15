@@ -159,15 +159,6 @@ const HomePage = () => {
           text="Featured Artists"
           sx={{ fontSize: '3rem', paddingTop: '2rem' }}
         />
-        {isCallout && (
-          <CalloutMessage
-            text="Become a Featured Artist! "
-            onClick={() => {
-              window.open('https://bit.ly/AI-Art-Attribution-Form', '_blank');
-            }}
-            setCallout={setCallout}
-          />
-        )}
         <ArtistListLayout>
           {artists.map((artist, e) => {
             const { artistId, name, style, description, portfolio, image } =
@@ -199,6 +190,15 @@ const HomePage = () => {
             );
           })}
         </ArtistListLayout>
+        {isCallout && (
+          <CalloutMessage
+            text="Become a Featured Artist! "
+            onClick={() => {
+              window.open('https://bit.ly/AI-Art-Attribution-Form', '_blank');
+            }}
+            setCallout={setCallout}
+          />
+        )}
       </ArtistLayout>
       <SectionLayout>
         <>
