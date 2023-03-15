@@ -99,7 +99,7 @@ export const UserInput: FC<UserInputProps> = ({
         setSnackbar({
           open: true,
           type: 'warning',
-          message: "Sorry, you don't have enough FIL for this transaction :(",
+          message: "Sorry, you don't have enough $FIL for this transaction :(",
         });
         return;
       }
@@ -133,8 +133,7 @@ export const UserInput: FC<UserInputProps> = ({
   return (
     <Box sx={containerStyle}>
       <Typography sx={textStyle}>
-        Enter a prompt and choose an artist style for our magical machine to
-        run... 🦄
+        Enter a prompt and choose an artist style to generate images...
       </Typography>
       <Grid container sx={userInputStyle}>
         <Grid
