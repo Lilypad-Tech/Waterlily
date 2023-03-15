@@ -9,8 +9,8 @@ import "./LilypadCallerInterface.sol";
 // this is the default cost of an image
 // it's about 50 cents
 uint256 constant DEFAULT_IMAGE_COST = 650000000000000 * 250;
-// this is 20% of the image cost
-uint256 constant DEFAULT_ARTIST_COMMISSION = 650000000000000 * 50;
+// this is 100% of the image cost – compute providers get nothing
+uint256 constant DEFAULT_ARTIST_COMMISSION = 650000000000000 * 250;
 
 /**
     @notice An experimental contract for POC work to call Bacalhau jobs from FVM smart contracts
@@ -43,7 +43,7 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
           an IPFS CID of the artists metadata? eg. portfolio links etc.
           Artist Style : string
           Artist Portfolio link : string
-          
+
         */
         string metadata;
         uint256 escrow; // amount of FIL owed that can be withdrawn right now
@@ -76,7 +76,7 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
       uint256 _imageCost,
       uint256 _artistCommission
     ) {
-        _updateCost(_imageCost, _artistCommission);        
+        _updateCost(_imageCost, _artistCommission);
         bridge = LilypadEvents(_eventsContractAddress);
     }
 
@@ -90,7 +90,7 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         // TODO: replace double quotes in the prompt otherwise our JSON breaks
         // TODO: do proper json encoding, look out for quotes in _prompt
         string memory spec = string.concat('{"_lilypad_template": "waterlily", "prompt": "', _prompt, '", "artistid": "', _artistID, '", "imageid": "', Strings.toString(nextID), '"}');
-        
+
         // run the job in lilypad and get the id back
         // record the image so we can reference it when the callbacks are triggered
         uint id = bridge.runBacalhauJob(address(this), spec, LilypadResultType.CID);
@@ -108,7 +108,7 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         });
         imageIDs.push(id);
         customerImages[msg.sender].push(id);
-        
+
         // if they have paid too much then refund the difference
         uint excess = msg.value - imageCost;
         if (excess > 0) {
@@ -167,9 +167,9 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
           // this is expressed as gwei but is basically a percentage of 20%
           _artistCommission = DEFAULT_ARTIST_COMMISSION;
         }
-        
+
         imageCost = _imageCost;
-        artistCommission = _artistCommission;   
+        artistCommission = _artistCommission;
     }
 
     function updateArtist(string calldata id, address wallet, string calldata metadata) public onlyOwner {
@@ -243,7 +243,7 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         // edge case where we deleted the artist in between the job
         // starting and completing
         require(bytes(artist.id).length > 0, "artist does not exist");
-        
+
         // update the result of the image
         image.ipfsResult = _result;
         image.isComplete = true;
