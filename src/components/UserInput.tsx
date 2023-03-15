@@ -137,15 +137,7 @@ export const UserInput: FC<UserInputProps> = ({
   }, [initialArtist]);
 
   const addFilNetwork = async () => {
-    const { chainId, rpc, name, nativeCurrency, blockExplorer } =
-      networks.filecoinMainnet;
-    await addNetwork({
-      chainId,
-      rpcUrls: rpc,
-      chainName: name,
-      nativeCurrency,
-      blockExplorerUrls: blockExplorer,
-    });
+    await addNetwork(networks.filecoinMainnet);
   };
 
   return (
@@ -187,9 +179,12 @@ export const UserInput: FC<UserInputProps> = ({
           </FormControl>
         </Grid>
       </Grid>
-      {/* {!verifyChainId('0x13a') && <Box onClick={addFilNetwork}>
-        <Link>This app runs on the FVM -> Click to add network</Link>
-      </Box>} */}
+      {walletState?.chainId === '0x13a'
+        ? null
+        : (<Box onClick={addFilNetwork}>
+            <Link>This app runs on the FVM -> Click to add network</Link>
+          </Box>)
+      }
       <br />
       <MyButton
         name="Generate Images" //"Coming Soon" //
