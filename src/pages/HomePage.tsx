@@ -44,8 +44,6 @@ import {
 } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
-import Link from '@mui/material/Link';
-import TwitterIcon from '@mui/icons-material/Twitter';
 
 const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -54,10 +52,8 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-const ipfsRoot = 'https://ipfs.io/ipfs/';
-
 const HomePage = () => {
-  const [isCallout, setCallout] = useState(true);
+  const [isCallout] = useState(true);
   const { customerImages } = useContext(ContractContext);
 
   const { walletState = defaultWalletState.walletState } =
@@ -66,16 +62,9 @@ const HomePage = () => {
     snackbar,
     closeSnackbar,
     statusState = defaultStatusState.statusState,
-    resetStatusState,
   } = useContext(StatusContext);
-  const {
-    imageState,
-    quickImages,
-    imagePrompt,
-    imageArtist,
-    setImageArtist,
-    twitterLink,
-  } = useContext(ImageContext);
+  const { quickImages, imagePrompt, imageArtist, setImageArtist, twitterLink } =
+    useContext(ImageContext);
 
   return (
     <>
@@ -91,7 +80,7 @@ const HomePage = () => {
       {quickImages.length > 0 && (
         <SectionLayout>
           <ImageHeader />
-          {Boolean(twitterLink) && <TwitterLink twitterLink={twitterLink} />}
+          {Boolean(twitterLink) && <TwitterLink />}
           <ImageListLayout>
             {quickImages
               .filter((i) => (i.indexOf('combined') > 0 ? false : true))
@@ -142,8 +131,8 @@ const HomePage = () => {
             />
           </UserInputLayout>
         ) : (
-          <>
-            <ParrotLoader />
+          <Box sx={{ padding: '0 1rem' }}>
+            <CircularProgress size={80} />
             <div>{statusState.isLoading}</div>
             {statusState.isMessage && (
               <div>
@@ -151,7 +140,7 @@ const HomePage = () => {
                 <div>{statusState.message?.description}</div>
               </div>
             )}
-          </>
+          </Box>
         )}
       </SectionLayout>
       <ArtistLayout>
@@ -209,6 +198,7 @@ const HomePage = () => {
             {customerImages.length < 1 && (
               <Typography>No Images yet!</Typography>
             )}
+            {/* MOVE TO COMPONENT */}
             {customerImages.map((image) => {
               const artist = artists.find((a) => a.artistId === image.artist);
               return (
