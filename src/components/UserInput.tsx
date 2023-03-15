@@ -194,7 +194,7 @@ export const UserInput: FC<UserInputProps> = ({
       <MyButton
         name="Generate Images" //"Coming Soon" //
         action={generateImages}
-        disabled={!prompt || !artist || Boolean(statusState.isLoading)}
+        disabled={!prompt || !artist.key || Boolean(statusState.isLoading)}
       />
     </Box>
   );
