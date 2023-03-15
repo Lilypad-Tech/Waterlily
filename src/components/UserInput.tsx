@@ -179,12 +179,11 @@ export const UserInput: FC<UserInputProps> = ({
           </FormControl>
         </Grid>
       </Grid>
-      {walletState?.chainId === '0x13a'
-        ? null
-        : (<Box onClick={addFilNetwork}>
-            <Link>This app runs on the FVM -> Click to add network</Link>
-          </Box>)
-      }
+      {walletState?.chainId === '0x13a' ? null : (
+        <Box onClick={addFilNetwork}>
+          <Link>This app runs on the FVM {'->'} Click to add network</Link>
+        </Box>
+      )}
       <br />
       <MyButton
         name="Generate Images" //"Coming Soon" //
