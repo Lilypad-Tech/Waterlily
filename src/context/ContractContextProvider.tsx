@@ -116,6 +116,7 @@ export const ContractContextProvider = ({
     const doAsync = async () => {
       const address = walletState.accounts[0];
       const [connectedContract] = getWriteContractConnection();
+      console.log('signer?', connectedContract.provider);
       const imageIDs = await connectedContract.getCustomerImages(address);
       const images = await bluebird.map(imageIDs, async (id: any) => {
         const image = await connectedContract.getImage(id);
