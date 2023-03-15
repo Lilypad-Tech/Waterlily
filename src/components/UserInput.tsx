@@ -69,12 +69,8 @@ export const UserInput: FC<UserInputProps> = ({
   } = useContext(StatusContext);
   const { verifyChainId, changeWalletChain, checkBalance } =
     useContext(WalletContext);
-  const {
-    setImagePrompt,
-    setImageArtist,
-    resetAllImageContext,
-    createTwitterLink,
-  } = useContext(ImageContext);
+  const { setImagePrompt, setImageArtist, resetAllImageContext } =
+    useContext(ImageContext);
   const artistObj = artists.reduce<Record<string, ArtistType>>(
     (acc, artist) => {
       acc[artist.name] = artist;
@@ -93,17 +89,12 @@ export const UserInput: FC<UserInputProps> = ({
 
   const generateImages = async () => {
     console.log('run lilypad function', artist);
-    await createTwitterLink(
-      'https://ai-art-files.cluster.world/job/13/combined.jpg'
-    );
-    return;
     setStatusState({
       ...defaultStatusState.statusState,
       isLoading: 'Submitting Waterlily job to the FVM network ...',
     });
     if (verifyChainId(networks.filecoinHyperspace.chainId)) {
       let balance = await checkBalance();
-      console.log('balance', balance);
       if (!balance || balance < MIN_BALANCE) {
         setSnackbar({
           open: true,

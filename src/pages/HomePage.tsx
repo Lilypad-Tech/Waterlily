@@ -19,6 +19,7 @@ import {
   ImageHeader,
   CalloutMessage,
   ParrotLoader,
+  TwitterLink,
 } from '@/components';
 import { artists } from '@/definitions/artists';
 import {
@@ -90,6 +91,7 @@ const HomePage = () => {
       {quickImages.length > 0 && (
         <SectionLayout>
           <ImageHeader />
+          {Boolean(twitterLink) && <TwitterLink twitterLink={twitterLink} />}
           <ImageListLayout>
             {quickImages
               .filter((i) => (i.indexOf('combined') > 0 ? false : true))
@@ -110,46 +112,6 @@ const HomePage = () => {
                 );
               })}
           </ImageListLayout>
-          {/* <ImageListLayout>
-            {quickImages.filter(i => i.indexOf('combined') > 0 ? true : false).map((quickImageURL, idx) => {
-              return (
-                <ImageQuickCard
-                  key={idx}
-                  idx={idx}
-                  image={{
-                    link: quickImageURL,
-                    alt: 'Not found',
-                  }}
-                  sx={{
-                    maxHeight: 250,
-                    border: '1px solid white',
-                  }}
-                />
-              );
-            })}
-          </ImageListLayout> */}
-          {Boolean(twitterLink) && (
-            <Link
-              href={twitterLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              sx={{ textDecoration: 'none' }}
-            >
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <TwitterIcon />
-                <Typography color="white" sx={{ paddingLeft: '10px' }}>
-                  Share on Twitter
-                </Typography>
-              </Box>
-            </Link>
-          )}
         </SectionLayout>
       )}
       {statusState.isError && (

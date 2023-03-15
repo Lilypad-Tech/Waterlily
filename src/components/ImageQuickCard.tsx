@@ -34,11 +34,6 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
   sx = {},
 }): ReactElement => {
   const { imageArtist, imagePrompt, downloadImage } = useContext(ImageContext);
-  let noSpacePrompt = imagePrompt.replace(/\s+/g, '').trim();
-  // let artistName = imageArtist.name.replace(/\s+/g, '').trim();
-  const fileName = `${noSpacePrompt.slice(0, 20)}-Image_${idx}`;
-  const folderName = imageArtist.name.replace(/\s+/g, '').trim();
-
   return (
     <Box sx={{ position: 'relative' }}>
       <Box
@@ -62,9 +57,9 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
           />
         </Card>
       </Box>
-      {/* <Button variant="outlined" onClick={() => alert('Feature coming soon!')}>
+      <Button variant="outlined" onClick={() => alert('Feature coming soon!')}>
         Mint as NFT
-      </Button> */}
+      </Button>
     </Box>
   );
 };
