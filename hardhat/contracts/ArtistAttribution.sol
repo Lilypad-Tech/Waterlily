@@ -117,6 +117,10 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         }
     }
 
+    function changeBridge(address _newBridgeAddress) public onlyOwner () {
+        bridge = LilypadEvents(_newBridgeAddress);
+    }
+
     function getArtistIDs() public view returns (string[] memory) {
         return artistIDs;
     }

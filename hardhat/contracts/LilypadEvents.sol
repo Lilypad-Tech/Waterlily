@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./LilypadCallerInterface.sol";
 
-error LilypadEventsUpgradeableError();
+error LilypadEventsError();
 
 /**
     @notice An experimental contract for POC work to call Bacalhau jobs from FVM smart contracts
