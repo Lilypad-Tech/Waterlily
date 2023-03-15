@@ -41,9 +41,11 @@ import {
   Typography,
   Card,
   CardMedia,
+  Button,
 } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { KeyboardDoubleArrowUpRounded } from '@mui/icons-material';
 
 const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -65,6 +67,14 @@ const HomePage = () => {
   } = useContext(StatusContext);
   const { quickImages, imagePrompt, imageArtist, setImageArtist, twitterLink } =
     useContext(ImageContext);
+
+  const goToTop = () => {
+    return document.getElementById('justAboveTextField')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end',
+      inline: 'nearest',
+    });
+  };
 
   return (
     <>
@@ -167,13 +177,7 @@ const HomePage = () => {
                     key: artistId,
                     style,
                   });
-                  document
-                    .getElementById('justAboveTextField')
-                    ?.scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'end',
-                      inline: 'nearest',
-                    });
+                  goToTop();
                 }}
               />
             );
@@ -196,7 +200,7 @@ const HomePage = () => {
             }}
           >
             {customerImages.length < 1 && (
-              <Typography>No Images yet!</Typography>
+              <Typography onClick={goToTop}>Generate an Image!</Typography>
             )}
             {/* MOVE TO COMPONENT */}
             {customerImages.map((image) => {
@@ -249,6 +253,15 @@ const HomePage = () => {
                 </Box>
               );
             })}
+            <Box sx={{ padding: '1rem 0' }}>
+              <Button
+                onClick={goToTop}
+                endIcon={<KeyboardDoubleArrowUpRounded />}
+                aria-label="Back to Top"
+              >
+                Back to Top
+              </Button>
+            </Box>
           </Box>
         </>
       </SectionLayout>

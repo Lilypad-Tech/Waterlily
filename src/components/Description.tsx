@@ -19,6 +19,7 @@ export const Description: FC<DescriptionProps> = ({ text }): ReactElement => {
     <Box sx={boxStyle}>
       <Typography variant="h6">Artists Create Astonishing Value.</Typography>
       <Typography variant="h6">They deserve to be paid.</Typography>
+      {/* <Typography variant="body1">100% goes to creators </Typography> */}
       <Link
         href="https://luck-muscle-f89.notion.site/Waterlily-2412ac513d414a8e9d60ad60d06efd8d"
         target="_blank"
