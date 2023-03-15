@@ -69,8 +69,12 @@ export const UserInput: FC<UserInputProps> = ({
   } = useContext(StatusContext);
   const { verifyChainId, changeWalletChain, checkBalance } =
     useContext(WalletContext);
-  const { setImagePrompt, setImageArtist, resetAllImageContext } =
-    useContext(ImageContext);
+  const {
+    setImagePrompt,
+    setImageArtist,
+    resetAllImageContext,
+    createTwitterLink,
+  } = useContext(ImageContext);
   const artistObj = artists.reduce<Record<string, ArtistType>>(
     (acc, artist) => {
       acc[artist.name] = artist;
@@ -89,6 +93,10 @@ export const UserInput: FC<UserInputProps> = ({
 
   const generateImages = async () => {
     console.log('run lilypad function', artist);
+    await createTwitterLink(
+      'https://ai-art-files.cluster.world/job/13/combined.jpg'
+    );
+    return;
     setStatusState({
       ...defaultStatusState.statusState,
       isLoading: 'Submitting Waterlily job to the FVM network ...',
@@ -180,3 +188,6 @@ export const UserInput: FC<UserInputProps> = ({
     </Box>
   );
 };
+function createTwitterLink(arg0: string) {
+  throw new Error('Function not implemented.');
+}

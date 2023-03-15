@@ -37,6 +37,7 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
     "@types/file-saver": "^2.0.5",
+    "@types/twit": "^2.2.31",
     "hardhat": "^2.13.0"
   }
 }

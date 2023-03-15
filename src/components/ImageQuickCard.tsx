@@ -1,6 +1,6 @@
 import { FC, ReactElement, useContext } from 'react';
 import { Box, Button, Card, CardMedia, Link } from '@mui/material';
-import { SxProps } from '@mui/system'
+import { SxProps } from '@mui/system';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import { ImageContext } from '@/context';
 
@@ -39,21 +39,6 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
   const fileName = `${noSpacePrompt.slice(0, 20)}-Image_${idx}`;
   const folderName = imageArtist.name.replace(/\s+/g, '').trim();
 
-  // const downloadImage = (imageUrl: string | undefined) => {
-  //   if (!imageUrl) return;
-  //   fetch(imageUrl)
-  //     .then((response) => {
-  //       return response.blob();
-  //     })
-  //     .then((blob) => {
-  //       // FileSaver.saveAs(blob, fileName);
-  //       FileSaver.saveAs(blob, `WaterlilyAI_${folderName}_${fileName}`);
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //     });
-  // };
-
   return (
     <Box sx={{ position: 'relative' }}>
       <Box
@@ -63,7 +48,7 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
         <CloudDownloadIcon />
       </Box>
       <Box sx={boxStyle}>
-        <Card sx={ sx }>
+        <Card sx={sx}>
           <Link
             href={image?.link || 'https://twitter.com/DeveloperAlly'}
             target="_blank"

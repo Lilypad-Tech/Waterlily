@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import bluebird from 'bluebird';
 import { ethers } from 'ethers';
-import * as FileSaver from 'file-saver';
+import FileSaver from 'file-saver';
 import { StatusContext } from '.';
 
 export interface StableDiffusionImage {
@@ -50,14 +50,15 @@ interface ImageContextValue {
   setQuickImages: Dispatch<SetStateAction<string[]>>;
   downloadImage: (imageUrl: string, folderName: string, fileName: string) => {};
   resetAllImageContext: () => void;
+  createTwitterLink: (imageUrl: string) => {};
 }
 
 export const IMAGE_HOST = `https://ai-art-files.cluster.world`;
 export const IMAGE_COUNT = 4;
-export const IMAGE_NUMBER_ARRAY: number[] = [0,1,2,3]
+export const IMAGE_NUMBER_ARRAY: number[] = [0, 1, 2, 3];
 
 export const getQuickImageURL = (jobID: number, imageIndex: number) => {
-  if(imageIndex < 0) return `${IMAGE_HOST}/job/${jobID}/combined.jpg`;
+  if (imageIndex < 0) return `${IMAGE_HOST}/job/${jobID}/combined.jpg`;
   return `${IMAGE_HOST}/job/${jobID}/image_${imageIndex}.png`;
 };
 
@@ -77,6 +78,7 @@ export const defaultImageState: ImageContextValue = {
   setQuickImages: () => {},
   downloadImage: async () => {},
   resetAllImageContext: () => {},
+  createTwitterLink: async (url: string) => {},
 };
 
 interface MyContextProviderProps {
@@ -129,7 +131,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
       }
     }
 
-    urls.push(getQuickImageURL(imageID, -1))
+    urls.push(getQuickImageURL(imageID, -1));
 
     const doAsync = async () => {
       while (!loaded) {
@@ -149,7 +151,8 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
         if (filteredURLs.length >= IMAGE_COUNT) {
           setQuickImages(filteredURLs);
           loaded = true;
-          createTwitterLink(filteredURLs[2]);
+          console.log(filteredURLs[4]);
+          createTwitterLink(filteredURLs[4]);
           setStatusState({
             isLoading: '',
             isError: '',
@@ -172,30 +175,8 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     };
   }, [imageID]);
 
-  // const createTwitterLink = async () => {
-  //   const tweetText = `Check out the ethical AI art I created on waterlily.ai! \n\n✍️ ${imagePrompt} \n\n🎨 ${imageArtist.name} \n\n`;
-  //   const response = await fetch(quickImages[0]);
-  //   const imageBlob = await response.blob();
-  //   const reader = new FileReader();
-  //   reader.readAsArrayBuffer(imageBlob);
-  //   return new Promise((resolve) => {
-  //     reader.onloadend = () => {
-  //       const buf = reader.result as ArrayBuffer;
-  //       const base64String = buf ? Buffer.from(buf).toString('base64') : '';
-  //       const tweetImageUrl = `https://example.com/images/my-image.jpg`;
-  //       const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-  //         tweetText
-  //       )}&url=${encodeURIComponent(tweetImageUrl)}`;
-  //       resolve(tweetUrl);
-  //     };
-  //   }).then((tweetUrl) => {
-  //     const url = tweetUrl as string;
-  //     setTwitterLink(url);
-  //   });
-  // };
-
   const createTwitterLink = async (url: string) => {
-    const tweetText = `Check out the ethical AI art I created on waterlily.ai! \n\n✍️ ${imagePrompt} \n\n🎨 ${imageArtist.name} \n\n`;
+    const tweetText = `Check out the ethical AI art I created on waterlily.ai! \n\n✍️ ${imagePrompt} \n\n🎨 ${imageArtist.name} -> 💸 0.05 $FIL paid \n\n`;
     // const response = await fetch(quickImages[2]);
     // const imageBlob = await response.blob();
     // const base64String = await convertBlobToBase64(imageBlob);
@@ -251,6 +232,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     downloadImage,
     twitterLink,
     resetAllImageContext,
+    createTwitterLink,
   };
 
   return (

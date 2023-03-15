@@ -32,9 +32,15 @@ import {
 import {
   IMAGE_NUMBER_ARRAY,
   getQuickImageURL,
-} from '../context/ImageContextProvider'
+} from '../context/ImageContextProvider';
 import { ImageQuickCard } from '@/components';
-import { CircularProgress, Box, Typography, Card, CardMedia } from '@mui/material';
+import {
+  CircularProgress,
+  Box,
+  Typography,
+  Card,
+  CardMedia,
+} from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Link from '@mui/material/Link';
@@ -49,13 +55,9 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
 
 const ipfsRoot = 'https://ipfs.io/ipfs/';
 
-
-
 const HomePage = () => {
   const [isCallout, setCallout] = useState(true);
-  const {
-    customerImages,
-  } = useContext(ContractContext)
+  const { customerImages } = useContext(ContractContext);
 
   const { walletState = defaultWalletState.walletState } =
     useContext(WalletContext);
@@ -89,24 +91,26 @@ const HomePage = () => {
         <SectionLayout>
           <ImageHeader />
           <ImageListLayout>
-            {quickImages.filter(i => i.indexOf('combined') > 0 ? false : true).map((quickImageURL, idx) => {
-              return (
-                <ImageQuickCard
-                  key={idx}
-                  idx={idx}
-                  image={{
-                    link: quickImageURL,
-                    alt: 'Not found',
-                  }}
-                  sx={{
-                    maxWidth: 250,
-                    border: '1px solid white',
-                  }}
-                />
-              );
-            })}
+            {quickImages
+              .filter((i) => (i.indexOf('combined') > 0 ? false : true))
+              .map((quickImageURL, idx) => {
+                return (
+                  <ImageQuickCard
+                    key={idx}
+                    idx={idx}
+                    image={{
+                      link: quickImageURL,
+                      alt: 'Not found',
+                    }}
+                    sx={{
+                      maxWidth: 250,
+                      border: '1px solid white',
+                    }}
+                  />
+                );
+              })}
           </ImageListLayout>
-          <ImageListLayout>
+          {/* <ImageListLayout>
             {quickImages.filter(i => i.indexOf('combined') > 0 ? true : false).map((quickImageURL, idx) => {
               return (
                 <ImageQuickCard
@@ -117,13 +121,13 @@ const HomePage = () => {
                     alt: 'Not found',
                   }}
                   sx={{
-                    maxWHeight: 250,
+                    maxHeight: 250,
                     border: '1px solid white',
                   }}
                 />
               );
             })}
-          </ImageListLayout>
+          </ImageListLayout> */}
           {Boolean(twitterLink) && (
             <Link
               href={twitterLink}
@@ -248,12 +252,11 @@ const HomePage = () => {
               justifyContent: 'center',
             }}
           >
-          {
-            customerImages.map((image) => {
-              const artist = artists.find(a => a.artistId === image.artist)
+            {customerImages.map((image) => {
+              const artist = artists.find((a) => a.artistId === image.artist);
               return (
                 <Box
-                  key={ image.id.toString() }
+                  key={image.id.toString()}
                   sx={{
                     mt: 2,
                     pt: 2,
@@ -262,7 +265,9 @@ const HomePage = () => {
                     maxWidth: '800px',
                   }}
                 >
-                  <Typography gutterBottom variant="h6">{image.prompt}</Typography>
+                  <Typography gutterBottom variant="h6">
+                    {image.prompt}
+                  </Typography>
                   <Typography gutterBottom>{artist?.name}</Typography>
                   <Box
                     sx={{
@@ -272,29 +277,31 @@ const HomePage = () => {
                       mt: 2,
                     }}
                   >
-                    {
-                      IMAGE_NUMBER_ARRAY.map(imageNumber => {
-                        return (
-                          <Card key={ imageNumber } sx={{
+                    {IMAGE_NUMBER_ARRAY.map((imageNumber) => {
+                      return (
+                        <Card
+                          key={imageNumber}
+                          sx={{
                             maxWidth: 250,
                             border: '1px solid white',
                             ml: 1,
                             mr: 1,
-                          }}>
-                            <CardMedia
-                              component="img"
-                              image={ getQuickImageURL(image.id.toNumber(), imageNumber) }
-                            />
-                          </Card>
-                        )
-                      }) 
-                    }
+                          }}
+                        >
+                          <CardMedia
+                            component="img"
+                            image={getQuickImageURL(
+                              image.id.toNumber(),
+                              imageNumber
+                            )}
+                          />
+                        </Card>
+                      );
+                    })}
                   </Box>
                 </Box>
-              )
-              
-            })
-          }
+              );
+            })}
           </Box>
         </>
       </SectionLayout>

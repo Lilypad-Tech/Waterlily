@@ -102,27 +102,30 @@ export const ContractContextProvider = ({
   } = useContext(StatusContext);
   const { imageID, setImageID, setImageState, quickImages } =
     useContext(ImageContext);
-  const {walletState} = useContext(WalletContext)
+  const { walletState } = useContext(WalletContext);
   const [txHash, setTxHash] = useState('');
 
   useEffect(() => {
-    if(!walletState || !walletState.isConnected || walletState.accounts.length <= 0) return
+    if (
+      !walletState ||
+      !walletState.isConnected ||
+      walletState.accounts.length <= 0
+    )
+      return;
 
     const doAsync = async () => {
-      const address = walletState.accounts[0]
+      const address = walletState.accounts[0];
       const [connectedContract] = getWriteContractConnection();
-      const imageIDs = await connectedContract.getCustomerImages(address)
+      const imageIDs = await connectedContract.getCustomerImages(address);
       const images = await bluebird.map(imageIDs, async (id: any) => {
-        const image = await connectedContract.getImage(id)
-        return image
-      })
-      setCustomerImages(images)
-    }
+        const image = await connectedContract.getImage(id);
+        return image;
+      });
+      setCustomerImages(images);
+    };
 
-    doAsync()
-  }, [
-    walletState,
-  ])
+    doAsync();
+  }, [walletState]);
 
   useEffect(() => {
     if (quickImages.length >= IMAGE_COUNT) {
@@ -168,7 +171,6 @@ export const ContractContextProvider = ({
     return [waterlilyContract, lilypadEventsContract];
   };
 
-
   const runStableDiffusionJob = async (prompt: string, artistid: string) => {
     if (!window.ethereum) {
       setStatusState({
@@ -187,6 +189,11 @@ export const ContractContextProvider = ({
     setStatusState({
       ...defaultStatusState.statusState,
       isLoading: 'Submitting Waterlily job to the FVM network ...',
+      isMessage: true,
+      message: {
+        title: 'Waiting for user to confirm wallet payment',
+        description: 'Please check your wallet activity',
+      },
     });
 
     const [connectedContract, eventsContract] = getWriteContractConnection();
@@ -213,7 +220,7 @@ export const ContractContextProvider = ({
           'Waiting for transaction to be included in a block on the FVM network...',
         isMessage: true,
         message: {
-          title: `TX Hash: ${tx.hash}`,
+          title: `This could take awhile... please be patient while we mine the block!`,
           description: (
             <a
               href={`${blockExplorerRoot}${tx.hash}`}
@@ -255,7 +262,7 @@ export const ContractContextProvider = ({
         isLoading: 'Generating your unique images on Bacalhau...!',
         isMessage: true,
         message: {
-          title: `Receipt: ${tx.hash}`,
+          title: `Please be patient... This takes 30 seconds or so depending on demand.`,
           description: (
             <a
               href={`${blockExplorerRoot}${tx.hash}`}

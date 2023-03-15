@@ -498,3 +498,69 @@ const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 //     </StableDiffusionContext.Provider>
 //   );
 // };
+
+/*
+  const createTwitterLink = async (imageUrl: string) => {
+    //https://ai-art-files.cluster.world/job/13/combined.jpg
+    console.log('imageUrl', imageUrl);
+    const tweetText = `Check out the ethical AI art I created on waterlily.ai!\n\n`;
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+      tweetText
+    )}&url=${encodeURIComponent(
+      imageUrl
+    )}&hashtags=WaterLilyAI&ref_src=twsrc%5Etfw&related=twitterapi%2Ctwitter`;
+
+    const response = await fetch(imageUrl);
+    const imageBlob = await response.blob();
+    const base64String = await convertBlobToBase64(imageBlob);
+    const tweetImageUrl = `data:${imageBlob.type};base64,${base64String}`;
+
+    window.open(
+      tweetUrl + `&amp;media=${encodeURIComponent(tweetImageUrl)}`,
+      '',
+      'width=600, height=400'
+    );
+    // const response = await fetch(imageUrl);
+    // const imageBlob = await response.blob();
+    // const base64String = await convertBlobToBase64(imageBlob);
+    // const dataUri = `data:${imageBlob.type};base64,${base64String}`;
+    // const tweetText = `Check out the ethical AI art I created on waterlily.ai! \n\n✍️ ${imagePrompt} \n\n🎨 ${imageArtist.name} -> 💸 0.05 $FIL paid \n\n`;
+    // const base64Image = imageUrl.replace(
+    //   /^data:image\/(png|jpeg|jpg);base64,/,
+    //   ''
+    // );
+    // const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    //   tweetText
+    // )}&url=${encodeURIComponent(
+    //   window.location.href
+    // )}&media=${encodeURIComponent(base64Image)}`;
+    setTwitterLink(tweetUrl);
+    // const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    //   tweetText
+    // )}&url=${encodeURIComponent(dataUri)}`;
+    // setTwitterLink(tweetUrl);
+  };
+
+  // const createTwitterLink = async () => {
+  //   const tweetText = `Check out the ethical AI art I created on waterlily.ai! \n\n✍️ ${imagePrompt} \n\n🎨 ${imageArtist.name} \n\n`;
+  //   const response = await fetch(quickImages[0]);
+  //   const imageBlob = await response.blob();
+  //   const reader = new FileReader();
+  //   reader.readAsArrayBuffer(imageBlob);
+  //   return new Promise((resolve) => {
+  //     reader.onloadend = () => {
+  //       const buf = reader.result as ArrayBuffer;
+  //       const base64String = buf ? Buffer.from(buf).toString('base64') : '';
+  //       const tweetImageUrl = `https://example.com/images/my-image.jpg`;
+  //       const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+  //         tweetText
+  //       )}&url=${encodeURIComponent(tweetImageUrl)}`;
+  //       resolve(tweetUrl);
+  //     };
+  //   }).then((tweetUrl) => {
+  //     const url = tweetUrl as string;
+  //     setTwitterLink(url);
+  //   });
+  // };
+
+*/
