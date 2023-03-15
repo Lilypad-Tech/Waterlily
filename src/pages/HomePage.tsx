@@ -22,6 +22,7 @@ import {
   TwitterLink,
   StatusMessage,
   GeneratedImages,
+  ErrorMessage,
   // ParrotLoader,
 } from '@/components';
 import { artists } from '@/definitions/artists';
@@ -105,18 +106,7 @@ const HomePage = () => {
       )}
       {statusState.isError && (
         <SectionLayout>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <div style={{ paddingTop: '1rem' }}>
-              <Typography variant="h5">{statusState.isError}</Typography>
-            </div>
-          </Box>
+          <ErrorMessage />
         </SectionLayout>
       )}
       <div id="justAboveTextField"></div>

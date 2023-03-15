@@ -334,6 +334,8 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
   }: networkType) => {
     console.log('Adding new network to wallet ', chainName);
     if (window.ethereum) {
+      await changeWalletChain('0x13a');
+      if (verifyChainId('0x13a')) return;
       window.ethereum
         .request({
           method: 'wallet_addEthereumChain',

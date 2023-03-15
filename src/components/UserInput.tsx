@@ -7,6 +7,7 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
+  Link,
 } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { MyButton } from '@/components';
@@ -67,8 +68,13 @@ export const UserInput: FC<UserInputProps> = ({
     setStatusState,
     setSnackbar,
   } = useContext(StatusContext);
-  const { verifyChainId, changeWalletChain, checkBalance } =
-    useContext(WalletContext);
+  const {
+    walletState,
+    verifyChainId,
+    changeWalletChain,
+    checkBalance,
+    addNetwork,
+  } = useContext(WalletContext);
   const { setImagePrompt, setImageArtist, resetAllImageContext } =
     useContext(ImageContext);
   const artistObj = artists.reduce<Record<string, ArtistType>>(
@@ -130,6 +136,18 @@ export const UserInput: FC<UserInputProps> = ({
     setArtist(initialArtist);
   }, [initialArtist]);
 
+  const addFilNetwork = async () => {
+    const { chainId, rpc, name, nativeCurrency, blockExplorer } =
+      networks.filecoinMainnet;
+    await addNetwork({
+      chainId,
+      rpcUrls: rpc,
+      chainName: name,
+      nativeCurrency,
+      blockExplorerUrls: blockExplorer,
+    });
+  };
+
   return (
     <Box sx={containerStyle}>
       <Typography sx={textStyle}>
@@ -169,6 +187,9 @@ export const UserInput: FC<UserInputProps> = ({
           </FormControl>
         </Grid>
       </Grid>
+      {/* {!verifyChainId('0x13a') && <Box onClick={addFilNetwork}>
+        <Link>This app runs on the FVM -> Click to add network</Link>
+      </Box>} */}
       <br />
       <MyButton
         name="Generate Images" //"Coming Soon" //

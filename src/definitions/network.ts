@@ -38,21 +38,13 @@ export const networks = {
   },
   filecoinMainnet: {
     name: 'Filecoin Mainnet',
-    chainId: '0xc45',
-    rpc: [
-      'https://rpc.ankr.com/filecoin_testnet',
-      'https://api.hyperspace.node.glif.io/rpc/v1',
-      'https://filecoin-hyperspace.chainstacklabs.com/rpc/v1',
-    ],
+    chainId: '0x13a',
+    rpc: ['https://api.node.glif.io'],
     nativeCurrency: {
-      name: 'tFIL',
-      symbol: 'tFIL',
+      name: 'Filecoin',
+      symbol: 'FIL',
       decimals: 18,
     },
-    blockExplorer: [
-      'https://fvm.starboard.ventures/transactions/',
-      'https://hyperspace.filscan.io/',
-      'https://beryx.zondax.chfor',
-    ],
+    blockExplorer: ['https://filfox.info/'],
   },
 };
