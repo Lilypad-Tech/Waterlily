@@ -1,5 +1,6 @@
 import { Dispatch, FC, ReactNode, SetStateAction } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Link } from '@mui/material';
+import ArrowRightAltOutlinedIcon from '@mui/icons-material/ArrowRightAltOutlined';
 // import TipsAndUpdatesOutlinedIcon from '@mui/icons-material/TipsAndUpdatesOutlined';
 // import BrushOutlinedIcon from '@mui/icons-material/BrushOutlined';
 import PaletteOutlinedIcon from '@mui/icons-material/PaletteOutlined';
@@ -9,9 +10,9 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 type CalloutMessageProps = {
   children?: ReactNode;
-  text: string;
-  onClick: any;
-  setCallout: Dispatch<SetStateAction<boolean>>;
+  text?: string;
+  onClick?: any;
+  setCallout?: Dispatch<SetStateAction<boolean>>;
 };
 
 const calloutStyle = {
@@ -78,27 +79,45 @@ const iconStyle = {
   marginRight: '1rem',
 };
 
-export const CalloutMessage: FC<CalloutMessageProps> = ({
-  text,
-  children,
-  onClick,
-  setCallout,
-}) => {
+export const CalloutMessage: FC<CalloutMessageProps> = () => {
   return (
-    //<Box sx={{ height: (theme) => theme.spacing(10) }} />
-    <Box onClick={onClick} sx={calloutStyle}>
-      <Box component="button" sx={contentStyle}>
-        <PaletteOutlinedIcon sx={iconStyle} />
-        <Typography>{text}</Typography>
-        {/* <CloseRoundedIcon
-          sx={{
-            position: 'absolute',
-            right: '1rem',
-          }}
-          onClick={() => setCallout(false)}
-        /> */}
+    <Link
+      href="https://bit.ly/AI-Art-Attribution-Form"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingTop: '0.5rem',
+          fontSize: '4rem',
+          // color: '#f53ebb',
+          // '-webkit-linear-gradient(right, #b583ff 10%, #f53ebb, #b583ff 70%)',
+        }}
+      >
+        <Typography>Are you an Artist? Be featured!</Typography>
+        <ArrowRightAltOutlinedIcon sx={{ paddingLeft: '0.5rem' }} />
       </Box>
-      {children}
-    </Box>
+    </Link>
   );
+  // return (
+  //   //<Box sx={{ height: (theme) => theme.spacing(10) }} />
+  //   <Box onClick={onClick} sx={calloutStyle}>
+  //     <Box component="button" sx={contentStyle}>
+  //       <PaletteOutlinedIcon sx={iconStyle} />
+  //       <Typography>{text}</Typography>
+  //       {/* <CloseRoundedIcon
+  //         sx={{
+  //           position: 'absolute',
+  //           right: '1rem',
+  //         }}
+  //         onClick={() => setCallout(false)}
+  //       /> */}
+  //     </Box>
+  //     {children}
+  //   </Box>
+  // );
 };
