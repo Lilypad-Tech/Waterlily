@@ -1,8 +1,9 @@
 import os, sys
 def upload(path, files):
+    token = os.getenv("FILESTORE_ACCESS_TOKEN")
     files = " ".join(f"-F \"uploads=@{x}\"" for x in files)
     cmd = (
-        f"curl --insecure {files} -F \"path={path}\" https://ai-art-files.cluster.world/upload")
+        f"curl --insecure {files} -F \"path={path}\" https://ai-art-files.cluster.world/upload?access_token={token}")
     print(f"Running: {cmd}")
     os.system(cmd)
 

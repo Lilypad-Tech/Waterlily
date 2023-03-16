@@ -218,3 +218,12 @@ sudo docker pull algoveraai/sdprojectv2:cecnstyle
 To launch the frontend against the testnet - add the following to the URL in your browser (works on localhost and production both):
 
 `?waterlilyNetwork=filecoinHyperspace`
+
+
+## uploading artist thumbnails
+
+If you need to upload anything to the filestore:
+
+```
+curl -F "uploads=@cecnstyle.png" -F "path=artist_thumbnails" https://ai-art-files.cluster.world/upload?access_token=XXX
+```
