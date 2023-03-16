@@ -158,9 +158,9 @@ console.log(`Upload target dir is ${uploadDir}`);
 const app = express();
 
 app.post('/upload', (req, res) => {
-  const token = req.query.access_token
+  const accessToken = req.query.access_token
 
-  if(!token || !process.env.FILESTORE_TOKEN != token) {
+  if(!accessToken || process.env.FILESTORE_TOKEN != accessToken) {
     res.status(403)
     res.json({
       ok: false,
@@ -184,19 +184,6 @@ app.post('/upload', (req, res) => {
 
     if (!Array.isArray(files.uploads)) {
       files.uploads = [files.uploads];
-    }
-
-    if (token && fields.token !== token) {
-      res.write('Wrong token!');
-      for (const file of files.uploads) {
-        if (!file) continue;
-        try {
-          await fsPromises.unlink(file.filepath);
-        } catch (err) {
-          console.log(`Error removing temporary file! ${file.filepath} ${err}`);
-        }
-      }
-      return res.end();
     }
 
     let targetPath = uploadDir;
