@@ -5,6 +5,7 @@ enum currentNetworkType {
 
 export const currentNetwork: currentNetworkType = currentNetworkType.Mainnet; //or 'mainnet'
 
+// import { NetworkDataType } from '../context';
 // export interface NetworkDataType {
 //   name: string;
 //   chainId: string;

@@ -291,7 +291,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
     nativeCurrency,
     blockExplorer,
   }: NetworkDataType) => {
-    console.log('Adding new network to wallet ', name);
+    console.log('Adding new network to wallet ', name, rpc);
     if (window.ethereum) {
       // const add = await checkForNetwork();
       // console.log('is add true', add);
@@ -303,7 +303,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
           params: [
             {
               chainId: chainId,
-              rpcUrls: network.rpc[0],
+              rpcUrls: network.rpc,
               chainName: name,
               nativeCurrency: nativeCurrency,
               blockExplorerUrls: blockExplorer || [],

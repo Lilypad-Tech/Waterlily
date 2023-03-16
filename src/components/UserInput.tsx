@@ -139,7 +139,8 @@ export const UserInput: FC<UserInputProps> = ({
   }, [initialArtist]);
 
   const addFilNetwork = async () => {
-    await addNetwork(networks.filecoinMainnet);
+    console.log('adding network', network);
+    await addNetwork(network);
   };
 
   return (
@@ -181,7 +182,7 @@ export const UserInput: FC<UserInputProps> = ({
           </FormControl>
         </Grid>
       </Grid>
-      {walletState?.chainId === '0x13a' ? null : (
+      {walletState?.chainId === network.chainId ? null : (
         <Box onClick={addFilNetwork} sx={{ cursor: 'pointer' }}>
           <Link>
             This app runs on the FVM Network {'->'} Click to add network
