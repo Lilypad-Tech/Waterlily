@@ -177,11 +177,11 @@ kubectl apply -f filestore-deploy/01-pv.yaml
 kubectl apply -f filestore-deploy/02-pvc.yaml
 kubectl apply -f filestore-deploy/03-service.yaml
 kubectl apply -f filestore-deploy/ingress.yaml
-cd filestore
 export CI_COMMIT_SHA=$(git rev-parse HEAD)
 export FILESTORE_IMAGE=gcr.io/webkit-servers/waterlily-filestore:$CI_COMMIT_SHA
 docker build -t $FILESTORE_IMAGE filestore
 docker push $FILESTORE_IMAGE
+export FILESTORE_TOKEN=XXX
 cat filestore-deploy/04-deployment.yaml | envsubst | kubectl apply -f -
 ```
 

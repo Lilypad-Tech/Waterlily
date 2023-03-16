@@ -161,7 +161,7 @@ app.post('/upload', (req, res) => {
   const token = req.query.access_token
 
   if(!token || !process.env.FILESTORE_TOKEN != token) {
-    res.statusCode(403)
+    res.status(403)
     res.json({
       ok: false,
       error: 'Invalid token'
