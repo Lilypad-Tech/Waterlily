@@ -1,5 +1,5 @@
 [Unit]
-Description=Lilypad Daemon
+Description=Lilypad Daemon Testnet
 After=network-online.target
 Wants=network-online.target systemd-networkd-wait-online.service
 
@@ -7,8 +7,8 @@ Wants=network-online.target systemd-networkd-wait-online.service
 Environment="LOG_TYPE=json"
 Environment="LOG_LEVEL=debug"
 Environment="HOME=/tmp"
-Environment="SQLITE_FILE_LOCATION=lilypad.sqlite"
-EnvironmentFile=/root/lilypad.env
+Environment="SQLITE_FILE_LOCATION=lilypad-testnet.sqlite"
+EnvironmentFile=/root/lilypad.testnet.env
 Restart=always
 RestartSec=5s
 ExecStart=/usr/bin/lilypad

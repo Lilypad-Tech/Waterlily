@@ -37,6 +37,7 @@ next-env.d.ts
 
 node_modules
 .env
+.env.testnet
 coverage
 coverage.json
 typechain
