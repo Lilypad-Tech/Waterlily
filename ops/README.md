@@ -48,7 +48,7 @@ Then we need to add artists:
 cd hardhat
 source .env
 export ARTIST=artist1
-export ADDRESS='0x230115404c551Fcd0B6d447DE1DaD3afca230E07'
+export ADDRESS='0x9e24343032E385a6d0FEaeAd89628F9110a43375'
 export META='apples oranges'
 npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
 ```
