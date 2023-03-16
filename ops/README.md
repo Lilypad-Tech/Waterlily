@@ -212,3 +212,9 @@ sudo docker pull algoveraai/sdprojectv2:mntstyle
 sudo docker pull algoveraai/sdprojectv2:btzstyle
 sudo docker pull algoveraai/sdprojectv2:cecnstyle
 ```
+
+## running against testnet
+
+To launch the frontend against the testnet - add the following to the URL in your browser (works on localhost and production both):
+
+`?waterlilyNetwork=filecoinHyperspace`

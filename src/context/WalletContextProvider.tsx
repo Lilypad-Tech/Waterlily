@@ -10,7 +10,7 @@ import {
 import { ethers } from 'ethers';
 import { ImageContext, NetworkContext, NetworkDataType } from '.';
 
-import { networks } from '../definitions/network';
+import { getNetwork } from '../definitions/network';
 
 interface WalletState {
   accounts: string[];
@@ -271,7 +271,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
           console.log('Error changing chains', err);
           if (err.code === 4902) {
             console.log('Adding the filecoin chain to wallet');
-            addNetwork(networks.filecoinMainnet);
+            addNetwork(getNetwork());
             // Make a request to add the chain to wallet here
             console.log(
               "Chain hasn't been added to the wallet yet... trying to add"
@@ -323,21 +323,22 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
 
   const checkForNetwork = async () => {
     if (!window.ethereum) return;
-    const networkId = networks.filecoinMainnet.chainId;
+    const network = getNetwork()
+    const networkId = network.chainId;
     try {
       const currentNetworkId = await window.ethereum.request({
         method: 'net_version',
       });
       if (
-        currentNetworkId === networks.filecoinMainnet.chainId ||
+        currentNetworkId === network.chainId ||
         parseInt(currentNetworkId, 10) ===
-          parseInt(networks.filecoinMainnet.chainId, 16)
+          parseInt(network.chainId, 16)
       ) {
         console.log(`The Filecoin Mainnet network is currently selected.`);
         return true;
       } else {
         console.log(`The Filecoin Mainnet network is not currently selected.`);
-        changeWalletChain(networks.filecoinMainnet.chainId);
+        changeWalletChain(network.chainId);
         return true;
       }
     } catch (error) {
@@ -345,36 +346,6 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
       return false;
     }
   };
-
-  // const addFilecoinNetwork = async () => {
-  //   const { chainId, rpc, name, nativeCurrency, blockExplorer } =
-  //     networks.filecoinMainnet;
-  //   if (window.ethereum) {
-  //     // const add = await checkForNetwork();
-  //     // if (add) return;
-  //     window.ethereum
-  //       .request({
-  //         method: 'wallet_addEthereumChain',
-  //         params: [
-  //           {
-  //             chainId: chainId,
-  //             rpcUrls: rpc,
-  //             chainName: name,
-  //             nativeCurrency: nativeCurrency,
-  //             blockExplorerUrls: blockExplorer || [],
-  //           },
-  //         ],
-  //       })
-  //       .then((res: XMLHttpRequestResponseType) => {
-  //         console.log(`Successfully added ${name} network`, res);
-  //       })
-  //       .catch((err: ErrorEvent) => {
-  //         console.log(`Error adding ${name} network`, err);
-  //       });
-  //   } else {
-  //     setWalletState(defaultWalletState.walletState);
-  //   }
-  // };
 
   const walletContextValue: WalletContextValue = {
     walletState,

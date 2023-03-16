@@ -42,7 +42,7 @@ export const networks = {
       LILYPAD_EVENTS_CONTRACT_ADDRESS:
         '0x5aFC3aCAFd6A2cB0bbdeD5A75c8d1E361FD25863',
     },
-    imageUrlRoot: `https://ai-art-files.cluster.world/job/`,
+    imageUrlRoot: `https://ai-art-files.cluster.world/job/3141-`,
   },
   filecoinMainnet: {
     name: 'Filecoin Mainnet',
@@ -62,3 +62,14 @@ export const networks = {
     imageUrlRoot: `https://ai-art-files.cluster.world/job/314-`,
   },
 };
+
+export const getNetwork = () => {
+  if (typeof window === "undefined") {
+    return networks.filecoinHyperspace
+  }
+  const urlSearchParams = new URLSearchParams((window as any).location.search);
+  const params = Object.fromEntries(urlSearchParams.entries());
+  let currentNetworkName: string = params.waterlilyNetwork || '';
+  if(currentNetworkName == 'filecoinHyperspace') return networks.filecoinHyperspace
+  return networks.filecoinMainnet
+}

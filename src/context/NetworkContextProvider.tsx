@@ -1,5 +1,5 @@
 import { useState, createContext, Dispatch, SetStateAction } from 'react';
-import { networks } from '@/definitions';
+import { getNetwork } from '@/definitions';
 import React from 'react';
 
 export interface NetworkDataType {
@@ -19,7 +19,7 @@ export interface NetworkDataType {
   imageUrlRoot: string;
 }
 
-const currentNetwork: NetworkDataType = networks.filecoinMainnet;
+const currentNetwork: NetworkDataType = getNetwork();
 
 interface NetworkContextValue {
   network: NetworkDataType;
@@ -27,7 +27,7 @@ interface NetworkContextValue {
 }
 
 const defaultNetworkState = {
-  network: networks.filecoinMainnet,
+  network: getNetwork(),
   setNetwork: () => {},
 };
 
