@@ -70,7 +70,8 @@ const HomePage = () => {
   return (
     <>
       <HeaderLayout>
-        <Logo height={40} />
+        <div></div>
+        {/* <Logo height={40} /> */}
         <WalletButton />
       </HeaderLayout>
       <TitleLayout>
