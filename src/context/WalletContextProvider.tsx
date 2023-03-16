@@ -8,45 +8,9 @@ import {
   useContext,
 } from 'react';
 import { ethers } from 'ethers';
-import { ImageContext } from '.';
+import { ImageContext, NetworkContext, NetworkDataType } from '.';
 
-import { currentNetwork, networks, NetworkData } from '../definitions/network';
-const rpc =
-  currentNetwork === 'testnet'
-    ? networks.filecoinHyperspace.rpc[0]
-    : networks.filecoinMainnet.rpc[0];
-
-const HyperspaceChainId = '0xc45';
-const HyperspaceNetworkData = {
-  chainId: '0xc45',
-  rpcUrls: [
-    'https://hyperspace.filfox.info/rpc/v1',
-    'https://filecoin-hyperspace.chainstacklabs.com/rpc/v1',
-  ],
-  chainName: 'Filecoin Hyperspace',
-  nativeCurrency: {
-    name: 'tFIL',
-    symbol: 'tFIL',
-    decimals: 18,
-  },
-  blockExplorerUrls: [
-    'https://fvm.starboard.ventures/transactions/',
-    'https://hyperspace.filscan.io/',
-    'https://beryx.zondax.chfor',
-  ],
-};
-
-interface networkType {
-  chainId: string;
-  rpcUrls: string[];
-  chainName: string;
-  nativeCurrency: {
-    name: string;
-    symbol: string;
-    decimals: number;
-  };
-  blockExplorerUrls?: string[];
-}
+import { networks } from '../definitions/network';
 
 interface WalletState {
   accounts: string[];
@@ -67,7 +31,7 @@ interface WalletContextValue {
   checkForWalletConnection: () => Promise<void>;
   verifyChainId: (reqChainId: string) => boolean;
   changeWalletChain: (reqChainId: string) => Promise<void>;
-  addNetwork: (networkData: NetworkData) => Promise<void>;
+  addNetwork: (networkData: NetworkDataType) => Promise<void>;
   disconnectWallet: () => void;
   checkBalance: () => Promise<number | null> | null;
 }
@@ -114,6 +78,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
     defaultWalletState.walletState
   );
   const { resetAllImageContext } = useContext(ImageContext);
+  const { network } = useContext(NetworkContext);
 
   useEffect(() => {
     if (window.ethereum) {
@@ -126,12 +91,6 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
   useEffect(() => {
     console.log('wallet state changed', walletState);
   }, [walletState]);
-
-  // useEffect(() => {
-  //   if (!window.ethereum) {
-  //     //??
-  //   }
-  // },[window.ethereum])
 
   ///wallet action functions
   const fetchWalletAccounts = async () => {
@@ -184,8 +143,8 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
         chainId: chainId,
         web3: true,
       });
-      if (!verifyChainId(HyperspaceChainId)) {
-        await changeWalletChain(HyperspaceChainId);
+      if (!verifyChainId(network.chainId)) {
+        await changeWalletChain(network.chainId);
       }
     } else {
       setWalletState(defaultWalletState.walletState);
@@ -275,7 +234,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
     if (!window.ethereum || !walletState.accounts[0]) {
       return null;
     }
-    const provider = new ethers.providers.JsonRpcProvider(rpc);
+    const provider = new ethers.providers.JsonRpcProvider(network.rpc[0]);
     try {
       const balance = await provider.getBalance(walletState.accounts[0]);
       const formattedBalance = ethers.utils.formatEther(balance);
@@ -317,7 +276,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
             console.log(
               "Chain hasn't been added to the wallet yet... trying to add"
             );
-            // addNetwork(HyperspaceNetworkData);
+            // addNetwork(network);
           }
         });
     } else {
@@ -331,7 +290,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
     name,
     nativeCurrency,
     blockExplorer,
-  }: NetworkData) => {
+  }: NetworkDataType) => {
     console.log('Adding new network to wallet ', name);
     if (window.ethereum) {
       // const add = await checkForNetwork();
@@ -344,7 +303,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
           params: [
             {
               chainId: chainId,
-              rpcUrls: rpc,
+              rpcUrls: network.rpc[0],
               chainName: name,
               nativeCurrency: nativeCurrency,
               blockExplorerUrls: blockExplorer || [],

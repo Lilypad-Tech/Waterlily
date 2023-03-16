@@ -19,7 +19,7 @@ export const FooterLayout: FC<FooterProps> = ({
   return (
     <Box sx={layoutStyle}>
       {/* Link below to a page with lilypad team faces & profiles if time */}
-      {/* {children}{' '}
+      {children}{' '}
       <Box
         sx={{
           border: '1px solid white',
@@ -31,7 +31,7 @@ export const FooterLayout: FC<FooterProps> = ({
         }
       >
         Made with ❤️ Lilypad Team
-      </Box> */}
+      </Box>
     </Box>
   );
 };

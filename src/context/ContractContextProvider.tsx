@@ -16,32 +16,22 @@ import {
   StatusContext,
   defaultStatusState,
   ImageContext,
+  IMAGE_COUNT,
   WalletContext,
+  NetworkContext,
 } from '.';
-
-import { IMAGE_COUNT } from './ImageContextProvider';
 
 /* Contracts */
 import {
   WATERLILY_CONTRACT_ADDRESS,
   LILYPAD_CONTRACT_ADDRESS,
 } from '@/definitions';
+
 import WaterlilyABI from '../abi/ArtistAttribution.sol/ArtistAttribution.json';
 import LilypadEventsABI from '../abi/LilypadEvents.sol/LilypadEvents.json';
+
 const IMAGE_COST = '0.1';
 const GAS_LIMIT = 9000000;
-
-/* Networks */
-import { currentNetwork, networks } from '../definitions/network';
-const rpc =
-  currentNetwork === 'testnet'
-    ? networks.filecoinHyperspace.rpc[0]
-    : networks.filecoinMainnet.rpc[0];
-
-const blockExplorerRoot =
-  currentNetwork === 'testnet'
-    ? networks.filecoinHyperspace.blockExplorer[0]
-    : networks.filecoinMainnet.blockExplorer[0];
 
 /* ContractContext */
 enum AccessType {
@@ -53,7 +43,7 @@ export interface ContractState {
   mode: AccessType;
   provider: ethers.providers.Provider | null;
   signer: ethers.Signer | null;
-  connectedWaterlilyContract: ethers.Contract;
+  connectedWaterlilyContract: ethers.Contract | null;
 }
 
 interface ContractContextValue {
@@ -63,18 +53,13 @@ interface ContractContextValue {
   runStableDiffusionJob: (prompt: string, artistId: string) => Promise<void>;
 }
 
-const pr = new ethers.providers.JsonRpcProvider(rpc);
-
+// const pr = new ethers.providers.JsonRpcProvider(network.rpc[0]);
 export const defaultContractState = {
   contractState: {
     mode: AccessType.Read,
-    provider: pr,
+    provider: null,
     signer: null,
-    connectedWaterlilyContract: new ethers.Contract(
-      WATERLILY_CONTRACT_ADDRESS,
-      WaterlilyABI.abi,
-      pr
-    ),
+    connectedWaterlilyContract: null,
   },
   customerImages: [],
   setContractState: () => {},
@@ -91,37 +76,44 @@ export const ContractContext =
 export const ContractContextProvider = ({
   children,
 }: MyContextProviderProps) => {
-  const [contractState, setContractState] = useState<ContractState>(
-    defaultContractState.contractState
-  );
+  const { network } = useContext(NetworkContext);
+  const readProvider = new ethers.providers.JsonRpcProvider(network.rpc[0]);
+
+  const [contractState, setContractState] = useState<ContractState>({
+    mode: AccessType.Read,
+    provider: readProvider,
+    signer: null,
+    connectedWaterlilyContract: new ethers.Contract(
+      WATERLILY_CONTRACT_ADDRESS,
+      WaterlilyABI.abi,
+      readProvider
+    ),
+  });
   const [customerImages, setCustomerImages] = useState<any[]>([]);
   const {
     statusState = defaultStatusState.statusState,
     setStatusState,
     setSnackbar,
   } = useContext(StatusContext);
-  const { imageID, setImageID, setImageState, quickImages } =
-    useContext(ImageContext);
+  const { setImageID, quickImages } = useContext(ImageContext);
   const { walletState } = useContext(WalletContext);
   const [txHash, setTxHash] = useState('');
 
   useEffect(() => {
-    if (
-      !walletState ||
-      !walletState.isConnected ||
-      walletState.accounts.length <= 0
-    )
-      return;
-
+    if (!walletState?.isConnected || walletState.accounts.length <= 0) return;
+    const connectedContract = getWaterlilyWriteContractConnection();
+    console.log('checking for customer images effect...', connectedContract);
+    //Bug in contract - should not be public (then needs to be a write contract)
     const doAsync = async () => {
-      const address = walletState.accounts[0];
-      const [connectedContract] = getWriteContractConnection();
-      console.log('signer?', connectedContract.provider);
-      const imageIDs = await connectedContract.getCustomerImages(address);
+      const imageIDs = await connectedContract?.getCustomerImages(
+        walletState.accounts[0]
+      );
+      console.log('Fetched imageIDs');
       const images = await bluebird.map(imageIDs, async (id: any) => {
-        const image = await connectedContract.getImage(id);
+        const image = await connectedContract?.getImage(id);
         return image;
       });
+      console.log('fetched Images');
       setCustomerImages(images);
     };
 
@@ -129,7 +121,7 @@ export const ContractContextProvider = ({
   }, [walletState]);
 
   useEffect(() => {
-    if (quickImages.length >= IMAGE_COUNT) {
+    if (quickImages?.length >= IMAGE_COUNT) {
       setSnackbar({
         type: 'success',
         open: true,
@@ -143,7 +135,7 @@ export const ContractContextProvider = ({
           title: `Receipt: ${txHash}`,
           description: (
             <a
-              href={`${blockExplorerRoot}${txHash}`}
+              href={`${network.blockExplorer[0]}${txHash}`}
               target="_blank"
               rel="no_referrer"
             >
@@ -155,21 +147,28 @@ export const ContractContextProvider = ({
     }
   }, [quickImages]);
 
-  const getWriteContractConnection = () => {
+  //otherwise use default.
+  const getWaterlilyWriteContractConnection = () => {
+    if (!window.ethereum || !walletState?.accounts[0]) return;
     console.log('Connecting to contract...');
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const waterlilyContract = new ethers.Contract(
+    return new ethers.Contract(
       WATERLILY_CONTRACT_ADDRESS,
       WaterlilyABI.abi,
       signer
-    ); //   provider = new ethers.providers.Web3Provider(window.ethereum);
-    const lilypadEventsContract = new ethers.Contract(
+    );
+  };
+
+  const getEventsWriteContractConnection = () => {
+    if (!window.ethereum || !walletState?.accounts[0]) return;
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    return new ethers.Contract(
       LILYPAD_CONTRACT_ADDRESS,
       LilypadEventsABI.abi,
       signer
-    ); //   provider = new ethers.providers.Web3Provider(window.ethereum);
-    return [waterlilyContract, lilypadEventsContract];
+    );
   };
 
   const runStableDiffusionJob = async (prompt: string, artistid: string) => {
@@ -187,17 +186,21 @@ export const ContractContextProvider = ({
       return;
     }
 
+    console.log('Starting Stable Diffusion Job');
     setStatusState({
       ...defaultStatusState.statusState,
-      isLoading: 'Submitting Waterlily job to the FVM network ...',
+      isLoading: 'Submitting your Waterlily prompts to the FVM network ...',
       isMessage: true,
       message: {
         title: 'Waiting for user to confirm wallet payment',
-        description: 'Please check your wallet activity',
+        description: 'Please check your wallet activity!',
       },
     });
 
+    console.log('fetching contract connections...');
     const [connectedContract, eventsContract] = getWriteContractConnection();
+    console.log('Got contracts', connectedContract, eventsContract);
+
     if (!connectedContract || !eventsContract) {
       setStatusState({
         ...defaultStatusState.statusState,
@@ -209,55 +212,50 @@ export const ContractContextProvider = ({
     const imageCost = ethers.utils.parseEther(IMAGE_COST);
 
     try {
+      console.log('Getting contract details...');
       const currentJobID = await eventsContract.currentJobID();
       const nextJobID = currentJobID.add(1);
+      console.log('Fetched contract details:', currentJobID, nextJobID);
+      console.log('Calling stable diffusion function...');
       const tx = await connectedContract.StableDiffusion(artistid, prompt, {
         value: imageCost,
       });
+      console.log('Got the tx hash', tx.hash); // Print the transaction hash
+      setTxHash(tx.hash);
 
       setStatusState((prevState) => ({
         ...prevState,
         isLoading:
-          'Waiting for transaction to be included in a block on the FVM network...',
+          'Waiting for transaction to be included in a block on the network...',
         isMessage: true,
         message: {
-          title: `This could take awhile... please be patient while we mine the block!`,
+          title: `This could take some time... please be patient while the transaction is included in a block!`,
           description: (
             <a
-              href={`${blockExplorerRoot}${tx.hash}`}
+              href={`${network.blockExplorer}${tx.hash}`}
               target="_blank"
               rel="no_referrer"
             >
-              Check Status in block explorer
+              Check Transaction Status in block explorer here
             </a>
           ),
         },
       }));
-      console.log('got tx hash', tx.hash); // Print the transaction hash
-      setTxHash(tx.hash);
       setSnackbar({
         type: 'success',
         open: true,
         message: `Transaction submitted to the FVM network: ${tx.hash}...`,
       });
       const receipt = await tx.wait();
+      console.log('----------TX INCLUDED IN BLOCK------------');
+      console.log(JSON.stringify(receipt, null, 4));
+      console.dir('Receipt:', receipt);
 
       setSnackbar({
         type: 'success',
         open: true,
         message: `Transaction included in block - creating images...!`,
       });
-
-      console.log('--------------------------------------------');
-      console.log(JSON.stringify(receipt, null, 4));
-      console.dir(receipt);
-
-      const imageID = nextJobID;
-
-      console.log('got image id', imageID.toString()); // Print the imageID
-
-      setImageID(imageID.toNumber());
-
       setStatusState((prevState) => ({
         ...prevState,
         isLoading: 'Generating your unique images on Bacalhau...!',
@@ -266,37 +264,46 @@ export const ContractContextProvider = ({
           title: `Please be patient... This takes 30 seconds or so depending on demand.`,
           description: (
             <a
-              href={`${blockExplorerRoot}${tx.hash}`}
+              href={`${network.blockExplorer}${tx.hash}`}
               target="_blank"
               rel="no_referrer"
             >
-              Check Status in block explorer
+              Check Transaction in block explorer
             </a>
           ), //receipt.transactionHash
         },
       }));
 
-      let isComplete = false;
+      const imageID = nextJobID;
+      setImageID(imageID.toNumber());
+      console.log(
+        'Starting to poll for images with imageID:',
+        imageID.toString()
+      );
+
+      // The below code was never completing :(
+      // Though really this is how it should receive images back (events)
+
+      /*let isComplete = false;
       let isCancelled = false;
 
-      // What is this doing? Events I assume? It was never completing :(
-      // const checkJob = async () => {
-      //   const job = await connectedContract.getImage(imageID);
-      //   console.log(
-      //     `checking job: complete: ${job.isComplete}, cancelled: ${job.isCancelled}`
-      //   );
-      //   if (job.isComplete) {
-      //     isComplete = true;
-      //   } else if (job.isCancelled) {
-      //     isCancelled = true;
-      //   }
-      // };
+      const checkJob = async () => {
+        const job = await connectedContract.getImage(imageID);
+        console.log(
+          `checking job: complete: ${job.isComplete}, cancelled: ${job.isCancelled}`
+        );
+        if (job.isComplete) {
+          isComplete = true;
+        } else if (job.isCancelled) {
+          isCancelled = true;
+        }
+      };
 
-      // while (!isComplete && !isCancelled) {
-      //   await checkJob();
-      //   if (isComplete || isCancelled) break;
-      //   await bluebird.delay(1000);
-      // }
+      while (!isComplete && !isCancelled) {
+        await checkJob();
+        if (isComplete || isCancelled) break;
+        await bluebird.delay(1000);
+      }
 
       if (isComplete) {
         setStatusState((prevState) => ({
@@ -329,16 +336,11 @@ export const ContractContextProvider = ({
           open: true,
           message: 'Error Running Bacalhau Job',
         });
-      }
+      } */
     } catch (error: any) {
       console.error(error);
       let errorMessage = error.toString();
-      if (
-        error.error &&
-        error.error.data &&
-        error.error.data.message &&
-        error.error.data.message.includes('revert reason:')
-      ) {
+      if (error?.error?.data?.message.includes('revert reason:')) {
         const match = error.error.data.message.match(
           /revert reason: Error\((.*?)\)/
         );

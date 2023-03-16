@@ -11,6 +11,7 @@ import {
   ContractContextProvider,
   StatusContextProvider,
   ImageContextProvider,
+  NetworkContextProvider,
 } from '@/context';
 import HomePage from './HomePage';
 
@@ -28,16 +29,18 @@ export default function Home() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <StatusContextProvider>
-        <WalletContextProvider>
-          <ImageContextProvider>
-            <ContractContextProvider>
-              <WebHeader />
-              <PageLayout>
-                <HomePage />
-              </PageLayout>
-            </ContractContextProvider>
-          </ImageContextProvider>
-        </WalletContextProvider>
+        <NetworkContextProvider>
+          <WalletContextProvider>
+            <ImageContextProvider>
+              <ContractContextProvider>
+                <WebHeader />
+                <PageLayout>
+                  <HomePage />
+                </PageLayout>
+              </ContractContextProvider>
+            </ImageContextProvider>
+          </WalletContextProvider>
+        </NetworkContextProvider>
       </StatusContextProvider>
     </ThemeProvider>
   );

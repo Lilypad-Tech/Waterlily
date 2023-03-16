@@ -3,9 +3,9 @@ enum currentNetworkType {
   Mainnet = 'mainnet',
 }
 
-export const currentNetwork: currentNetworkType = currentNetworkType.Testnet; //or 'mainnet'
+export const currentNetwork: currentNetworkType = currentNetworkType.Mainnet; //or 'mainnet'
 
-export interface NetworkData {
+export interface NetworkDataType {
   name: string;
   chainId: string;
   rpc: string[];

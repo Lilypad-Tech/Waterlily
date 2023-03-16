@@ -21,7 +21,7 @@ export const PageLayout = ({ children }: Props) => {
   return (
     <Box sx={style}>
       {children}
-      <FooterLayout />
+      {/* <FooterLayout /> */}
     </Box>
   );
 };

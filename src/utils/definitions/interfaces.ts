@@ -56,7 +56,7 @@ type explore = {
   name: string;
   url: string;
 };
-export interface NetworkData {
+export interface NetworkDataType {
   displayName: string;
   id: number;
   rpc: string | undefined;
@@ -64,6 +64,6 @@ export interface NetworkData {
   blockExplorer: explore;
 }
 export interface ChainData {
-  wallaby: NetworkData;
-  hyperspace: NetworkData;
+  wallaby: NetworkDataType;
+  hyperspace: NetworkDataType;
 }
