@@ -158,6 +158,16 @@ console.log(`Upload target dir is ${uploadDir}`);
 const app = express();
 
 app.post('/upload', (req, res) => {
+  const token = req.query.access_token
+
+  if(!token || !process.env.FILESTORE_TOKEN != token) {
+    res.statusCode(403)
+    res.json({
+      ok: false,
+      error: 'Invalid token'
+    })
+  }
+  
   // handle upload
   const form = new formidable.IncomingForm({
     uploadDir: uploadTmpDir,

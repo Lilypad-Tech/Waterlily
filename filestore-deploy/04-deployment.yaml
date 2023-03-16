@@ -21,6 +21,9 @@ spec:
       - name: filestore
         image: ${FILESTORE_IMAGE}
         imagePullPolicy: Always
+        env:
+        - name: FILESTORE_TOKEN
+          value: ${FILESTORE_TOKEN}
         ports:
         - containerPort: 80
           name: web
