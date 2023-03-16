@@ -12,7 +12,14 @@ export interface NetworkDataType {
     decimals: number;
   };
   blockExplorer: string[];
+  contracts: {
+    WATERLILY_CONTRACT_ADDRESS: string;
+    LILYPAD_EVENTS_CONTRACT_ADDRESS: string;
+  };
+  imageUrlRoot: string;
 }
+
+const currentNetwork: NetworkDataType = networks.filecoinMainnet;
 
 interface NetworkContextValue {
   network: NetworkDataType;
@@ -34,9 +41,7 @@ interface MyContextProviderProps {
 export const NetworkContextProvider = ({
   children,
 }: MyContextProviderProps) => {
-  const [network, setNetwork] = useState<NetworkDataType>(
-    networks.filecoinMainnet
-  ); //keyof definitions/networks
+  const [network, setNetwork] = useState<NetworkDataType>(currentNetwork); //keyof definitions/networks
 
   const networkContextValue: NetworkContextValue = {
     network,

@@ -21,11 +21,11 @@ import {
   NetworkContext,
 } from '.';
 
-/* Contracts */
-import {
-  WATERLILY_CONTRACT_ADDRESS,
-  LILYPAD_CONTRACT_ADDRESS,
-} from '@/definitions';
+// /* Contracts */
+// import {
+//   WATERLILY_CONTRACT_ADDRESS,
+//   LILYPAD_CONTRACT_ADDRESS,
+// } from '@/definitions';
 
 import WaterlilyABI from '../abi/ArtistAttribution.sol/ArtistAttribution.json';
 import LilypadEventsABI from '../abi/LilypadEvents.sol/LilypadEvents.json';
@@ -84,7 +84,7 @@ export const ContractContextProvider = ({
     provider: readProvider,
     signer: null,
     connectedWaterlilyContract: new ethers.Contract(
-      WATERLILY_CONTRACT_ADDRESS,
+      network.contracts.WATERLILY_CONTRACT_ADDRESS,
       WaterlilyABI.abi,
       readProvider
     ),
@@ -101,14 +101,17 @@ export const ContractContextProvider = ({
 
   useEffect(() => {
     if (!walletState?.isConnected || walletState.accounts.length <= 0) return;
-    const connectedContract = getWaterlilyWriteContractConnection();
+    // const connectedContract = getWaterlilyWriteContractConnection();
+    const connectedContract = contractState.connectedWaterlilyContract;
     console.log('checking for customer images effect...', connectedContract);
+    console.log('using provider', contractState.provider);
     //Bug in contract - should not be public (then needs to be a write contract)
     const doAsync = async () => {
       const imageIDs = await connectedContract?.getCustomerImages(
         walletState.accounts[0]
       );
-      console.log('Fetched imageIDs');
+      if (!imageIDs) return;
+      console.log('Fetched imageIDs', imageIDs);
       const images = await bluebird.map(imageIDs, async (id: any) => {
         const image = await connectedContract?.getImage(id);
         return image;
@@ -154,7 +157,7 @@ export const ContractContextProvider = ({
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     return new ethers.Contract(
-      WATERLILY_CONTRACT_ADDRESS,
+      network.contracts.WATERLILY_CONTRACT_ADDRESS,
       WaterlilyABI.abi,
       signer
     );
@@ -198,8 +201,10 @@ export const ContractContextProvider = ({
     });
 
     console.log('fetching contract connections...');
-    const [connectedContract, eventsContract] = getWriteContractConnection();
-    console.log('Got contracts', connectedContract, eventsContract);
+    const eventsContract = getEventsWriteContractConnection();
+    console.log('Connected to event contract', eventsContract);
+    const connectedContract = getWaterlilyWriteContractConnection();
+    console.log('Connected to waterlily contract');
 
     if (!connectedContract || !eventsContract) {
       setStatusState({

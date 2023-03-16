@@ -5,17 +5,18 @@ enum currentNetworkType {
 
 export const currentNetwork: currentNetworkType = currentNetworkType.Mainnet; //or 'mainnet'
 
-export interface NetworkDataType {
-  name: string;
-  chainId: string;
-  rpc: string[];
-  nativeCurrency: {
-    name: string;
-    symbol: string;
-    decimals: number;
-  };
-  blockExplorer: string[];
-}
+// export interface NetworkDataType {
+//   name: string;
+//   chainId: string;
+//   rpc: string[];
+//   nativeCurrency: {
+//     name: string;
+//     symbol: string;
+//     decimals: number;
+//   };
+//   blockExplorer: string[];
+//   imageUrlRoot: string;
+// }
 
 export const networks = {
   filecoinHyperspace: {
@@ -35,6 +36,12 @@ export const networks = {
       'https://fvm.starboard.ventures/transactions/',
       'https://hyperspace.filscan.io/',
     ],
+    contracts: {
+      WATERLILY_CONTRACT_ADDRESS: '0xfF1f3f598036BA96752b76262aB80cE4e6965eB0',
+      LILYPAD_EVENTS_CONTRACT_ADDRESS:
+        '0x5aFC3aCAFd6A2cB0bbdeD5A75c8d1E361FD25863',
+    },
+    imageUrlRoot: `https://ai-art-files.cluster.world/job/`,
   },
   filecoinMainnet: {
     name: 'Filecoin Mainnet',
@@ -46,5 +53,11 @@ export const networks = {
       decimals: 18,
     },
     blockExplorer: ['https://filfox.info/'],
+    contracts: {
+      WATERLILY_CONTRACT_ADDRESS: '0xdC7612fa94F098F1d7BB40E0f4F4db8fF0bC8820',
+      LILYPAD_EVENTS_CONTRACT_ADDRESS:
+        '0x6a46ddE41c3f572A07527149552b4B1875B0361B',
+    },
+    imageUrlRoot: `https://ai-art-files.cluster.world/job/314-`,
   },
 };

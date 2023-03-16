@@ -1,14 +1,11 @@
 import { useContext } from 'react';
 import { Box, Typography, CardMedia, Card } from '@mui/material';
-import {
-  ContractContext,
-  getQuickImageURL,
-  IMAGE_NUMBER_ARRAY,
-} from '@/context';
+import { ContractContext, ImageContext, IMAGE_NUMBER_ARRAY } from '@/context';
 import { artists } from '@/definitions';
 
 export const GeneratedImages = () => {
   const { customerImages } = useContext(ContractContext);
+  const { getQuickImageURL } = useContext(ImageContext);
   return (
     <>
       {customerImages.map((image) => {

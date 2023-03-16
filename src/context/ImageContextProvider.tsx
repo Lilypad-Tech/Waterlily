@@ -9,7 +9,7 @@ import React, {
 import bluebird from 'bluebird';
 import { ethers } from 'ethers';
 import FileSaver from 'file-saver';
-import { StatusContext } from '.';
+import { NetworkContext, StatusContext, NetworkDataType } from '.';
 
 export interface StableDiffusionImage {
   id: ethers.BigNumber | string;
@@ -51,16 +51,18 @@ interface ImageContextValue {
   downloadImage: (imageUrl: string, folderName: string, fileName: string) => {};
   resetAllImageContext: () => void;
   createTwitterLink: (imageUrl: string) => void;
+  getQuickImageURL: (jobID: number, imageIndex: number) => string;
 }
 
-export const IMAGE_HOST = `https://ai-art-files.cluster.world`;
+// export const IMAGE_HOST = `https://ai-art-files.cluster.world`;
 export const IMAGE_COUNT = 4;
 export const IMAGE_NUMBER_ARRAY: number[] = [0, 1, 2, 3];
+// export const IMAGE_URL_ROOT = `${IMAGE_HOST}/job/314-`;
 
-export const getQuickImageURL = (jobID: number, imageIndex: number) => {
-  if (imageIndex < 0) return `${IMAGE_HOST}/job/${jobID}/combined.jpg`;
-  return `${IMAGE_HOST}/job/${jobID}/image_${imageIndex}.png`;
-};
+// export const getQuickImageURL = (jobID: number, imageIndex: number) => {
+//   if (imageIndex < 0) return `${IMAGE_HOST}/job/${jobID}/combined.jpg`;
+//   return `${IMAGE_HOST}/job/${jobID}/image_${imageIndex}.png`;
+// };
 
 export const defaultImageState: ImageContextValue = {
   imageState: {
@@ -81,6 +83,9 @@ export const defaultImageState: ImageContextValue = {
   createTwitterLink: (url: string) => {
     return '';
   },
+  getQuickImageURL: (jobID: number, imageIndex: number) => {
+    return '';
+  },
 };
 
 interface MyContextProviderProps {
@@ -89,21 +94,11 @@ interface MyContextProviderProps {
 
 export const ImageContext = createContext<ImageContextValue>(defaultImageState);
 
-export const convertBlobToBase64 = (blob: any) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = reject;
-    reader.onload = () => {
-      resolve(reader.result);
-    };
-    reader.readAsDataURL(blob);
-  });
-
 export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
+  const { network } = useContext(NetworkContext);
   const [imageState, setImageState] = useState<ImageState>(
     defaultImageState.imageState
   );
-
   const [imageID, setImageID] = useState<number>(0);
   const [quickImages, setQuickImages] = useState<string[]>([]);
   const [imagePrompt, setImagePrompt] = useState<string>('');
@@ -179,9 +174,10 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
 
   const createTwitterLink = (url: string) => {
     const tweetText = `Check out the ethical AI art I created on waterlily.ai! \n\n✍️ ${imagePrompt} \n\n🎨 ${imageArtist.name} -> 💸 0.05 $FIL paid \n\n`;
+    const endTweetText = `Powered by @BacalhauProject and @Filecoin`;
     const tweetUrl: string = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
       tweetText
-    )}&url=${encodeURIComponent(url)}`;
+    )}&url=${encodeURIComponent(url)}&text=${encodeURIComponent(endTweetText)}`;
 
     setTwitterLink(tweetUrl);
   };
@@ -214,6 +210,11 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     setTwitterLink('');
   };
 
+  const getQuickImageURL = (jobID: number, imageIndex: number) => {
+    if (imageIndex < 0) return `${network.imageUrlRoot}${jobID}/combined.jpg`;
+    return `${network.imageUrlRoot}${jobID}/image_${imageIndex}.png`;
+  };
+
   const imageContextValue: ImageContextValue = {
     imageState,
     setImageState,
@@ -229,6 +230,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     downloadImage,
     resetAllImageContext,
     createTwitterLink,
+    getQuickImageURL,
   };
 
   return (
