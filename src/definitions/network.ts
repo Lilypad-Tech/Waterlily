@@ -42,7 +42,7 @@ export const networks = {
       LILYPAD_EVENTS_CONTRACT_ADDRESS:
         '0x5aFC3aCAFd6A2cB0bbdeD5A75c8d1E361FD25863',
     },
-    imageUrlRoot: `https://ai-art-files.cluster.world/job/3141-`,
+    imageUrlRoot: `https://waterlily.cluster.world/job/3141-`,
   },
   filecoinMainnet: {
     name: 'Filecoin Mainnet',
@@ -59,7 +59,7 @@ export const networks = {
       LILYPAD_EVENTS_CONTRACT_ADDRESS:
         '0x6a46ddE41c3f572A07527149552b4B1875B0361B',
     },
-    imageUrlRoot: `https://ai-art-files.cluster.world/job/314-`,
+    imageUrlRoot: `https://waterlily.cluster.world/job/314-`,
   },
 };
 
