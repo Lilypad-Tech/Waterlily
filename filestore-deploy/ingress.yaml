@@ -11,9 +11,20 @@ spec:
   tls:
   - hosts:
     - ai-art-files.cluster.world
+    - waterlily.cluster.world
     secretName: ingress-app
   rules:
   - host: ai-art-files.cluster.world
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: filestore
+            port:
+              number: 80
+  - host: waterlily.cluster.world
     http:
       paths:
       - path: /
