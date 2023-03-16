@@ -85,4 +85,7 @@ export const artists: ArtistType[] = [
       alt: 'Charles Balthazar Julien Févret de Saint-Mémin',
     },
   },
+  // {
+  //TODO add new artists
+  // }
 ];

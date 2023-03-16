@@ -53,7 +53,7 @@ export const networks = {
       symbol: 'FIL',
       decimals: 18,
     },
-    blockExplorer: ['https://filfox.info/'],
+    blockExplorer: ['https://filfox.info/tx/'],
     contracts: {
       WATERLILY_CONTRACT_ADDRESS: '0xdC7612fa94F098F1d7BB40E0f4F4db8fF0bC8820',
       LILYPAD_EVENTS_CONTRACT_ADDRESS:
