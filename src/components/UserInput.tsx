@@ -13,6 +13,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { MyButton } from '@/components';
 import { artists, ArtistType, networks } from '@/definitions';
 import {
+  NetworkContext,
   WalletContext,
   ContractContext,
   StatusContext,
@@ -62,6 +63,7 @@ export const UserInput: FC<UserInputProps> = ({
   const [prompt, setPrompt] = useState(initialPrompt);
   const [artist, setArtist] = useState(initialArtist);
   // const [artist, setArtist, prompt, setPrompt] = useContext(ImageContext);
+  const { network } = useContext(NetworkContext);
   const { runStableDiffusionJob } = useContext(ContractContext);
   const {
     statusState = defaultStatusState.statusState,
@@ -99,7 +101,7 @@ export const UserInput: FC<UserInputProps> = ({
       ...defaultStatusState.statusState,
       isLoading: 'Submitting Waterlily job to the FVM network ...',
     });
-    if (verifyChainId(networks.filecoinHyperspace.chainId)) {
+    if (verifyChainId(network.chainId)) {
       let balance = await checkBalance();
       if (!balance || balance < MIN_BALANCE) {
         setSnackbar({
@@ -118,7 +120,7 @@ export const UserInput: FC<UserInputProps> = ({
         ...defaultStatusState.statusState,
         isLoading: '',
       });
-      changeWalletChain(networks.filecoinHyperspace.chainId);
+      changeWalletChain(network.chainId);
     }
   };
 
