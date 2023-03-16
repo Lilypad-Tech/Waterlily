@@ -158,7 +158,7 @@ export const UserInput: FC<UserInputProps> = ({
         >
           <TextField
             label="Text Prompt"
-            placeholder="A rainbow unicorn dancing on an Australian Beach"
+            placeholder="A rainbow unicorn in space"
             id="prompt_input"
             onChange={(e) => setPrompt(e.target.value)}
             fullWidth
@@ -197,6 +197,3 @@ export const UserInput: FC<UserInputProps> = ({
     </Box>
   );
 };
-function createTwitterLink(arg0: string) {
-  throw new Error('Function not implemented.');
-}

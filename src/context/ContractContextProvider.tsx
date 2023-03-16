@@ -168,7 +168,7 @@ export const ContractContextProvider = ({
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     return new ethers.Contract(
-      LILYPAD_CONTRACT_ADDRESS,
+      network.contracts.LILYPAD_EVENTS_CONTRACT_ADDRESS,
       LilypadEventsABI.abi,
       signer
     );
