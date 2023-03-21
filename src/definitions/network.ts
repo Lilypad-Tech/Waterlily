@@ -5,20 +5,6 @@ enum currentNetworkType {
 
 export const currentNetwork: currentNetworkType = currentNetworkType.Mainnet; //or 'mainnet'
 
-// import { NetworkDataType } from '../context';
-// export interface NetworkDataType {
-//   name: string;
-//   chainId: string;
-//   rpc: string[];
-//   nativeCurrency: {
-//     name: string;
-//     symbol: string;
-//     decimals: number;
-//   };
-//   blockExplorer: string[];
-//   imageUrlRoot: string;
-// }
-
 export const networks = {
   filecoinHyperspace: {
     name: 'Filecoin Hyperspace Testnet',
@@ -34,7 +20,7 @@ export const networks = {
       decimals: 18,
     },
     blockExplorer: [
-      'https://fvm.starboard.ventures/transactions/',
+      'https://fvm.starboard.ventures/hyperspace/explorer/tx/',
       'https://hyperspace.filscan.io/',
     ],
     contracts: {
@@ -48,12 +34,16 @@ export const networks = {
     name: 'Filecoin Mainnet',
     chainId: '0x13a',
     rpc: ['https://api.node.glif.io'],
+    // wss: ['wss://wss.node.glif.io/apigw/lotus/rpc/v1'],
     nativeCurrency: {
       name: 'Filecoin',
       symbol: 'FIL',
       decimals: 18,
     },
-    blockExplorer: ['https://filfox.info/tx/'],
+    blockExplorer: [
+      'https://fvm.starboard.ventures/explorer/tx/',
+      'https://filfox.info/tx/',
+    ],
     contracts: {
       WATERLILY_CONTRACT_ADDRESS: '0xdC7612fa94F098F1d7BB40E0f4F4db8fF0bC8820',
       LILYPAD_EVENTS_CONTRACT_ADDRESS:
@@ -64,12 +54,13 @@ export const networks = {
 };
 
 export const getNetwork = () => {
-  if (typeof window === "undefined") {
-    return networks.filecoinHyperspace
+  if (typeof window === 'undefined') {
+    return networks.filecoinHyperspace;
   }
   const urlSearchParams = new URLSearchParams((window as any).location.search);
   const params = Object.fromEntries(urlSearchParams.entries());
   let currentNetworkName: string = params.waterlilyNetwork || '';
-  if(currentNetworkName == 'filecoinHyperspace') return networks.filecoinHyperspace
-  return networks.filecoinMainnet
-}
+  if (currentNetworkName == 'filecoinHyperspace')
+    return networks.filecoinHyperspace;
+  return networks.filecoinMainnet;
+};
