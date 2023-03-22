@@ -1,7 +1,7 @@
 # Waterlily
 A project bringing ethics back to Generative AI-Art
 
-(Live on FVM!)[https://www.waterlily.ai/]
+[Live on FVM!](https://www.waterlily.ai/)
 
 
 ## Overview
