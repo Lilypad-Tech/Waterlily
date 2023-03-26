@@ -132,8 +132,14 @@ const HomePage = () => {
         />
         <ArtistListLayout>
           {artists.map((artist, e) => {
-            const { artistId, name, style, description, portfolio, image } =
-              artist;
+            const {
+              artistId,
+              name,
+              style,
+              description,
+              portfolio,
+              thumbnails,
+            } = artist;
             return (
               <ArtistCard
                 key={e}
@@ -141,7 +147,7 @@ const HomePage = () => {
                 style={style}
                 description={description}
                 portfolio={portfolio}
-                image={image}
+                thumbnails={thumbnails}
                 disabled={statusState.isLoading ? true : false}
                 onClick={() => {
                   setImageArtist({

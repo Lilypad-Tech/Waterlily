@@ -111,10 +111,6 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
 
   const { setStatusState } = useContext(StatusContext);
 
-  // useEffect(() => {
-  //   console.log(imageState);
-  // }, [imageState]);
-
   useEffect(() => {
     if (!imageID) return;
     let active = true;

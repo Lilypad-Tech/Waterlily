@@ -28,7 +28,7 @@ export const networks = {
       LILYPAD_EVENTS_CONTRACT_ADDRESS:
         '0x5aFC3aCAFd6A2cB0bbdeD5A75c8d1E361FD25863',
     },
-    imageUrlRoot: `https://waterlily.cluster.world/job/3141-`,
+    imageUrlRoot: `https://waterlily.cluster.world/job/`,
   },
   filecoinMainnet: {
     name: 'Filecoin Mainnet',

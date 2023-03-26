@@ -19,12 +19,17 @@ const boxStyle = {
   padding: '1rem',
 };
 
+type ImageThumbnail = {
+  link: string;
+  alt: string;
+};
+//TO DO fix this to work off artists definitions
 interface ArtistCardProps {
   name?: string;
   style?: string;
   description?: string;
   disabled?: boolean;
-  image?: { link: string; alt: string };
+  thumbnails: ImageThumbnail[];
   portfolio: string;
   onClick?: () => void;
 }
@@ -34,10 +39,11 @@ export const ArtistCard: FC<ArtistCardProps> = ({
   style,
   description,
   disabled = false,
-  image,
+  thumbnails,
   portfolio,
   onClick,
 }): ReactElement => {
+  console.log('thumbnails', thumbnails);
   const [expanded, setExpanded] = useState(false);
   const { walletState } = useContext(WalletContext);
 
@@ -67,8 +73,8 @@ export const ArtistCard: FC<ArtistCardProps> = ({
               <CardMedia
                 component="img"
                 // height="250"
-                image={image?.link || './monet-water-lilies.jpeg'}
-                alt={image?.alt || 'Monet Water Lilies'}
+                image={thumbnails[0].link || './monet-water-lilies.jpeg'}
+                alt={thumbnails[0].alt || 'Monet Water Lilies'}
                 sx={{
                   pointerEvents: 'none',
                   border: '1px solid #fff',
