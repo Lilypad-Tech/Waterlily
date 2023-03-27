@@ -24,3 +24,4 @@ export * from './ParrotLoader';
 export * from './TwitterLink';
 export * from './StatusMessage';
 export * from './GeneratedImages';
+export * from './ArtistCardGrid';

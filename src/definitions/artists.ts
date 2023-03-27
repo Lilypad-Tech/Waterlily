@@ -79,23 +79,23 @@ export const ArtMediums = [
   'Photography',
 ];
 
-export enum ArtistCategory {
+enum ArtistCategory {
   Classical = 'Classical Art',
   Modern = 'Modern Art',
   Digital = 'Digital Art',
 }
 
-export enum ArtistType {
+enum ArtistType {
   Private = 'private',
   Public = 'public',
 }
 
-export type ArtistThumbnail = {
+type ArtistThumbnail = {
   link: string;
   alt: string;
 };
 
-export interface ArtistData {
+interface ArtistData {
   artistId: string; //how do we keep this hidden...
   artistType: ArtistType;
   name: string;

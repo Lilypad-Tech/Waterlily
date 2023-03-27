@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { MyButton } from '@/components';
-import { artists, ArtistType, networks } from '@/definitions';
+import { ArtistType, networks } from '@/definitions';
 import {
   NetworkContext,
   WalletContext,
@@ -19,6 +19,7 @@ import {
   StatusContext,
   defaultStatusState,
   ImageContext,
+  ArtistContext,
 } from '@/context';
 
 const MIN_BALANCE = 0.15;
@@ -62,6 +63,7 @@ export const UserInput: FC<UserInputProps> = ({
 } = {}): ReactElement => {
   const [prompt, setPrompt] = useState(initialPrompt);
   const [artist, setArtist] = useState(initialArtist);
+  const { artistState: artists } = useContext(ArtistContext);
   // const [artist, setArtist, prompt, setPrompt] = useContext(ImageContext);
   const { network } = useContext(NetworkContext);
   const { runStableDiffusionJob } = useContext(ContractContext);
@@ -79,13 +81,10 @@ export const UserInput: FC<UserInputProps> = ({
   } = useContext(WalletContext);
   const { setImagePrompt, setImageArtist, resetAllImageContext } =
     useContext(ImageContext);
-  const artistObj = artists.reduce<Record<string, ArtistType>>(
-    (acc, artist) => {
-      acc[artist.name] = artist;
-      return acc;
-    },
-    {}
-  );
+  const artistObj = artists.reduce<Record<string, any>>((acc, artist) => {
+    acc[artist.name] = artist;
+    return acc;
+  }, {});
 
   const handleChange = (event: SelectChangeEvent) => {
     setArtist({

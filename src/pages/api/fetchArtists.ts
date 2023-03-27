@@ -6,10 +6,10 @@ import {
   ArtistCategory,
   ArtistThumbnail,
   ArtistType,
-} from '../../definitions/artists';
+} from '@/context';
 
 const spreadsheetId = '1q2bJT9fULFavXyB9XDO8TNBpWwvHHBNbCikfxfYN3zU';
-const range = 'Sheet1!A3:P9';
+const range = 'Sheet1!A4:P10';
 
 async function fetchData(apiKey: string): Promise<any[]> {
   const sheets = google.sheets({ version: 'v4', auth: apiKey });
@@ -27,18 +27,20 @@ function createArtistData(row: any[]): ArtistData {
   const artistType =
     row[3] === 'Public' ? ArtistType.Public : ArtistType.Private;
   const name = row[1];
-  const category = row[12] as ArtistCategory;
-  const style = row[13];
+  const category = row[14] as ArtistCategory;
+  const style = row[12];
+  const period = row[13];
   const artLink = row[6];
   const thumbnailLinks = row[9] ? row[9].split(',') : [];
   const thumbnailAlts = row[10] ? row[10].split(',') : [];
-  const thumbnails: ArtistThumbnail[] = thumbnailLinks.map((link, i) => ({
-    link,
-    alt: thumbnailAlts[i] || '',
-  }));
-  const description = row[7];
-  const portfolio = row[8];
-  const period = row[14];
+  const thumbnails: ArtistThumbnail[] = thumbnailLinks.map(
+    (link: string, i: number) => ({
+      link,
+      alt: thumbnailAlts[i] || '',
+    })
+  );
+  const portfolio = row[7];
+  const description = row[8];
   const tags = row[15] ? row[15].split(',') : [];
   const nationality = row[16];
   return {

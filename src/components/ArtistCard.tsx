@@ -11,7 +11,7 @@ import {
   Link,
   Button,
 } from '@mui/material';
-import { WalletContext } from '@/context';
+import { WalletContext, ArtistData } from '@/context';
 
 const boxStyle = {
   display: 'flex',
@@ -25,22 +25,14 @@ type ImageThumbnail = {
 };
 //TO DO fix this to work off artists definitions
 interface ArtistCardProps {
-  name?: string;
-  style?: string;
-  description?: string;
+  artist: ArtistData;
   disabled?: boolean;
-  thumbnails: ImageThumbnail[];
-  portfolio: string;
   onClick?: () => void;
 }
 
 export const ArtistCard: FC<ArtistCardProps> = ({
-  name,
-  style,
-  description,
+  artist,
   disabled = false,
-  thumbnails,
-  portfolio,
   onClick,
 }): ReactElement => {
   const [expanded, setExpanded] = useState(false);
@@ -50,8 +42,8 @@ export const ArtistCard: FC<ArtistCardProps> = ({
     <Box sx={boxStyle}>
       <Card sx={{ maxWidth: 300 }}>
         <CardHeader
-          title={name || 'Artist Name'}
-          subheader={style || 'Artist Style'}
+          title={artist.name || 'Artist Name'}
+          subheader={artist.style || 'Artist Style'}
           sx={{
             height: '120px',
           }}
@@ -67,13 +59,15 @@ export const ArtistCard: FC<ArtistCardProps> = ({
             mb: 2,
           }}
         >
-          <Link href={portfolio} target="_blank" rel="noreferrer">
-            <Watermark text={name || 'ArtistName'}>
+          <Link href={artist.portfolio} target="_blank" rel="noreferrer">
+            <Watermark text={artist.name || 'ArtistName'}>
               <CardMedia
                 component="img"
                 // height="250"
-                image={thumbnails[0].link || './monet-water-lilies.jpeg'}
-                alt={thumbnails[0].alt || 'Monet Water Lilies'}
+                image={
+                  artist.thumbnails[0]?.link || './monet-water-lilies.jpeg'
+                }
+                alt={artist.thumbnails[0]?.alt || 'Monet Water Lilies'}
                 sx={{
                   pointerEvents: 'none',
                   border: '1px solid #fff',
@@ -88,7 +82,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
           }}
         >
           <Typography variant="body2" color="text.secondary">
-            {description || 'Artist Description'}
+            {artist.description || 'Artist Description'}
           </Typography>
         </CardContent>
         <CardActions

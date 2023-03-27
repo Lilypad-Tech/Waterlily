@@ -1,4 +1,7 @@
 import { forwardRef, useState, useContext, useEffect } from 'react';
+import { Box, Typography, Button, Snackbar } from '@mui/material';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { KeyboardDoubleArrowUpRounded } from '@mui/icons-material';
 import {
   HeaderLayout,
   TitleLayout,
@@ -9,7 +12,6 @@ import {
   ImageListLayout,
 } from '@/layouts';
 import {
-  Logo,
   Title,
   Subtitle,
   Description,
@@ -23,9 +25,10 @@ import {
   StatusMessage,
   GeneratedImages,
   ErrorMessage,
+  ArtistCardGrid,
   // ParrotLoader,
 } from '@/components';
-import { artists } from '@/definitions/artists';
+
 import {
   ContractContext,
   WalletContext,
@@ -33,11 +36,9 @@ import {
   StatusContext,
   defaultStatusState,
   ImageContext,
-  fetchArtistData,
+  ArtistContext,
+  ArtistType,
 } from '@/context';
-import { Box, Typography, Button, Snackbar } from '@mui/material';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
-import { KeyboardDoubleArrowUpRounded } from '@mui/icons-material';
 
 const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -48,8 +49,7 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
 
 const HomePage = () => {
   const [isCallout] = useState(true);
-  const { customerImages } = useContext(ContractContext);
-
+  const { artistState: artists } = useContext(ArtistContext);
   const { walletState = defaultWalletState.walletState } =
     useContext(WalletContext);
   const {
@@ -59,6 +59,7 @@ const HomePage = () => {
   } = useContext(StatusContext);
   const { quickImages, imagePrompt, imageArtist, setImageArtist, twitterLink } =
     useContext(ImageContext);
+  const { customerImages } = useContext(ContractContext);
 
   const goToTop = () => {
     return document.getElementById('justAboveTextField')?.scrollIntoView({
@@ -67,6 +68,10 @@ const HomePage = () => {
       inline: 'nearest',
     });
   };
+
+  useEffect(() => {
+    console.log('artistState', artists);
+  }, [artists]);
 
   return (
     <>
@@ -131,37 +136,9 @@ const HomePage = () => {
           text="Featured Artists"
           sx={{ fontSize: '3rem', paddingTop: '2rem' }}
         />
-        <ArtistListLayout>
-          {artists.map((artist, e) => {
-            const {
-              artistId,
-              name,
-              style,
-              description,
-              portfolio,
-              thumbnails,
-            } = artist;
-            return (
-              <ArtistCard
-                key={e}
-                name={name}
-                style={style}
-                description={description}
-                portfolio={portfolio}
-                thumbnails={thumbnails}
-                disabled={statusState.isLoading ? true : false}
-                onClick={() => {
-                  setImageArtist({
-                    name,
-                    key: artistId,
-                    style,
-                  });
-                  goToTop();
-                }}
-              />
-            );
-          })}
-        </ArtistListLayout>
+        {/* <ArtistListLayout> */}
+        <ArtistCardGrid navigate={goToTop} artistType={ArtistType.Public} />
+        {/* </ArtistListLayout> */}
         {isCallout && <CalloutMessage />}
       </ArtistLayout>
       <SectionLayout>

@@ -5,24 +5,31 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import fetchArtists from '../pages/api/fetchArtists';
+// import fetchArtists from '../pages/api/fetchArtists';
 // import { google } from 'googleapis';
 // import { Fireproof } from '@fireproof/core';
 
-enum ArtistType {
-  Private = 'private',
-  Public = 'public',
+export enum ArtistType {
+  Private = 'Private',
+  Public = 'Public',
 }
 
-type ArtistThumbnail = {
+export type ArtistThumbnail = {
   link: string;
   alt: string;
 };
+
+export enum ArtistCategory {
+  Classical = 'Classical Art',
+  Modern = 'Modern Art',
+  Digital = 'Digital Art',
+}
 
 export interface ArtistData {
   artistId: string; //how do we keep this hidden...
   artistType: ArtistType;
   name: string;
+  category: ArtistCategory;
   style: string;
   period: string;
   tags: string[];
@@ -36,6 +43,7 @@ const defaultArtistData: ArtistData = {
   artistId: '',
   artistType: ArtistType.Public,
   name: '',
+  category: ArtistCategory.Classical,
   style: '',
   period: '',
   tags: [],
@@ -45,18 +53,19 @@ const defaultArtistData: ArtistData = {
   thumbnails: [],
 };
 
-export interface ArtistState {
-  artists: ArtistData[];
+export interface Artists {
+  publicArtists: ArtistData[];
+  privateArtists: ArtistData[];
 }
 
 interface ArtistContextValue {
-  artistState: ArtistState;
-  setArtistState: Dispatch<SetStateAction<ArtistState>>;
+  artistState: ArtistData[];
+  setArtistState: Dispatch<SetStateAction<ArtistData[]>>;
   fetchArtistData: () => void;
 }
 
 export const defaultArtistState: ArtistContextValue = {
-  artistState: { artists: [] },
+  artistState: [],
   setArtistState: () => {},
   fetchArtistData: () => {},
 };
@@ -69,41 +78,22 @@ export const ArtistContext =
   createContext<ArtistContextValue>(defaultArtistState);
 
 export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
-  const [artistState, setArtistState] = useState<ArtistState>(
+  const [artistState, setArtistState] = useState<ArtistData[]>(
     defaultArtistState.artistState
   );
 
   useEffect(() => {
-    const fetchArtistData = async () => {
-      try {
-        const response = await fetch('/api/fetchArtists');
-        const data = await response.json();
-        console.log('artists', data);
-        // setArtistData(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     fetchArtistData();
   }, []);
 
-  //read the artist details from Google Sheets
   const fetchArtistData = async () => {
-    // const artistData = await fetchArtists();
-    // console.log('artist data', artistData);
-    // const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
-    // if (!API_KEY) return;
-    // const sheets = google.sheets({ version: 'v4', auth: API_KEY });
-    // // Define the range of the Google Sheet to read
-    // const range = 'Sheet1!B3:P9';
-    // const spreadsheetId = '1q2bJT9fULFavXyB9XDO8TNBpWwvHHBNbCikfxfYN3zU';
-    // //https:docs.google.com/spreadsheets/d/1q2bJT9fULFavXyB9XDO8TNBpWwvHHBNbCikfxfYN3zU/edit#gid=0
-    // const artistData = await sheets.spreadsheets.values.get({
-    //   spreadsheetId,
-    //   range,
-    //   key: API_KEY,
-    // });
-    // console.log('artistData', artistData.data.values);
+    try {
+      const response = await fetch('/api/fetchArtists');
+      const data = await response.json();
+      setArtistState(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const addArtistToDB = () => {
