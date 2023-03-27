@@ -26,6 +26,7 @@
     "eslint-config-next": "13.2.3",
     "ethers": "^5.7.2",
     "file-saver": "^2.0.5",
+    "fs": "^0.0.1-security",
     "googleapis": "^114.0.0",
     "multiformats": "^11.0.2",
     "next": "13.2.3",

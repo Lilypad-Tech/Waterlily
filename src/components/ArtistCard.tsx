@@ -43,7 +43,6 @@ export const ArtistCard: FC<ArtistCardProps> = ({
   portfolio,
   onClick,
 }): ReactElement => {
-  console.log('thumbnails', thumbnails);
   const [expanded, setExpanded] = useState(false);
   const { walletState } = useContext(WalletContext);
 

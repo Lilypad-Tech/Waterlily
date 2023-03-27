@@ -12,6 +12,7 @@ import {
   StatusContextProvider,
   ImageContextProvider,
   NetworkContextProvider,
+  ArtistContextProvider,
 } from '@/context';
 import HomePage from './HomePage';
 
@@ -22,7 +23,7 @@ let theme = createTheme({
 });
 theme = responsiveFontSizes(theme);
 
-//Wallet auth belongs here too?
+//I think my context's maybe shouldn't have children
 export default function Home() {
   return (
     //Wallet Context Provider here
@@ -30,16 +31,18 @@ export default function Home() {
       <CssBaseline />
       <StatusContextProvider>
         <NetworkContextProvider>
-          <WalletContextProvider>
-            <ImageContextProvider>
-              <ContractContextProvider>
-                <WebHeader />
-                <PageLayout>
-                  <HomePage />
-                </PageLayout>
-              </ContractContextProvider>
-            </ImageContextProvider>
-          </WalletContextProvider>
+          <ArtistContextProvider>
+            <WalletContextProvider>
+              <ImageContextProvider>
+                <ContractContextProvider>
+                  <WebHeader />
+                  <PageLayout>
+                    <HomePage />
+                  </PageLayout>
+                </ContractContextProvider>
+              </ImageContextProvider>
+            </WalletContextProvider>
+          </ArtistContextProvider>
         </NetworkContextProvider>
       </StatusContextProvider>
     </ThemeProvider>

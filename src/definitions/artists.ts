@@ -79,18 +79,18 @@ export const ArtMediums = [
   'Photography',
 ];
 
-enum ArtistCategory {
+export enum ArtistCategory {
   Classical = 'Classical Art',
   Modern = 'Modern Art',
   Digital = 'Digital Art',
 }
 
-enum ArtistType {
+export enum ArtistType {
   Private = 'private',
   Public = 'public',
 }
 
-type ArtistThumbnail = {
+export type ArtistThumbnail = {
   link: string;
   alt: string;
 };

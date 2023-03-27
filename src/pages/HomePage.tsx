@@ -33,6 +33,7 @@ import {
   StatusContext,
   defaultStatusState,
   ImageContext,
+  fetchArtistData,
 } from '@/context';
 import { Box, Typography, Button, Snackbar } from '@mui/material';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
