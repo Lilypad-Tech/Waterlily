@@ -137,7 +137,7 @@ const HomePage = () => {
           sx={{ fontSize: '3rem', paddingTop: '2rem' }}
         />
         {/* <ArtistListLayout> */}
-        <ArtistCardGrid navigate={goToTop} artistType={ArtistType.Public} />
+        <ArtistCardGrid navigate={goToTop} />
         {/* </ArtistListLayout> */}
         {isCallout && <CalloutMessage />}
       </ArtistLayout>
