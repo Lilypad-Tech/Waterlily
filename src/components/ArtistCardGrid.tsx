@@ -11,6 +11,7 @@ import { useTheme } from '@mui/material/styles';
 import Fuse from 'fuse.js';
 import {
   ArtistContext,
+  ArtistCategory,
   ArtistData,
   ImageContext,
   StatusContext,
@@ -28,7 +29,6 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
   const { statusState = defaultStatusState.statusState } =
     useContext(StatusContext);
   const [currentPage, setCurrentPage] = useState(1);
-  const [uniqueCategories, setUniqueCategories] = useState<string[]>([]);
   const [uniqueStyles, setUniqueStyles] = useState<string[]>([]);
 
   const [searchName, setSearchName] = useState('');
@@ -36,17 +36,12 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
   const [searchStyle, setSearchStyle] = useState('');
 
   useEffect(() => {
-    const categories = new Set<string>();
     const styles = new Set<string>();
     artists.forEach((artist) => {
-      artist.category.split(',').forEach((category) => {
-        categories.add(category.trim());
-      });
       artist.style.split(',').forEach((style) => {
         styles.add(style.trim());
       });
     });
-    setUniqueCategories(Array.from(categories));
     setUniqueStyles(Array.from(styles));
   }, [artists]);
 
@@ -67,12 +62,10 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
   //To do fix filtering
   const filteredData = artists.filter((artist: ArtistData) => {
     const nameResult = fuseName.search(searchName);
-    const categoryResult = fuseCategory.search(searchCategory);
     const styleResult = fuseStyle.search(searchStyle);
     return (
       (searchName === '' || nameResult.find((r) => r.item === artist)) &&
-      (searchCategory === '' ||
-        categoryResult.find((r) => r.item === artist)) &&
+      (searchCategory === '' || artist.category === searchCategory) &&
       (searchStyle === '' || styleResult.find((r) => r.item === artist))
     );
   });
@@ -132,9 +125,9 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
           size="medium"
         >
           <MenuItem value="">All Categories</MenuItem>
-          {uniqueCategories.map((category) => (
-            <MenuItem key={category} value={category}>
-              {category}
+          {Object.keys(ArtistCategory).map((key) => (
+            <MenuItem key={key} value={ArtistCategory[key]}>
+              {ArtistCategory[key]}
             </MenuItem>
           ))}
         </TextField>
