@@ -109,6 +109,7 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
 
   return (
     <Box sx={{ paddingTop: '1rem' }}>
+      {/* TO DO search input no responsive to screen sizes aka should stack */}
       <Box>
         <TextField
           label="Search by name"

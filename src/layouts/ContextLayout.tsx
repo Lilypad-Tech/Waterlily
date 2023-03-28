@@ -1,6 +1,5 @@
-// import '@/styles/globals.css';
-import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
+import { AppProps } from 'next/app';
 import React from 'react';
 import {
   ThemeProvider,
@@ -8,6 +7,10 @@ import {
   responsiveFontSizes,
 } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import HomePage from '../pages/HomePage';
+import ArtistSignup from '../pages/ArtistSignup';
+import { WebHeader } from '@/components';
+import { PageLayout } from '@/layouts';
 import {
   NavigationContextProvider,
   WalletContextProvider,
@@ -17,8 +20,6 @@ import {
   NetworkContextProvider,
   ArtistContextProvider,
 } from '@/context';
-import { WebHeader } from '@/components';
-import { PageLayout } from '@/layouts';
 
 let theme = createTheme({
   palette: {
@@ -27,12 +28,14 @@ let theme = createTheme({
 });
 theme = responsiveFontSizes(theme);
 
-export default function App({ Component, pageProps }: AppProps) {
+//I think my context's maybe shouldn't have children
+export const ContextLayout = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
 
   const handleNavigation = (page: string) => {
     router.push(`/${page}`);
   };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -46,6 +49,8 @@ export default function App({ Component, pageProps }: AppProps) {
                     <WebHeader />
                     <PageLayout>
                       <Component {...pageProps} />
+                      {/* {router.pathname === '/' && <HomePage />}
+                      {router.pathname === '/ArtistSignup' && <ArtistSignup />} */}
                     </PageLayout>
                   </ContractContextProvider>
                 </ImageContextProvider>
@@ -56,4 +61,4 @@ export default function App({ Component, pageProps }: AppProps) {
       </NavigationContextProvider>
     </ThemeProvider>
   );
-}
+};

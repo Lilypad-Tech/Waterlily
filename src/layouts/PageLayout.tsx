@@ -23,7 +23,13 @@ export const PageLayout = ({ children }: Props) => {
       {children}
       {/* <FooterLayout /> */}
       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Box sx={{ width: '60%', fontSize: '0.75rem', fontStyle: 'italic' }}>
+        <Box
+          sx={{
+            width: '60%',
+            fontSize: '0.75rem',
+            fontStyle: 'italic',
+          }}
+        >
           “Never doubt that a small group of thoughtful, committed, citizens can
           change the world. Indeed, it is the only thing that ever has.” ―
           Margaret Mead
