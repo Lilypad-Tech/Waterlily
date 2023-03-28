@@ -115,7 +115,7 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
   };
 
   return (
-    <Box>
+    <Box sx={{ paddingTop: '1rem' }}>
       <Box>
         <TextField
           label="Search by name"

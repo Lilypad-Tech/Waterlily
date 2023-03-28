@@ -136,9 +136,8 @@ const HomePage = () => {
           text="Featured Artists"
           sx={{ fontSize: '3rem', paddingTop: '2rem' }}
         />
-        {/* <ArtistListLayout> */}
+        {/* TODO: separate public and private artists & display separately */}
         <ArtistCardGrid navigate={goToTop} />
-        {/* </ArtistListLayout> */}
         {isCallout && <CalloutMessage />}
       </ArtistLayout>
       <SectionLayout>

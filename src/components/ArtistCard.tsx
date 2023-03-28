@@ -10,8 +10,11 @@ import {
   Typography,
   Link,
   Button,
+  Stack,
+  Chip,
 } from '@mui/material';
 import { WalletContext, ArtistData } from '@/context';
+import { artists } from '@/definitions';
 
 const boxStyle = {
   display: 'flex',
@@ -38,14 +41,38 @@ export const ArtistCard: FC<ArtistCardProps> = ({
   const [expanded, setExpanded] = useState(false);
   const { walletState } = useContext(WalletContext);
 
+  const subHeader = () => {
+    return (
+      <>
+        <Typography sx={{ padding: 0 }}>
+          {artist.period || 'Unknown'}
+        </Typography>
+        <Typography sx={{ padding: 0 }}>
+          {artist.style || 'Artist Style'}
+        </Typography>
+      </>
+    );
+  };
+
   return (
     <Box sx={boxStyle}>
-      <Card sx={{ maxWidth: 300 }}>
+      <Card sx={{ maxWidth: 300, padding: 0, margin: 0 }}>
         <CardHeader
           title={artist.name || 'Artist Name'}
-          subheader={artist.style || 'Artist Style'}
+          subheader={
+            <>
+              <Typography sx={{ padding: 0 }}>
+                {artist.period || 'Unknown'}
+              </Typography>
+              <Typography sx={{ padding: 0, fontSize: '0.8rem' }}>
+                {artist.nationality || 'Nationality'}
+              </Typography>
+            </>
+          }
           sx={{
             height: '120px',
+            padding: '0.5rem',
+            paddingTop: '1rem',
           }}
         />
         <Box
@@ -56,9 +83,10 @@ export const ArtistCard: FC<ArtistCardProps> = ({
             alignItems: 'center',
             justifyContent: 'center',
             //backgroundColor: '#fff',
-            mb: 2,
+            // mb: 1,
           }}
         >
+          {/* TODO: link should open a modal with their generated art examples */}
           <Link href={artist.portfolio} target="_blank" rel="noreferrer">
             <Watermark text={artist.name || 'ArtistName'}>
               <CardMedia
@@ -71,6 +99,8 @@ export const ArtistCard: FC<ArtistCardProps> = ({
                 sx={{
                   pointerEvents: 'none',
                   border: '1px solid #fff',
+                  padding: 0,
+                  margin: 0,
                 }}
               />
             </Watermark>
@@ -78,9 +108,22 @@ export const ArtistCard: FC<ArtistCardProps> = ({
         </Box>
         <CardContent
           sx={{
-            height: '240px',
+            height: '264px',
+            padding: '0 1rem',
           }}
         >
+          <Typography sx={{ padding: 0, paddingBottom: '0.3rem' }}>
+            {artist.style || 'Artist Style'}
+          </Typography>
+          <Box display="flex" flexWrap="wrap" justifyContent="center">
+            {artist.tags.map((tag) => {
+              return (
+                <Box mr={1} mb={0.5}>
+                  <Chip label={tag} variant="outlined" size="small" />
+                </Box>
+              );
+            })}
+          </Box>
           <Typography variant="body2" color="text.secondary">
             {artist.description || 'Artist Description'}
           </Typography>
@@ -91,6 +134,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'flex-end',
+            paddingTop: '1rem',
           }}
         >
           {walletState?.isConnected && (

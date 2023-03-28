@@ -23,14 +23,28 @@ async function fetchData(apiKey: string): Promise<any[]> {
 
 function createArtistData(row: any[]): ArtistData {
   console.log('artists rows', row);
-  const artistId = row[4];
+  // 0 Needs Validation
+  // 1 Name
+  // 2 priority
+  // 3 artistType
+  // 4 artistId
+  // 5 dockerModel
+  // 6 artLink
+  // 7 portfolio
+  // 8 description
+  // 9 thumbnails
+  // 10 thumnailAlt
+  // 11 category
+  // 12 style
+  // 13 period
+  // 14 tags
+  // 15 nationality
+  const name = row[1];
   const artistType =
     row[3] === 'Public' ? ArtistType.Public : ArtistType.Private;
-  const name = row[1];
-  const category = row[14] as ArtistCategory;
-  const style = row[12];
-  const period = row[13];
-  const artLink = row[6];
+  const artistId = row[4];
+  const portfolio = row[7];
+  const description = row[8];
   const thumbnailLinks = row[9] ? row[9].split(',') : [];
   const thumbnailAlts = row[10] ? row[10].split(',') : [];
   const thumbnails: ArtistThumbnail[] = thumbnailLinks.map(
@@ -39,10 +53,11 @@ function createArtistData(row: any[]): ArtistData {
       alt: thumbnailAlts[i] || '',
     })
   );
-  const portfolio = row[7];
-  const description = row[8];
-  const tags = row[15] ? row[15].split(',') : [];
-  const nationality = row[16];
+  const category = row[11] as ArtistCategory;
+  const style = row[12];
+  const period = row[13] ? row[13] : 'Current';
+  const tags = row[14] ? row[14].split(',') : [];
+  const nationality = row[15];
   return {
     artistId,
     artistType,
