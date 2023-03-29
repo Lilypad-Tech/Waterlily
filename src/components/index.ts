@@ -25,3 +25,4 @@ export * from './TwitterLink';
 export * from './StatusMessage';
 export * from './GeneratedImages';
 export * from './ArtistCardGrid';
+export * from './ArtistThumbnailUploader';

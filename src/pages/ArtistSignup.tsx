@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   Formik,
+  useFormikContext,
   FormikHelpers,
   FormikProps,
   Form,
@@ -13,20 +14,28 @@ import {
   Box,
   TextField,
   MenuItem,
-  TextareaAutosize,
   Button,
   Typography,
   Checkbox,
   FormControlLabel,
+  Autocomplete,
+  Chip,
 } from '@mui/material';
 import {
   ArtistData,
   ArtistCategory,
   ArtistThumbnail,
   ArtistType,
+  ArtStyleTags,
 } from '@/context';
 import { HeaderLayout, TitleLayout } from '@/layouts';
-import { Description, Subtitle, Title, WalletButton } from '@/components';
+import {
+  Description,
+  Subtitle,
+  Title,
+  WalletButton,
+  ArtistThumbnailUploader,
+} from '@/components';
 
 interface FormData {
   // artistId: string; //how do we keep this hidden...
@@ -130,11 +139,27 @@ const artistTypeOptions = Object.values(ArtistType).map((artistType) => (
 
 const ArtistSignup: React.FC<{}> = () => {
   const [thumbnails, setThumbnails] = useState<ArtistThumbnail[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
+
+  const handleAddTag = (newTag: string) => {
+    if (!tags.includes(newTag) && newTag.trim() !== '') {
+      setTags([...tags, newTag.trim()]);
+    }
+  };
+
+  const handleChangeTags = (event: any, newTags: string[]) => {
+    setTags(newTags);
+  };
+
+  const handleDeleteTag = (tagToDelete: string) => {
+    setTags(tags.filter((tag) => tag !== tagToDelete));
+  };
 
   const handleFormSubmit = (values: ArtistData) => {
     console.log(values);
     // do something with the form data, e.g. submit it to a backend API
   };
+
   return (
     <Box flex="column">
       <HeaderLayout>
@@ -230,6 +255,23 @@ const ArtistSignup: React.FC<{}> = () => {
                 formik.touched.biography && Boolean(formik.errors.biography)
               }
               helperText={formik.touched.biography && formik.errors.biography}
+              InputProps={{
+                endAdornment: (
+                  <p
+                    style={{
+                      fontSize: '12px',
+                      position: 'absolute',
+                      bottom: '-0.5rem',
+                      right: '0.8rem',
+                    }}
+                  >
+                    {formik.values.biography.length}/350
+                  </p>
+                ),
+              }}
+              inputProps={{
+                maxLength: 350,
+              }}
             />
 
             <Typography>Artwork Details</Typography>
@@ -264,6 +306,52 @@ const ArtistSignup: React.FC<{}> = () => {
               helperText={formik.touched.style && formik.errors.style}
             />
 
+            <Autocomplete
+              multiple
+              freeSolo
+              options={ArtStyleTags}
+              value={tags}
+              onChange={(event, newValue) => {
+                if (newValue.length <= 5) {
+                  // only set tags if there are 4 or fewer
+                  setTags(newValue);
+                }
+              }}
+              renderTags={(tagValue, getTagProps) =>
+                tagValue.map((option, index) => (
+                  <Chip
+                    color="primary"
+                    {...getTagProps({ index })}
+                    label={option}
+                    onDelete={() => handleDeleteTag(option)}
+                    key={option}
+                  />
+                ))
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  label="Styles"
+                  placeholder={
+                    tags.length >= 5
+                      ? 'Only 4 tags allowable'
+                      : 'Select or add tags'
+                  }
+                  onKeyPress={(event) => {
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                      if (tags.length < 5) {
+                        handleAddTag((event.target as HTMLInputElement).value);
+                        (event.target as HTMLInputElement).value = '';
+                      }
+                    }
+                  }}
+                  disabled={tags.length >= 4}
+                />
+              )}
+            />
+
             {/* put a year drop down in. */}
             <TextField
               id="period"
@@ -293,8 +381,14 @@ const ArtistSignup: React.FC<{}> = () => {
               helperText={formik.touched.portfolio && formik.errors.portfolio}
             />
             <Typography>Images</Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Box sx={{ width: '80%' }}>
+                <ArtistThumbnailUploader />
+              </Box>
+            </Box>
 
             <Typography>Verification Checks</Typography>
+            {/* TODO: refactor to a component */}
             <Box sx={{ justifyContent: 'left' }}>
               <FormControlLabel
                 value="originalArt"
@@ -308,12 +402,14 @@ const ArtistSignup: React.FC<{}> = () => {
                 control={<Checkbox />}
                 label="Do you consent to having a Machine Learning Model trained on your artworks?"
                 labelPlacement="start"
+                sx={{ width: '80%', justifyContent: 'space-between' }}
               />
               <FormControlLabel
                 value="legalContent"
                 control={<Checkbox />}
                 label="Is this art legal content?"
                 labelPlacement="start"
+                sx={{ width: '80%', justifyContent: 'space-between' }}
               />
             </Box>
 
