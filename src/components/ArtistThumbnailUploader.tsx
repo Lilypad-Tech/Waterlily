@@ -1,6 +1,7 @@
 import React, { FC, ReactElement, useState } from 'react';
 import 'react-dropzone-uploader/dist/styles.css';
 import Dropzone from 'react-dropzone-uploader';
+import ReactCrop from 'react-easy-crop';
 
 interface Props {}
 
@@ -9,7 +10,7 @@ export const ArtistThumbnailUploader: FC<Props> = (): ReactElement => {
   //create a dropzone
   // add autosizing of these images (keep aspect ratio but resize to w=668px)
   //add cropping
-
+  const [files, setFiles] = useState([]);
   const [isUpdatePreview, setIsUpdatePreview] = useState(false);
 
   const getUploadParams = ({ meta }) => {
@@ -34,7 +35,7 @@ export const ArtistThumbnailUploader: FC<Props> = (): ReactElement => {
     <Dropzone
       getUploadParams={getUploadParams}
       onChangeStatus={handleChangeStatus}
-      onSubmit={handleSubmit}
+      // onSubmit={handleSubmit}
       maxFiles={3}
       accept="image/*"
       inputContent={(files, extra) =>

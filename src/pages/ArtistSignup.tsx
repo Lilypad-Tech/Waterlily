@@ -35,6 +35,7 @@ import {
   Title,
   WalletButton,
   ArtistThumbnailUploader,
+  ArtistUpload,
 } from '@/components';
 
 interface FormData {
@@ -381,9 +382,15 @@ const ArtistSignup: React.FC<{}> = () => {
               helperText={formik.touched.portfolio && formik.errors.portfolio}
             />
             <Typography>Images</Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            {/* <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               <Box sx={{ width: '80%' }}>
                 <ArtistThumbnailUploader />
+              </Box>
+            </Box> */}
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Box sx={{ width: '80%' }}>
+                <Typography>Art Thumbnails</Typography>
+                <ArtistUpload />
               </Box>
             </Box>
 
