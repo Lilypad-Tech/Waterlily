@@ -296,7 +296,7 @@ export const ContractContextProvider = ({
       }));
 
       const imageID = nextJobID;
-      setImageID(45); //imageID.toNumber());
+      setImageID(imageID.toNumber()); //45;
       console.log(
         'Starting to poll for images with imageID:',
         imageID.toString()
@@ -402,19 +402,19 @@ export const ContractContextProvider = ({
       return;
     }
     console.log('saving to NFT.storage', image);
-    const metadata = await saveToNFTStorage(image);
+    const metadata: any = await saveToNFTStorage(image);
     console.log('metadata mint', metadata);
 
-    // console.log('Connecting to NFT Contract...');
-    // const connectedNftContract = getWaterlilyNFTWriteContractConnection();
-    // console.log('Calling NFT Minting function...');
-    // const tx = await connectedNftContract?.mintWaterlilyNFT(
-    //   walletState?.accounts[0],
-    //   metadata.url
-    //   //metadata ipfs uri
-    // );
-    // const receipt = await tx.wait();
-    // console.log('receipt - NFT Minted!', receipt);
+    console.log('Connecting to NFT Contract...');
+    const connectedNftContract = getWaterlilyNFTWriteContractConnection();
+    console.log('Calling NFT Minting function...');
+    const tx = await connectedNftContract?.mintWaterlilyNFT(
+      walletState?.accounts[0],
+      metadata?.ipnft
+      //metadata ipfs uri
+    );
+    const receipt = await tx.wait();
+    console.log('receipt - NFT Minted!', receipt);
   };
 
   //THESE GO LAST

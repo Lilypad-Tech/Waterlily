@@ -1,8 +1,7 @@
 import { forwardRef, useState, useContext, useEffect } from 'react';
-import { Box, Typography, Button, Snackbar } from '@mui/material';
+import { Box, Button, Snackbar } from '@mui/material';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { KeyboardDoubleArrowUpRounded } from '@mui/icons-material';
-import { useRouter } from 'next/router';
 import {
   HeaderLayout,
   TitleLayout,
@@ -38,7 +37,6 @@ import {
   defaultStatusState,
   ImageContext,
   ArtistContext,
-  ArtistType,
 } from '@/context';
 
 const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
@@ -58,7 +56,7 @@ const HomePage = () => {
     closeSnackbar,
     statusState = defaultStatusState.statusState,
   } = useContext(StatusContext);
-  const { quickImages, imagePrompt, imageArtist, setImageArtist, twitterLink } =
+  const { quickImages, imagePrompt, imageArtist, twitterLink } =
     useContext(ImageContext);
   const { customerImages } = useContext(ContractContext);
 
