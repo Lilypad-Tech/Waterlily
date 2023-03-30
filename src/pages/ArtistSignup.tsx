@@ -27,6 +27,7 @@ import {
   ArtistThumbnail,
   ArtistType,
   ArtStyleTags,
+  useNavigation,
 } from '@/context';
 import { HeaderLayout, TitleLayout } from '@/layouts';
 import {
@@ -139,6 +140,7 @@ const artistTypeOptions = Object.values(ArtistType).map((artistType) => (
 //   };
 
 const ArtistSignup: React.FC<{}> = () => {
+  const { handleNavigation } = useNavigation();
   const [thumbnails, setThumbnails] = useState<ArtistThumbnail[]>([]);
   const [tags, setTags] = useState<string[]>([]);
 
@@ -164,14 +166,14 @@ const ArtistSignup: React.FC<{}> = () => {
   return (
     <Box flex="column" sx={{ paddingBottom: '2rem' }}>
       <HeaderLayout>
-        <div>Home</div>
+        <div onClick={() => handleNavigation('/')}>Home</div>
         {/* <Logo height={40} /> */}
         <WalletButton />
       </HeaderLayout>
       <TitleLayout>
         <Title />
         <Subtitle text="Artist Onboarding" />
-        <div>Thankyou note here</div>
+        <div>Thankyou note here / Link to FAQ </div>
       </TitleLayout>
       <Formik
         initialValues={initialValues}
