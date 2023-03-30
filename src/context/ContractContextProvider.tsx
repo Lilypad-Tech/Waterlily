@@ -153,6 +153,7 @@ export const ContractContextProvider = ({
       }));
     }
   }, [quickImages]);
+
   //otherwise use default.
   const getWaterlilyWriteContractConnection = () => {
     if (!window.ethereum || !walletState?.accounts[0]) return;
@@ -296,7 +297,7 @@ export const ContractContextProvider = ({
       }));
 
       const imageID = nextJobID;
-      setImageID(imageID.toNumber()); //45;
+      setImageID(56); //(imageID.toNumber()); //45;
       console.log(
         'Starting to poll for images with imageID:',
         imageID.toString()
@@ -404,6 +405,9 @@ export const ContractContextProvider = ({
     console.log('saving to NFT.storage', image);
     const metadata: any = await saveToNFTStorage(image);
     console.log('metadata mint', metadata);
+    if (!metadata || !metadata.url) {
+      throw new Error();
+    }
 
     console.log('Connecting to NFT Contract...');
     const connectedNftContract = getWaterlilyNFTWriteContractConnection();
@@ -413,8 +417,53 @@ export const ContractContextProvider = ({
       metadata?.ipnft
       //metadata ipfs uri
     );
+    setStatusState((prevState) => ({
+      ...prevState,
+      isLoading:
+        'Waiting for transaction to be included in a block on the network...',
+      isMessage: true,
+      message: {
+        title: `This could take some time... please be patient while the transaction is included in a block!`,
+        description: (
+          <a
+            href={`${network.blockExplorer}${tx.hash}`}
+            target="_blank"
+            rel="no_referrer"
+          >
+            Check Transaction Status in block explorer here
+          </a>
+        ),
+      },
+    }));
+    setSnackbar({
+      type: 'success',
+      open: true,
+      message: `Transaction submitted to the FVM network: ${tx.hash}...`,
+    });
     const receipt = await tx.wait();
     console.log('receipt - NFT Minted!', receipt);
+    setSnackbar({
+      type: 'success',
+      open: true,
+      message: `NFT Minted!`,
+    });
+    setStatusState((prevState) => ({
+      ...prevState,
+      isLoading: '',
+      isMessage: true,
+      message: {
+        title: `NFT Minted`,
+        description: (
+          <a
+            href={`${network.blockExplorer}${tx.hash}`}
+            target="_blank"
+            rel="no_referrer"
+          >
+            Check Transaction in block explorer
+          </a>
+        ), //receipt.transactionHash
+      },
+    }));
   };
 
   //THESE GO LAST

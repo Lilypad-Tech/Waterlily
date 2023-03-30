@@ -81,7 +81,7 @@ interface ImageContextValue {
   createTwitterLink: (imageUrl: string) => void;
   getQuickImageURL: (jobID: number, imageIndex: number) => string;
   nftMetadata: any;
-  saveToNFTStorage: (image: { link: string; alt: string }) => void;
+  saveToNFTStorage: (image: { link: string; alt: string }) => Promise<any>;
 }
 
 export const IMAGE_COUNT = 4;
@@ -116,7 +116,9 @@ export const defaultImageState: ImageContextValue = {
     return '';
   },
   nftMetadata: null,
-  saveToNFTStorage: (image: { link: string; alt: string }) => {},
+  saveToNFTStorage: (image: { link: string; alt: string }) => {
+    return {} as Promise<any>;
+  },
 };
 
 interface MyContextProviderProps {
@@ -307,13 +309,13 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     });
     let nftJson = await createNFTMetadata(image);
     //setStatus here to loading
-    await NFTStorageClient.store(nftJson)
+    let metadata: any = await NFTStorageClient.store(nftJson)
       .then((metadata) => {
         console.log('NFT Data pinned to IPFS & stored on Filecoin');
         console.log('Metadata URI:', metadata.url, metadata);
         setStatusState((prevState) => ({
           ...prevState,
-          isLoading: '', //'NFT Metadata successfully saved to NFT.Storage!',
+          isLoading: 'Sending to minting function - check your wallet!', //'NFT Metadata successfully saved to NFT.Storage!',
           isMessage: true,
           message: {
             title: `NFT Metadata successfully saved to NFT.Storage!`,
@@ -324,6 +326,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
             ),
           },
         }));
+
         setNftMetadata(metadata);
         return metadata;
         //mint the NFT now
@@ -335,7 +338,9 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
           isError:
             'Something went wrong saving the NFT metadata to NFT.Storage',
         });
+        throw err;
       });
+    return metadata;
   };
 
   const imageContextValue: ImageContextValue = {
