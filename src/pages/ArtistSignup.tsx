@@ -162,7 +162,7 @@ const ArtistSignup: React.FC<{}> = () => {
   };
 
   return (
-    <Box flex="column">
+    <Box flex="column" sx={{ paddingBottom: '2rem' }}>
       <HeaderLayout>
         <div>Home</div>
         {/* <Logo height={40} /> */}
@@ -433,6 +433,7 @@ const ArtistSignup: React.FC<{}> = () => {
           </Box>
         )}
       </Formik>
+      <Typography>FAQ's somewhere too</Typography>
     </Box>
   );
 };

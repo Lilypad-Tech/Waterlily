@@ -190,17 +190,19 @@ export const ArtistUpload: FC<Props> = (props: Props): ReactElement => {
                   Open File Dialog
                 </button>
               </div>
-              <aside>
-                <h4>Files</h4>
-                <aside style={thumbsContainer}>{thumbs}</aside>
-                <ul>
-                  {acceptedFiles.map((file) => (
-                    <li key={file.path}>
-                      {file.path} - {file.size} bytes
-                    </li>
-                  ))}
-                </ul>
-              </aside>
+              {acceptedFiles.length > 0 && (
+                <aside>
+                  <h4>Files</h4>
+                  <aside style={thumbsContainer}>{thumbs}</aside>
+                  <ul>
+                    {acceptedFiles.map((file) => (
+                      <li key={file.path}>
+                        {file.path} - {file.size} bytes
+                      </li>
+                    ))}
+                  </ul>
+                </aside>
+              )}
             </div>
           );
         }}
