@@ -141,37 +141,35 @@ const HomePage = () => {
         <ArtistCardGrid navigate={goToTop} />
         {isCallout && <CalloutMessage />}
       </ArtistLayout>
-      <SectionLayout>
-        <>
-          <Title
-            text="Your Generated Images"
-            sx={{ fontSize: '3rem', paddingTop: '2rem' }}
-          />
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {customerImages.length < 1 ? (
-              <Typography onClick={goToTop}>Generate an Image!</Typography>
-            ) : (
+      {customerImages.length > 0 && (
+        <SectionLayout>
+          <>
+            <Title
+              text="Your Generated Images"
+              sx={{ fontSize: '3rem', paddingTop: '2rem' }}
+            />
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
               <GeneratedImages />
-            )}
-            <Box sx={{ padding: '1rem 0' }}>
-              <Button
-                onClick={goToTop}
-                endIcon={<KeyboardDoubleArrowUpRounded />}
-                aria-label="Back to Top"
-              >
-                Back to Top
-              </Button>
             </Box>
-          </Box>
-        </>
-      </SectionLayout>
+          </>
+        </SectionLayout>
+      )}
+      <Box sx={{ padding: '1rem 0' }}>
+        <Button
+          onClick={goToTop}
+          endIcon={<KeyboardDoubleArrowUpRounded />}
+          aria-label="Back to Top"
+        >
+          Back to Top
+        </Button>
+      </Box>
       {snackbar.open && (
         <Snackbar
           open={snackbar.open}
