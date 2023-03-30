@@ -146,6 +146,10 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
     }
   };
 
+  const findArtistDetailsByName = () => {};
+
+  const findArtistDetailsById = () => {};
+
   const addArtistToDB = () => {
     //when we have the page
   };

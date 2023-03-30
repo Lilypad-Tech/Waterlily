@@ -1,8 +1,16 @@
+declare let window: any;
 import { FC, ReactElement, useContext } from 'react';
 import { Box, Button, Card, CardMedia, Link } from '@mui/material';
 import { SxProps } from '@mui/system';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
-import { ImageContext } from '@/context';
+import {
+  defaultWalletState,
+  ImageContext,
+  WalletContext,
+  StatusContext,
+  defaultStatusState,
+  ContractContext,
+} from '@/context';
 
 //ipfs.io/ipfs/{cid} should be fine?
 
@@ -33,7 +41,12 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
   idx,
   sx = {},
 }): ReactElement => {
+  const { walletState = defaultWalletState.walletState } =
+    useContext(WalletContext);
   const { imageArtist, imagePrompt, downloadImage } = useContext(ImageContext);
+  const { mintNFT } = useContext(ContractContext);
+  const { statusState = defaultStatusState.statusState } =
+    useContext(StatusContext);
   let noSpacePrompt = imagePrompt.replace(/\s+/g, '').trim();
   // let artistName = imageArtist.name.replace(/\s+/g, '').trim();
   const fileName = `${noSpacePrompt.slice(0, 20)}-Image_${idx}`;
@@ -58,13 +71,22 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
             component="img"
             // height="200"
             image={image?.link || './monet-water-lilies.jpeg'}
-            alt={image?.alt || 'Monet Water Lilies'}
+            alt={image?.alt || 'Monet Water Lilies Placeholder Image'}
           />
         </Card>
       </Box>
-      {/* <Button variant="outlined" onClick={() => alert('Feature coming soon!')}>
+      {/* pass in imageID to the nftfunction - it has the rest */}
+      <Button
+        variant="outlined"
+        onClick={() => mintNFT(image)}
+        disabled={
+          !window.ethereum ||
+          !walletState.accounts[0] ||
+          Boolean(statusState.isLoading)
+        }
+      >
         Mint as NFT
-      </Button> */}
+      </Button>
     </Box>
   );
 };

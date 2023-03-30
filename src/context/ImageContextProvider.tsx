@@ -9,7 +9,15 @@ import React, {
 import bluebird from 'bluebird';
 import { ethers } from 'ethers';
 import FileSaver from 'file-saver';
-import { NetworkContext, StatusContext, NetworkDataType } from '.';
+import { NFTStorage } from 'nft.storage';
+import {
+  NetworkContext,
+  StatusContext,
+  WalletContext,
+  defaultStatusState,
+  defaultWalletState,
+} from '.';
+import { TokenInput } from 'nft.storage/dist/src/token';
 
 export interface StableDiffusionImage {
   id: ethers.BigNumber | string;
@@ -20,6 +28,26 @@ export interface StableDiffusionImage {
   errorMessage: string;
   isComplete: boolean;
   isCancelled: boolean;
+}
+
+interface NFTProperties {
+  type: string;
+  prompt: string;
+  originalArtist: {
+    name: string;
+  };
+  imageID: number;
+  origins: {
+    ipfs: string;
+  };
+  mintedBy: string;
+}
+
+export interface NFTMetadata extends TokenInput {
+  name: string;
+  description: string;
+  image: Blob;
+  properties: NFTProperties;
 }
 
 export interface ImageState {
@@ -52,9 +80,10 @@ interface ImageContextValue {
   resetAllImageContext: () => void;
   createTwitterLink: (imageUrl: string) => void;
   getQuickImageURL: (jobID: number, imageIndex: number) => string;
+  nftMetadata: any;
+  saveToNFTStorage: (image: { link: string; alt: string }) => void;
 }
 
-// export const IMAGE_HOST = `https://ai-art-files.cluster.world`;
 export const IMAGE_COUNT = 4;
 export const IMAGE_NUMBER_ARRAY: number[] = [0, 1, 2, 3];
 // export const IMAGE_URL_ROOT = `${IMAGE_HOST}/job/314-`;
@@ -86,6 +115,8 @@ export const defaultImageState: ImageContextValue = {
   getQuickImageURL: (jobID: number, imageIndex: number) => {
     return '';
   },
+  nftMetadata: null,
+  saveToNFTStorage: (image: { link: string; alt: string }) => {},
 };
 
 interface MyContextProviderProps {
@@ -96,6 +127,8 @@ export const ImageContext = createContext<ImageContextValue>(defaultImageState);
 
 export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
   const { network } = useContext(NetworkContext);
+  const { walletState = defaultWalletState.walletState } =
+    useContext(WalletContext);
   const [imageState, setImageState] = useState<ImageState>(
     defaultImageState.imageState
   );
@@ -108,6 +141,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     style: string;
   }>({ name: '', key: '', style: '' });
   const [twitterLink, setTwitterLink] = useState<string>('');
+  const [nftMetadata, setNftMetadata] = useState<any>('');
 
   const { setStatusState } = useContext(StatusContext);
 
@@ -211,6 +245,99 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     return `${network.imageUrlRoot}${jobID}/image_${imageIndex}.png`;
   };
 
+  const getImageBlob = async (
+    imageHTTPURL: string // this is the imageHTTPURL will just be ipfs://cid for normal image
+  ) => {
+    const r = await fetch(imageHTTPURL);
+    console.log('r', r);
+    if (!r.ok) {
+      // throw new Error(`error fetching image: [${r.statusText}]: ${r.status}`);
+      setStatusState({
+        ...defaultStatusState.statusState,
+        isError: 'Could not fetch the image',
+      });
+    }
+    return r.blob();
+  };
+
+  const NFTStorageClient = new NFTStorage({
+    token: process.env.NEXT_PUBLIC_NFT_STORAGE_API_KEY || 'undefined',
+  });
+
+  //we know the prompt, artist, jobID & image url.
+  const createNFTMetadata = async (image: { link: string; alt: string }) => {
+    //fetch artist details here
+    //get the image blob
+    let imageBlob = await getImageBlob(image.link);
+    // let ipfsImageBlob = await NFTStorageClient.storeBlob(imageBlob)
+
+    const nftJson: NFTMetadata = {
+      name: 'Waterlily Ethical AI NFTs',
+      description: `This NFT created by Waterlily.ai from artwork trained on artworks by ${imageArtist.name}. Creators are paid for every use of their artwork on waterlily.ai. Be part of the change.`,
+      image: imageBlob, //,image.link, //should be a Blob - need to make it
+      properties: {
+        type: `Stable Diffusion Ethical AI-generated image by Waterlily.ai`,
+        prompt: imagePrompt,
+        originalArtist: {
+          name: imageArtist.name,
+          //add other details
+        },
+        imageID: imageID,
+        origins: {
+          ipfs: ``, //original bacalhau ipfs link
+        },
+        mintedBy: walletState?.accounts[0] || '',
+        // content: {
+        //   'text/markdown': imagePrompt,
+        // },
+      },
+    };
+
+    return nftJson;
+  };
+
+  const saveToNFTStorage = async (image: { link: string; alt: string }) => {
+    if (!NFTStorageClient) {
+      console.log('No nft.storage client');
+      return;
+    }
+    setStatusState({
+      ...defaultStatusState.statusState,
+      isLoading: 'Creating & Storing NFT Metadata to NFT.Storage...',
+    });
+    let nftJson = await createNFTMetadata(image);
+    //setStatus here to loading
+    await NFTStorageClient.store(nftJson)
+      .then((metadata) => {
+        console.log('NFT Data pinned to IPFS & stored on Filecoin');
+        console.log('Metadata URI:', metadata.url, metadata);
+        setStatusState((prevState) => ({
+          ...prevState,
+          isLoading: '', //'NFT Metadata successfully saved to NFT.Storage!',
+          isMessage: true,
+          message: {
+            title: `NFT Metadata successfully saved to NFT.Storage!`,
+            description: (
+              <a href={metadata.url} target="_blank" rel="no_referrer">
+                {metadata.url}
+              </a>
+            ),
+          },
+        }));
+        setNftMetadata(metadata);
+        return metadata;
+        //mint the NFT now
+      })
+      .catch((err) => {
+        console.log('Error uploading to NFT.storage', err);
+        setStatusState({
+          ...defaultStatusState.statusState,
+          isError:
+            'Something went wrong saving the NFT metadata to NFT.Storage',
+        });
+      });
+  };
+
   const imageContextValue: ImageContextValue = {
     imageState,
     setImageState,
@@ -227,6 +354,8 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     resetAllImageContext,
     createTwitterLink,
     getQuickImageURL,
+    nftMetadata,
+    saveToNFTStorage,
   };
 
   return (

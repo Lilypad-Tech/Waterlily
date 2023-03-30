@@ -15,6 +15,7 @@ export interface NetworkDataType {
   contracts: {
     WATERLILY_CONTRACT_ADDRESS: string;
     LILYPAD_EVENTS_CONTRACT_ADDRESS: string;
+    WATERLILY_NFT_CONTRACT_ADDRESS: string;
   };
   imageUrlRoot: string;
 }

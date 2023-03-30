@@ -27,6 +27,8 @@ export const networks = {
       WATERLILY_CONTRACT_ADDRESS: '0xfF1f3f598036BA96752b76262aB80cE4e6965eB0',
       LILYPAD_EVENTS_CONTRACT_ADDRESS:
         '0x5aFC3aCAFd6A2cB0bbdeD5A75c8d1E361FD25863',
+      WATERLILY_NFT_CONTRACT_ADDRESS:
+        '0x3619c1f295B3081985e581Ea3b8546CE629C5A3D',
     },
     imageUrlRoot: `https://waterlily.cluster.world/job/3141-`,
   },
@@ -48,6 +50,7 @@ export const networks = {
       WATERLILY_CONTRACT_ADDRESS: '0xdC7612fa94F098F1d7BB40E0f4F4db8fF0bC8820',
       LILYPAD_EVENTS_CONTRACT_ADDRESS:
         '0x6a46ddE41c3f572A07527149552b4B1875B0361B',
+      WATERLILY_NFT_CONTRACT_ADDRESS: '',
     },
     imageUrlRoot: `https://waterlily.cluster.world/job/314-`,
   },

@@ -77,7 +77,7 @@ const HomePage = () => {
   return (
     <>
       <HeaderLayout>
-        <div></div>
+        <div />
         {/* <Logo height={40} /> */}
         <WalletButton />
       </HeaderLayout>
@@ -100,7 +100,7 @@ const HomePage = () => {
                     idx={idx}
                     image={{
                       link: quickImageURL,
-                      alt: 'Not found',
+                      alt: `Waterlily Generated Image ${idx} from ${imageArtist.name} data`,
                     }}
                     sx={{
                       maxWidth: 250,

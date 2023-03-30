@@ -29,6 +29,7 @@ import {
 
 import WaterlilyABI from '../abi/ArtistAttribution.sol/ArtistAttribution.json';
 import LilypadEventsABI from '../abi/LilypadEvents.sol/LilypadEvents.json';
+import WaterlilyNFTABI from '../abi/WaterlilyNFT.sol/WaterlilyNFT.json';
 
 const IMAGE_COST = '0.1';
 const GAS_LIMIT = 9000000;
@@ -51,6 +52,7 @@ interface ContractContextValue {
   setContractState: Dispatch<SetStateAction<ContractState>>;
   customerImages: any[];
   runStableDiffusionJob: (prompt: string, artistId: string) => Promise<void>;
+  mintNFT: (image: { link: string; alt: string }) => Promise<void>;
 }
 
 // const pr = new ethers.providers.JsonRpcProvider(network.rpc[0]);
@@ -64,6 +66,7 @@ export const defaultContractState = {
   customerImages: [],
   setContractState: () => {},
   runStableDiffusionJob: async () => {},
+  mintNFT: async () => {},
 };
 
 interface MyContextProviderProps {
@@ -95,7 +98,8 @@ export const ContractContextProvider = ({
     setStatusState,
     setSnackbar,
   } = useContext(StatusContext);
-  const { setImageID, quickImages } = useContext(ImageContext);
+  const { setImageID, quickImages, saveToNFTStorage } =
+    useContext(ImageContext);
   const { walletState } = useContext(WalletContext);
   const [txHash, setTxHash] = useState('');
 
@@ -149,7 +153,6 @@ export const ContractContextProvider = ({
       }));
     }
   }, [quickImages]);
-
   //otherwise use default.
   const getWaterlilyWriteContractConnection = () => {
     if (!window.ethereum || !walletState?.accounts[0]) return;
@@ -170,6 +173,17 @@ export const ContractContextProvider = ({
     return new ethers.Contract(
       network.contracts.LILYPAD_EVENTS_CONTRACT_ADDRESS,
       LilypadEventsABI.abi,
+      signer
+    );
+  };
+
+  const getWaterlilyNFTWriteContractConnection = () => {
+    if (!window.ethereum || !walletState?.accounts[0]) return;
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    return new ethers.Contract(
+      network.contracts.WATERLILY_NFT_CONTRACT_ADDRESS,
+      WaterlilyNFTABI.abi,
       signer
     );
   };
@@ -256,6 +270,8 @@ export const ContractContextProvider = ({
       console.log(JSON.stringify(receipt, null, 4));
       console.dir('Receipt:', receipt);
 
+      //poll for events
+
       setSnackbar({
         type: 'success',
         open: true,
@@ -280,7 +296,7 @@ export const ContractContextProvider = ({
       }));
 
       const imageID = nextJobID;
-      setImageID(imageID.toNumber());
+      setImageID(45); //imageID.toNumber());
       console.log(
         'Starting to poll for images with imageID:',
         imageID.toString()
@@ -371,12 +387,43 @@ export const ContractContextProvider = ({
     }
   };
 
+  const mintNFT = async (image: { link: string; alt: string }) => {
+    if (!window.ethereum) {
+      setStatusState({
+        ...statusState,
+        isError: 'Web3 not available',
+        isMessage: true,
+        message: {
+          title: 'Web3 not available',
+          description:
+            'Please install and unlock a Web3 provider in your browser to use this application.',
+        },
+      });
+      return;
+    }
+    console.log('saving to NFT.storage', image);
+    const metadata = await saveToNFTStorage(image);
+    console.log('metadata mint', metadata);
+
+    // console.log('Connecting to NFT Contract...');
+    // const connectedNftContract = getWaterlilyNFTWriteContractConnection();
+    // console.log('Calling NFT Minting function...');
+    // const tx = await connectedNftContract?.mintWaterlilyNFT(
+    //   walletState?.accounts[0],
+    //   metadata.url
+    //   //metadata ipfs uri
+    // );
+    // const receipt = await tx.wait();
+    // console.log('receipt - NFT Minted!', receipt);
+  };
+
   //THESE GO LAST
   const contractContextValue: ContractContextValue = {
     contractState,
     setContractState,
     customerImages,
     runStableDiffusionJob,
+    mintNFT,
   };
 
   return (
