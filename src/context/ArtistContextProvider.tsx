@@ -73,6 +73,7 @@ export type ArtistThumbnail = {
 export enum ArtistCategory {
   Classical = 'Classical Art',
   Modern = 'Modern Art',
+  PostModern = 'Post-Modern Art',
   Digital = 'Digital Art',
 }
 
