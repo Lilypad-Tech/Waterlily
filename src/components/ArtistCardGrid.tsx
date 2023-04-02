@@ -74,13 +74,13 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-  useEffect(() => {
-    console.log('filteredData', filteredData);
-  }, [filteredData]);
+  // useEffect(() => {
+  //   console.log('filteredData', filteredData);
+  // }, [filteredData]);
 
-  useEffect(() => {
-    console.log('currentData', currentData);
-  }, [currentData]);
+  // useEffect(() => {
+  //   console.log('currentData', currentData);
+  // }, [currentData]);
 
   const handlePageChange = (event: any, value: number) => {
     setCurrentPage(value);

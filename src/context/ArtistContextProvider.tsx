@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import Fuse from 'fuse.js';
 // import fetchArtists from '../pages/api/fetchArtists';
 // import { google } from 'googleapis';
 // import { Fireproof } from '@fireproof/core';
@@ -112,12 +113,16 @@ interface ArtistContextValue {
   artistState: ArtistData[];
   setArtistState: Dispatch<SetStateAction<ArtistData[]>>;
   fetchArtistData: () => void;
+  findArtistById: (artistId: string) => object;
 }
 
 export const defaultArtistState: ArtistContextValue = {
   artistState: [],
   setArtistState: () => {},
   fetchArtistData: () => {},
+  findArtistById: () => {
+    return {};
+  },
 };
 
 interface MyContextProviderProps {
@@ -146,9 +151,20 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
     }
   };
 
-  const findArtistDetailsByName = () => {};
+  const findArtistByName = (name: string) => {
+    const fuse = new Fuse(artistState, { keys: ['name'] });
+    const artistData: any = fuse.search(name);
+    console.log('artist data found', artistData);
+    return artistData[0].item;
+  };
 
-  const findArtistDetailsById = () => {};
+  const findArtistById = (artistId: string) => {
+    //search artistState
+    const fuse = new Fuse(artistState, { keys: ['artistId'] });
+    const artistData: any = fuse.search(artistId);
+    console.log('artist data found', artistData);
+    return artistData[0].item;
+  };
 
   const addArtistToDB = () => {
     //when we have the page
@@ -158,6 +174,7 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
     artistState,
     setArtistState,
     fetchArtistData,
+    findArtistById,
   };
 
   return (

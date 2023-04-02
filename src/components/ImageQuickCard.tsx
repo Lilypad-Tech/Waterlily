@@ -75,7 +75,8 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
           />
         </Card>
       </Box>
-      {/* pass in imageID to the nftfunction - it has the rest */}
+      {/* pass in image link to the nftfunction - it has the rest 
+      - probs should be it's own component*/}
       <Button
         variant="outlined"
         onClick={() => mintNFT(image)}
