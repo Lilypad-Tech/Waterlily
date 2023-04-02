@@ -23,7 +23,14 @@ import {
   Stepper,
   Step,
   StepLabel,
+  InputAdornment,
+  Tooltip,
 } from '@mui/material';
+// import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { YearCalendar } from '@mui/x-date-pickers/YearCalendar';
 import {
   ArtistData,
   ArtistCategory,
@@ -78,7 +85,7 @@ const initialValues: FormData = {
   period: '',
   biography: '',
   //ArtWork Data
-  category: ArtistCategory.Modern, //empty really
+  category: ArtistCategory.PostModern, //empty really
   style: '',
   tags: [],
   portfolio: '', //link to portfolio
@@ -226,141 +233,173 @@ const ArtistSignup: React.FC<{}> = () => {
             {activeStep === 0 && (
               <Box key={steps[0]}>
                 {/* most of these fields the same. Just map it */}
-                <Typography>Personal Details</Typography>
-                <TextField
-                  id="name"
-                  name="name"
-                  label="Name"
-                  variant="outlined"
-                  fullWidth
-                  value={formik.values.name}
-                  onChange={formik.handleChange}
-                  error={formik.touched.name && Boolean(formik.errors.name)}
-                  helperText={formik.touched.name && formik.errors.name}
-                />
-                <TextField
-                  id="email"
-                  name="email"
-                  label="Email"
-                  variant="outlined"
-                  fullWidth
-                  value={formik.values.email}
-                  onChange={formik.handleChange}
-                  error={formik.touched.email && Boolean(formik.errors.email)}
-                  helperText={formik.touched.email && formik.errors.email}
-                />
-                <TextField
-                  id="walletAddress"
-                  name="walletAddress"
-                  label="Wallet Address"
-                  variant="outlined"
-                  fullWidth
-                  value={formik.values.walletAddress}
-                  onChange={formik.handleChange}
-                  error={
-                    formik.touched.walletAddress &&
-                    Boolean(formik.errors.walletAddress)
-                  }
-                  helperText={
-                    formik.touched.walletAddress && formik.errors.walletAddress
-                  }
-                />
-                <TextField
-                  id="nationality"
-                  name="nationality"
-                  label="Nationality"
-                  placeholder="Optional: Your Nationality"
-                  variant="outlined"
-                  fullWidth
-                  value={formik.values.nationality}
-                  onChange={formik.handleChange}
-                  error={
-                    formik.touched.nationality &&
-                    Boolean(formik.errors.nationality)
-                  }
-                  helperText={
-                    formik.touched.nationality && formik.errors.nationality
-                  }
-                />
-                <TextField
-                  id="biography"
-                  name="biography"
-                  label="Biography"
-                  placeholder="Your biography"
-                  variant="outlined"
-                  fullWidth
-                  multiline
-                  value={formik.values.biography}
-                  onChange={formik.handleChange}
-                  error={
-                    formik.touched.biography && Boolean(formik.errors.biography)
-                  }
-                  helperText={
-                    formik.touched.biography && formik.errors.biography
-                  }
-                  InputProps={{
-                    endAdornment: (
-                      <p
-                        style={{
-                          fontSize: '12px',
-                          position: 'absolute',
-                          bottom: '-0.5rem',
-                          right: '0.8rem',
-                        }}
-                      >
-                        {formik.values.biography.length}/350
-                      </p>
-                    ),
-                  }}
-                  inputProps={{
-                    maxLength: 350,
-                  }}
-                />
+                <Typography color="primary" variant="h5">
+                  Personal Details
+                </Typography>
+                <Tooltip
+                  title="Name will be displayed on the website"
+                  placement="top-start"
+                >
+                  <TextField
+                    id="name"
+                    name="name"
+                    label="Name"
+                    variant="outlined"
+                    fullWidth
+                    value={formik.values.name}
+                    onChange={formik.handleChange}
+                    error={formik.touched.name && Boolean(formik.errors.name)}
+                    helperText={formik.touched.name && formik.errors.name}
+                    // InputProps={{
+                    //   startAdornment: (
+                    //     <InputAdornment position="start">
+                    //       <InfoOutlinedIcon />
+                    //     </InputAdornment>
+                    //   ),
+                    // }}
+                  />
+                </Tooltip>
+                <Tooltip
+                  title="For Waterlily admin to contact you"
+                  placement="top-start"
+                >
+                  <TextField
+                    id="email"
+                    name="email"
+                    label="Email"
+                    variant="outlined"
+                    fullWidth
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    error={formik.touched.email && Boolean(formik.errors.email)}
+                    helperText={formik.touched.email && formik.errors.email}
+                  />
+                </Tooltip>
+                <Tooltip
+                  title="The address payments will be sent to. Must be an f4 ethereum address"
+                  placement="top-start"
+                >
+                  <TextField
+                    id="walletAddress"
+                    name="walletAddress"
+                    label="Wallet Address"
+                    variant="outlined"
+                    fullWidth
+                    value={formik.values.walletAddress}
+                    onChange={formik.handleChange}
+                    error={
+                      formik.touched.walletAddress &&
+                      Boolean(formik.errors.walletAddress)
+                    }
+                    helperText={
+                      formik.touched.walletAddress &&
+                      formik.errors.walletAddress
+                    }
+                  />
+                </Tooltip>
+                <Tooltip
+                  title="Optional. Will be displayed on website"
+                  placement="top-start"
+                >
+                  <TextField
+                    id="nationality"
+                    name="nationality"
+                    label="Nationality"
+                    placeholder="Optional: Your Nationality"
+                    variant="outlined"
+                    fullWidth
+                    value={formik.values.nationality}
+                    onChange={formik.handleChange}
+                    error={
+                      formik.touched.nationality &&
+                      Boolean(formik.errors.nationality)
+                    }
+                    helperText={
+                      formik.touched.nationality && formik.errors.nationality
+                    }
+                  />
+                </Tooltip>
+                <Tooltip
+                  title="Tell us about yourself and your art!"
+                  placement="top-start"
+                >
+                  <TextField
+                    id="biography"
+                    name="biography"
+                    label="Biography"
+                    placeholder="Your biography"
+                    variant="outlined"
+                    fullWidth
+                    multiline
+                    value={formik.values.biography}
+                    onChange={formik.handleChange}
+                    error={
+                      formik.touched.biography &&
+                      Boolean(formik.errors.biography)
+                    }
+                    helperText={
+                      formik.touched.biography && formik.errors.biography
+                    }
+                    InputProps={{
+                      endAdornment: (
+                        <p
+                          style={{
+                            fontSize: '12px',
+                            position: 'absolute',
+                            bottom: '-0.5rem',
+                            right: '0.8rem',
+                          }}
+                        >
+                          {formik.values.biography.length}/350
+                        </p>
+                      ),
+                    }}
+                    inputProps={{
+                      maxLength: 350,
+                    }}
+                  />
+                </Tooltip>
               </Box>
             )}
             {activeStep === 1 && (
               <Box key={steps[1]} sx={{ width: '100%' }}>
-                <Typography>Artwork Details</Typography>
-                <TextField
-                  id="category"
-                  name="category"
-                  label="Category"
-                  variant="outlined"
-                  fullWidth
-                  select
-                  value={formik.values.category}
-                  onChange={formik.handleChange}
-                  error={
-                    formik.touched.category && Boolean(formik.errors.category)
-                  }
-                  helperText={formik.touched.category && formik.errors.category}
+                <Typography color="primary" variant="h5">
+                  Artwork Details
+                </Typography>
+                <Tooltip
+                  title="New artists will be post-modern or digital"
+                  placement="top-start"
                 >
-                  {Object.values(ArtistCategory).map((category) => (
-                    <MenuItem key={category} value={category}>
-                      {category}
-                    </MenuItem>
-                  ))}
-                </TextField>
-
-                <TextField
-                  id="style"
-                  name="style"
-                  label="Style"
-                  variant="outlined"
-                  fullWidth
-                  value={formik.values.style}
-                  onChange={formik.handleChange}
-                  error={formik.touched.style && Boolean(formik.errors.style)}
-                  helperText={formik.touched.style && formik.errors.style}
-                />
-
+                  <TextField
+                    id="category"
+                    name="category"
+                    label="Category"
+                    variant="outlined"
+                    fullWidth
+                    select
+                    value={formik.values.category}
+                    onChange={formik.handleChange}
+                    error={
+                      formik.touched.category && Boolean(formik.errors.category)
+                    }
+                    helperText={
+                      formik.touched.category && formik.errors.category
+                    }
+                  >
+                    {Object.values(ArtistCategory).map((category) => (
+                      <MenuItem key={category} value={category}>
+                        {category}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Tooltip>
                 <Autocomplete
                   multiple
                   freeSolo
                   options={ArtStyleTags}
                   value={tags}
                   onChange={(event, newValue) => {
-                    if (newValue.length <= 5) {
+                    if (newValue.length < 5) {
                       // only set tags if there are 4 or fewer
                       setTags(newValue);
                     }
@@ -377,44 +416,101 @@ const ArtistSignup: React.FC<{}> = () => {
                     ))
                   }
                   renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      variant="outlined"
-                      label="Styles"
-                      placeholder={
-                        tags.length >= 5
-                          ? 'Only 4 tags allowable'
-                          : 'Select or add tags'
-                      }
-                      onKeyPress={(event) => {
-                        if (event.key === 'Enter') {
-                          event.preventDefault();
-                          if (tags.length < 5) {
-                            handleAddTag(
-                              (event.target as HTMLInputElement).value
-                            );
-                            (event.target as HTMLInputElement).value = '';
-                          }
+                    <Tooltip
+                      title="Enter up to 4 tags that describe your art style"
+                      placement="top-start"
+                      // arrow
+                    >
+                      <TextField
+                        {...params}
+                        variant="outlined"
+                        label="Tags"
+                        placeholder={
+                          tags.length >= 4
+                            ? 'Only 4 tags allowable'
+                            : 'Select or add tags'
                         }
-                      }}
-                      disabled={tags.length >= 4}
-                    />
+                        onKeyPress={(event) => {
+                          if (event.key === 'Enter') {
+                            event.preventDefault();
+                            if (tags.length < 5) {
+                              handleAddTag(
+                                (event.target as HTMLInputElement).value
+                              );
+                              (event.target as HTMLInputElement).value = '';
+                            }
+                          }
+                        }}
+                        disabled={tags.length >= 4}
+                      />
+                    </Tooltip>
                   )}
                 />
+                <Tooltip
+                  title="What is the predominate style of artwork you usually create? 1-2 words"
+                  placement="top-start"
+                  // arrow
+                >
+                  <TextField
+                    id="style"
+                    name="style"
+                    label="Style"
+                    variant="outlined"
+                    fullWidth
+                    value={formik.values.style}
+                    onChange={formik.handleChange}
+                    error={formik.touched.style && Boolean(formik.errors.style)}
+                    helperText={formik.touched.style && formik.errors.style}
+                  />
+                </Tooltip>
 
                 {/* put a year drop down in. */}
-                <TextField
-                  id="period"
-                  name="period"
-                  label="Period"
-                  placeholder="Enter your artwork dates"
-                  variant="outlined"
-                  fullWidth
-                  value={formik.values.period}
-                  onChange={formik.handleChange}
-                  error={formik.touched.period && Boolean(formik.errors.period)}
-                  helperText={formik.touched.period && formik.errors.period}
-                />
+                <Tooltip
+                  title="Enter artwork creation dates eg. 1991 - current"
+                  placement="top-start"
+                  // arrow
+                >
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <Field name="period">
+                      {({ field, form }) => (
+                        <DatePicker
+                          {...field}
+                          label="Period"
+                          views={['year']}
+                          openTo="year"
+                          format="yyyy"
+                          minDate={new Date(1200, 0, 1)}
+                          maxDate={new Date()}
+                          value={field.value || null}
+                          onChange={(newValue) =>
+                            form.setFieldValue(field.name, newValue)
+                          }
+                          error={
+                            form.touched[field.name] &&
+                            Boolean(form.errors[field.name])
+                          }
+                          helperText={
+                            form.touched[field.name] && form.errors[field.name]
+                          }
+                        />
+                      )}
+                    </Field>
+                  </LocalizationProvider>
+                  {/* <TextField
+                    id="period"
+                    name="period"
+                    label="Period"
+                    placeholder="1991 - current"
+                    variant="outlined"
+                    fullWidth
+                    value={formik.values.period}
+                    onChange={formik.handleChange}
+                    error={
+                      formik.touched.period && Boolean(formik.errors.period)
+                    }
+                    helperText={formik.touched.period && formik.errors.period}
+                  /> */}
+                </Tooltip>
 
                 <TextField
                   id="portfolio"
@@ -448,20 +544,27 @@ const ArtistSignup: React.FC<{}> = () => {
             )}
             {activeStep === 2 && (
               <Box key={steps[2]}>
-                <Typography>Verification Checks</Typography>
+                <Typography color="primary" variant="h5">
+                  Upload Art & Verify
+                </Typography>
                 {/* TODO: refactor to a component */}
-                <Box sx={{ justifyContent: 'left' }}>
+                <Box sx={{ justifyContent: 'left', paddingTop: '1rem' }}>
+                  <ArtistUpload />
                   <FormControlLabel
                     value="originalArt"
                     control={<Checkbox />}
                     label="Is your art your own original work?"
                     labelPlacement="start"
-                    sx={{ width: '80%', justifyContent: 'space-between' }}
+                    sx={{
+                      width: '80%',
+                      justifyContent: 'space-between',
+                      paddingTop: '1rem',
+                    }}
                   />
                   <FormControlLabel
                     value="trainingConsent"
                     control={<Checkbox />}
-                    label="Do you consent to having a Machine Learning Model trained on your artworks?"
+                    label="Do you consent to having an ML Model trained on your artworks?"
                     labelPlacement="start"
                     sx={{ width: '80%', justifyContent: 'space-between' }}
                   />
@@ -515,8 +618,11 @@ const ArtistSignup: React.FC<{}> = () => {
                 >
                   Back
                 </Button>
-                <Button onClick={handleNext}>
-                  {activeStep === steps.length - 1 ? '' : 'Next'}
+                <Button
+                  onClick={handleNext}
+                  disabled={activeStep === steps.length - 1}
+                >
+                  Next
                 </Button>
               </Box>
             </Box>
