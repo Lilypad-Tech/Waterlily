@@ -588,8 +588,6 @@ const ArtistSignup: React.FC<{}> = () => {
                 >
                   <Box sx={{ width: '80%' }}>
                     <ArtistUpload
-                      // files={thumbnails}
-                      // setFiles={setThumbnails}
                       files={formik.values.thumbnails}
                       setFiles={(files) =>
                         formik.setFieldValue(

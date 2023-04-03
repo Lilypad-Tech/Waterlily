@@ -9,7 +9,7 @@ import React, {
   CSSProperties,
 } from 'react';
 import Dropzone from 'react-dropzone';
-import { Box, Button, IconButton, TextField } from '@mui/material';
+import { Box, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 const baseStyle = {
@@ -204,8 +204,8 @@ export const ArtistUpload: FC<Props> = ({
         ctx?.drawImage(image, 0, 0);
 
         // Add text watermark
-        const text = 'Waterlily';
-        const fontSize = image.height / 10;
+        const text = formik.values.name || 'Waterlily';
+        const fontSize = image.height / 12;
         const color = '#fff';
         ctx.font = `${fontSize}px serif`;
         ctx.fillStyle = color;
@@ -250,8 +250,12 @@ export const ArtistUpload: FC<Props> = ({
         ref={dropzoneRef}
         noClick
         noKeyboard
-        // maxFiles={maxFiles}
-        // accept={{ accept: ['image/jpeg', 'image/png', 'image/jpg'] }} //{ accept: ['image/*', ".zip"] }
+        maxFiles={maxFiles}
+        accept={{
+          'image/*': ['.png', '.jpeg'],
+          // 'application/pdf': ['.pdf'],
+        }}
+        // accept={{ image: ['jpeg', 'png'] }}
         onDrop={handleAcceptedFiles}
       >
         {({ getRootProps, getInputProps }) => {
