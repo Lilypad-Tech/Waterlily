@@ -7,12 +7,10 @@ import React, {
   SetStateAction,
   createRef,
   CSSProperties,
-  useContext,
 } from 'react';
 import Dropzone from 'react-dropzone';
 import { Box, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { ArtistContext, ArtistContextProvider } from '@/context';
 
 const baseStyle = {
   flex: 1,
@@ -140,13 +138,14 @@ const ArtistPreview: FC<{
 };
 
 export const ArtistUpload: FC<Props> = ({
+  files,
+  setFiles,
   maxFiles,
   dropText,
   formik,
   name,
 }: Props): ReactElement => {
   const dropzoneRef: any = createRef();
-  const { addWatermark, getBase64 } = useContext(ArtistContext);
 
   const openDialog = () => {
     // Note that the ref is set async,
@@ -172,34 +171,6 @@ export const ArtistUpload: FC<Props> = ({
     []
   );
 
-  // const addWatermark = async (imgSrc: string) => {
-  //   const image = new Image();
-  //   image.src = imgSrc;
-  //   await new Promise((resolve, reject) => {
-  //     image.onload = resolve;
-  //     image.onerror = reject;
-  //   });
-
-  //   const canvas = document.createElement('canvas');
-  //   canvas.width = image.width;
-  //   canvas.height = image.height;
-
-  //   const ctx = canvas.getContext('2d');
-  //   ctx?.drawImage(image, 0, 0);
-
-  //   // Add text watermark
-  //   const text = formik.values.name || 'Waterlily';
-  //   const fontSize = image.height / 12;
-  //   const color = '#fff';
-  //   ctx.font = `${fontSize}px serif`;
-  //   ctx.fillStyle = color;
-  //   const textWidth = ctx?.measureText(text).width;
-  //   const x = image.width / 2 - textWidth / 2;
-  //   const y = image.height - fontSize / 2;
-  //   ctx?.fillText(text, x, y);
-  //   return canvas.toDataURL('image/jpeg');
-  // };
-
   const handleAcceptedFiles = async (acceptedFiles: File[]) => {
     const existingFiles = formik.values[name];
 
@@ -215,10 +186,32 @@ export const ArtistUpload: FC<Props> = ({
           return Object.assign(file, { preview: base64 });
         }
 
-        const watermarkedBase64 = await addWatermark(
-          base64,
-          formik.values.name
-        ); //canvas.toDataURL('image/jpeg');
+        const image = new Image();
+        image.src = base64;
+        await new Promise((resolve, reject) => {
+          image.onload = resolve;
+          image.onerror = reject;
+        });
+
+        const canvas = document.createElement('canvas');
+        canvas.width = image.width;
+        canvas.height = image.height;
+
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(image, 0, 0);
+
+        // Add text watermark
+        const text = formik.values.name || 'Waterlily';
+        const fontSize = image.height / 12;
+        const color = '#fff';
+        ctx.font = `${fontSize}px serif`;
+        ctx.fillStyle = color;
+        const textWidth = ctx?.measureText(text).width;
+        const x = image.width / 2 - textWidth / 2;
+        const y = image.height - fontSize / 2;
+        ctx?.fillText(text, x, y);
+
+        const watermarkedBase64 = canvas.toDataURL('image/jpeg');
         return Object.assign(file, { preview: watermarkedBase64 });
       })
     );
@@ -226,21 +219,27 @@ export const ArtistUpload: FC<Props> = ({
     formik.setFieldValue(name, [...existingFiles, ...newFilesWithPreviews]);
   };
 
-  // const getBase64 = (file: File) => {
-  //   return new Promise<string>((resolve, reject) => {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(file);
-  //     reader.onload = () => {
-  //       const result = reader.result?.toString();
-  //       if (result) {
-  //         resolve(result);
-  //       } else {
-  //         reject(new Error('Failed to read file as base64'));
-  //       }
-  //     };
-  //     reader.onerror = (error) => reject(error);
-  //   });
-  // };
+  const getBase64 = (file: File) => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const result = reader.result?.toString();
+        if (result) {
+          resolve(result);
+        } else {
+          reject(new Error('Failed to read file as base64'));
+        }
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  useEffect(() => {
+    // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
+    console.log('new files', files);
+    return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
+  }, [files]);
 
   return (
     <section style={container}>
@@ -253,6 +252,7 @@ export const ArtistUpload: FC<Props> = ({
           'image/*': ['.png', '.jpeg'],
           // 'application/pdf': ['.pdf'],
         }}
+        // accept={{ image: ['jpeg', 'png'] }}
         onDrop={handleAcceptedFiles}
       >
         {({ getRootProps, getInputProps }) => {
@@ -265,12 +265,12 @@ export const ArtistUpload: FC<Props> = ({
                   Open File Dialog
                 </Button>
               </Box>
-              {formik.values[name].length > 0 && (
+              {files.length > 0 && (
                 <>
                   <h4>Files</h4>
                   {/* Change to Grid */}
                   <aside style={aStyle}>
-                    {formik.values[name].map((file: any, i: number) => (
+                    {files.map((file, i) => (
                       <ArtistPreview
                         key={file.name}
                         file={file}

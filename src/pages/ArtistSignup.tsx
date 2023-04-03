@@ -50,7 +50,7 @@ import {
 } from '@/components';
 
 interface FormData {
-  // artistId: string; //how do we keep this hidden...
+  // artistId: string; //need to generate this - should be be passing from FE or just generate in DB?
   //Personal Data
   artistType: ArtistType;
   name: string;
@@ -70,7 +70,7 @@ interface FormData {
   trainingConsent: Boolean;
   legalContent: Boolean;
   //Images
-  avatar: '';
+  avatar: File;
   thumbnails: File[]; //up to 3 images, cropped // change this type
   images: File[];
 }
@@ -97,7 +97,7 @@ const initialValues: FormData = {
   trainingConsent: false,
   legalContent: false,
   //images
-  avatar: '',
+  avatar: {} as File,
   images: [],
 };
 
@@ -106,14 +106,15 @@ const validationSchema = Yup.object().shape({
   name: Yup.string().required('Required'),
   email: Yup.string().email().required('Required'),
   walletAddress: Yup.string().required('Required'),
-  nationality: Yup.string(),
+  nationality: Yup.string(), //opt
   biography: Yup.string().required('Required'),
+  avatar: Yup.object<File>(), //opt
   //ArtWork Data
   category: Yup.string().required('Required'),
   style: Yup.string().required('Required'),
-  tags: Yup.array(),
+  tags: Yup.array(), //opt
   periodStart: Yup.string().required('Required'),
-  periodEnd: Yup.string(),
+  periodEnd: Yup.string(), //if blank = "current"
   portfolio: Yup.string().url().required('Required'),
   thumbnails: Yup.array<File>().required('Required'),
   //Verification data
@@ -122,7 +123,6 @@ const validationSchema = Yup.object().shape({
   legalContent: Yup.boolean().required('Required'),
   images: Yup.array<File>().required('Required'),
   //Images
-  // avatar:
   // thumbnails:
   // images:
 });
@@ -599,20 +599,31 @@ const ArtistSignup: React.FC<{}> = () => {
                   Upload Art & Verify
                 </Typography>
                 {/* TODO: refactor to a component */}
-                <Box sx={{ justifyContent: 'left', paddingTop: '1rem' }}>
-                  <ArtistUpload
-                    files={formik.values.images}
-                    setFiles={(files) =>
-                      formik.setFieldValue(
-                        'images',
-                        Array.isArray(files) ? files : []
-                      )
-                    }
-                    maxFiles={200}
-                    dropText="Drag and drop at least 50 original artworks, or"
-                    formik={formik}
-                    name="images"
-                  />
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingTop: '1rem',
+                    width: '100%',
+                  }}
+                >
+                  <Box sx={{ width: '80%' }}>
+                    <ArtistUpload
+                      files={formik.values.images}
+                      setFiles={(files) =>
+                        formik.setFieldValue(
+                          'images',
+                          Array.isArray(files) ? files : []
+                        )
+                      }
+                      maxFiles={200}
+                      dropText="Drag and drop at least 50 original artworks, or"
+                      formik={formik}
+                      name="images"
+                    />
+                  </Box>
                   <FormControlLabel
                     value="originalArt"
                     control={<Checkbox />}

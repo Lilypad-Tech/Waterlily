@@ -6,9 +6,6 @@ import React, {
   useState,
 } from 'react';
 import Fuse from 'fuse.js';
-// import fetchArtists from '../pages/api/fetchArtists';
-// import { google } from 'googleapis';
-// import { Fireproof } from '@fireproof/core';
 
 export const ArtStyleTags = [
   'Surrealism',
@@ -114,6 +111,8 @@ interface ArtistContextValue {
   setArtistState: Dispatch<SetStateAction<ArtistData[]>>;
   fetchArtistData: () => void;
   findArtistById: (artistId: string) => object;
+  getBase64: (file: File) => Promise<string>;
+  addWatermark: (imgSrc: string, wmText: string) => Promise<string>;
 }
 
 export const defaultArtistState: ArtistContextValue = {
@@ -122,6 +121,12 @@ export const defaultArtistState: ArtistContextValue = {
   fetchArtistData: () => {},
   findArtistById: () => {
     return {};
+  },
+  addWatermark: (imgSrc: string, wmText: string) => {
+    return {} as Promise<string>;
+  },
+  getBase64: (file: File) => {
+    return {} as Promise<string>;
   },
 };
 
@@ -170,11 +175,86 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
     //when we have the page
   };
 
+  const getBase64 = (file: File) => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const result = reader.result?.toString();
+        if (result) {
+          resolve(result);
+        } else {
+          reject(new Error('Failed to read file as base64'));
+        }
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const addWatermark = async (imgSrc: string, wmText: string) => {
+    const image = new Image();
+    image.src = imgSrc;
+    await new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = reject;
+    });
+
+    const canvas = document.createElement('canvas');
+    canvas.width = image.width;
+    canvas.height = image.height;
+
+    const ctx = canvas.getContext('2d');
+    ctx?.drawImage(image, 0, 0);
+
+    // Add text watermark
+    let text = wmText || 'Waterlily';
+    const fontSize = image.height / 12;
+    const color = 'rgba(255, 255, 255, 0.75)';
+    const outlineColor = 'rgba(0, 0, 0, 0.3)';
+    const outlineWidth = 4;
+
+    ctx.font = `${fontSize}px cursive`;
+    ctx.fillStyle = color;
+    ctx.strokeStyle = outlineColor;
+    ctx.lineWidth = outlineWidth;
+
+    let textWidth = ctx?.measureText(text).width;
+
+    console.log('textwidth', textWidth, image.width, canvas.width);
+    if (textWidth > image.width) {
+      console.log('too big');
+      const words = wmText.split(' ');
+      //KuKula (Nataly Abramovitch)
+      console.log('words', words);
+      text = words[0];
+      if (words[0].length > 20) {
+        text = words[0].substring(0, 20);
+      }
+      textWidth = ctx?.measureText(text).width;
+    }
+
+    const x = image.width / 2 - textWidth / 2;
+    const y = image.height - fontSize / 2;
+
+    // Add text shadow
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    ctx.shadowBlur = 4;
+
+    ctx?.fillText(text, x, y);
+    ctx?.strokeText(text, x, y);
+    ctx?.fillText(text, x, y);
+    return canvas.toDataURL('image/jpeg');
+  };
+
   const artistContextValue: ArtistContextValue = {
     artistState,
     setArtistState,
     fetchArtistData,
     findArtistById,
+    getBase64,
+    addWatermark,
   };
 
   return (
