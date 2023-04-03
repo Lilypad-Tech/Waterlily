@@ -2,68 +2,15 @@ import React, {
   FC,
   ReactElement,
   useEffect,
-  useState,
   useMemo,
   Dispatch,
   SetStateAction,
   createRef,
+  Ref,
 } from 'react';
-import Dropzone, {
-  useDropzone,
-  DropzoneOptions,
-  DropzoneRootProps,
-  DropzoneInputProps,
-} from 'react-dropzone';
-import { Box, TextField } from '@mui/material';
-
-const container: React.CSSProperties = {
-  flex: '1',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  padding: '20px',
-  borderWidth: '1px',
-  borderRadius: '4px',
-  // borderColor: ${props => getColor(props)},
-  borderStyle: 'solid',
-  // backgroundColor: '#fafafa',
-  // color: '#bdbdbd',
-  borderColor: 'rgba(255, 255, 255, 0.23)',
-  outline: 'none',
-  transition: 'border .24s ease-in-out',
-  // width: '80%',
-};
-
-const thumbsContainer: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  marginTop: 16,
-};
-
-const thumb: React.CSSProperties = {
-  display: 'inline-flex',
-  borderRadius: 2,
-  border: '1px solid #eaeaea',
-  marginBottom: 8,
-  marginRight: 8,
-  width: 100,
-  height: 100,
-  padding: 4,
-  boxSizing: 'border-box',
-};
-
-const thumbInner: React.CSSProperties = {
-  display: 'flex',
-  minWidth: 0,
-  overflow: 'hidden',
-};
-
-const img: React.CSSProperties = {
-  display: 'block',
-  width: 'auto',
-  height: '100%',
-};
+import Dropzone from 'react-dropzone';
+import { Box, Button, IconButton, TextField } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 const baseStyle = {
   flex: 1,
@@ -93,39 +40,110 @@ const rejectStyle = {
   borderColor: '#ff1744',
 };
 
+const container: React.CSSProperties = {
+  flex: '1',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  padding: '20px',
+  borderWidth: '1px',
+  borderRadius: '4px',
+  // borderColor: ${props => getColor(props)},
+  borderStyle: 'solid',
+  // backgroundColor: '#fafafa',
+  // color: '#bdbdbd',
+  borderColor: 'rgba(255, 255, 255, 0.23)',
+  outline: 'none',
+  transition: 'border .24s ease-in-out',
+  // width: '80%',
+};
+
+const thumb: React.CSSProperties = {
+  display: 'inline-flex',
+  borderRadius: 2,
+  border: '1px solid #eaeaea',
+  marginBottom: 2,
+  marginRight: 2,
+  width: 668 / 4,
+  height: 504 / 4,
+  padding: 0,
+  boxSizing: 'border-box',
+  overflow: 'hidden',
+};
+
+const thumbInner: React.CSSProperties = {
+  display: 'flex',
+  minWidth: '100%',
+  overflow: 'hidden',
+  justifyContent: 'center',
+  position: 'relative',
+};
+
+const img: React.CSSProperties = {
+  display: 'block',
+  width: 'auto',
+  height: '100%',
+  objectFit: 'cover',
+  objectPosition: 'center',
+};
+
+const icon: React.CSSProperties = {
+  position: 'absolute',
+  top: 2,
+  right: 2,
+  zIndex: 1,
+  cursor: 'pointer',
+  display: 'block',
+  padding: 0,
+};
+
+const aStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  marginTop: 16,
+};
+
 interface Props {
   files: File[];
-  setFiles: Dispatch<SetStateAction<File[]>>;
+  setFiles: Dispatch<SetStateAction<any[]>>;
+  maxFiles: number;
+  dropText: string;
 }
 
-export const ArtistUpload: FC<Props> = (props: Props): ReactElement => {
-  const [files, setFiles] = useState<Array<File & { preview: string }>>([]);
-  const dropzoneRef = createRef();
-  const { getRootProps, getInputProps, isFocused, isDragAccept, isDragReject } =
-    useDropzone({
-      accept: { 'image/*': [] },
-      noClick: true,
-      noKeyboard: true,
-      onDrop: (acceptedFiles: File[]) => {
-        setFiles(
-          acceptedFiles.map((file) =>
-            Object.assign(file, {
-              preview: URL.createObjectURL(file),
-            })
-          )
-        );
-      },
-    } as DropzoneOptions);
-
-  const style = useMemo(
-    () => ({
-      ...baseStyle,
-      ...(isFocused ? focusedStyle : {}),
-      ...(isDragAccept ? acceptStyle : {}),
-      ...(isDragReject ? rejectStyle : {}),
-    }),
-    [isFocused, isDragAccept, isDragReject]
+const ArtistPreview: FC<{
+  file: any;
+  onRemove: () => void;
+  key: string;
+}> = ({ file, onRemove, key }) => {
+  console.log('file', file.preview);
+  return (
+    <Box sx={thumb} key={key}>
+      <Box style={thumbInner}>
+        <IconButton onClick={onRemove} sx={icon}>
+          <CloseIcon />
+        </IconButton>
+        <img
+          src={file.preview}
+          style={img}
+          // Revoke data uri after image is loaded
+          onLoad={() => {
+            URL.revokeObjectURL(file.preview);
+          }}
+          alt={file.name}
+        />
+      </Box>
+    </Box>
   );
+};
+
+export const ArtistUpload: FC<Props> = ({
+  files,
+  setFiles,
+  maxFiles,
+  dropText,
+}: Props): ReactElement => {
+  const dropzoneRef: any = createRef();
 
   const openDialog = () => {
     // Note that the ref is set async,
@@ -135,67 +153,74 @@ export const ArtistUpload: FC<Props> = (props: Props): ReactElement => {
     }
   };
 
-  const thumbs = files.map((file) => (
-    <>
-      <div style={thumb} key={file.name}>
-        <div style={thumbInner}>
-          <img
-            src={file.preview}
-            style={img}
-            // Revoke data uri after image is loaded
-            onLoad={() => {
-              URL.revokeObjectURL(file.preview);
-            }}
-            alt={file.name}
-          />
-        </div>
-      </div>
-      {/* <p>{file.name}</p> */}
-    </>
-  ));
+  const removeFile = (fileIndex: number) => {
+    const newFiles = [...files];
+    newFiles.splice(fileIndex, 1);
+    setFiles(newFiles);
+  };
+
+  const style: any = useMemo(
+    () => ({
+      ...baseStyle,
+      // ...(isFocused ? focusedStyle : {}),
+      // ...(isDragAccept ? acceptStyle : {}),
+      // ...(isDragReject ? rejectStyle : {}),
+    }),
+    []
+  );
+
+  const handleAcceptedFiles = (acceptedFiles: File[]) => {
+    console.log('handle files', files, acceptedFiles);
+    setFiles((prevFiles) => [
+      ...prevFiles,
+      ...acceptedFiles.map((file) =>
+        Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        })
+      ),
+    ]);
+  };
 
   useEffect(() => {
     // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
+    console.log('new files', files);
     return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
   }, [files]);
 
   return (
     <section style={container}>
-      {/* <Box {...getRootProps({ style } as DropzoneRootProps)}>
-        <input {...(getInputProps() as DropzoneInputProps)} />
-        <p>Drag 'n' drop some files here</p>
-      </Box>
-      <aside style={thumbsContainer}>{thumbs}</aside> */}
       <Dropzone
         ref={dropzoneRef}
         noClick
         noKeyboard
-        onDrop={(acceptedFiles: File[]) => {
-          setFiles(
-            acceptedFiles.map((file) =>
-              Object.assign(file, {
-                preview: URL.createObjectURL(file),
-              })
-            )
-          );
-        }}
+        // maxFiles={maxFiles}
+        onDrop={handleAcceptedFiles}
       >
-        {({ getRootProps, getInputProps, acceptedFiles }) => {
+        {({ getRootProps, getInputProps }) => {
           return (
-            <div style={{ width: '100%' }}>
-              <div {...getRootProps({ style })}>
+            <Box style={{ width: '100%' }}>
+              <Box {...getRootProps({ style })}>
                 <input {...getInputProps()} />
-                <p>Drag 'n' drop some files here</p>
-                <button type="button" onClick={openDialog}>
+                <p>{dropText}</p>
+                <Button variant="outlined" onClick={openDialog}>
                   Open File Dialog
-                </button>
-              </div>
-              {acceptedFiles.length > 0 && (
+                </Button>
+              </Box>
+              {files.length > 0 && (
                 <aside>
                   <h4>Files</h4>
-                  <aside style={thumbsContainer}>{thumbs}</aside>
+                  {/* Change to Grid */}
+                  <aside style={aStyle}>
+                    {files.map((file, i) => (
+                      <ArtistPreview
+                        key={file.name}
+                        file={file}
+                        onRemove={() => removeFile(i)}
+                      />
+                    ))}
+                  </aside>
                   <ul>
-                    {acceptedFiles.map((file) => (
+                    {files.map((file) => (
                       <li key={file.path}>
                         {file.path} - {file.size} bytes
                       </li>
@@ -203,7 +228,7 @@ export const ArtistUpload: FC<Props> = (props: Props): ReactElement => {
                   </ul>
                 </aside>
               )}
-            </div>
+            </Box>
           );
         }}
       </Dropzone>

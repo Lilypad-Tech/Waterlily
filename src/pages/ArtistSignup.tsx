@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import {
   Formik,
   useFormikContext,
@@ -57,7 +57,8 @@ interface FormData {
   email: string;
   walletAddress: string;
   nationality?: string;
-  period: string;
+  periodStart: string;
+  periodEnd: string;
   biography: string; //char limited
   //ArtWork Data
   category: ArtistCategory;
@@ -82,7 +83,8 @@ const initialValues: FormData = {
   email: '',
   walletAddress: '',
   nationality: '',
-  period: '',
+  periodStart: '',
+  periodEnd: '',
   biography: '',
   //ArtWork Data
   category: ArtistCategory.PostModern, //empty really
@@ -105,7 +107,8 @@ const validationSchema = Yup.object().shape({
   email: Yup.string().email().required('Required'),
   walletAddress: Yup.string().required('Required'),
   nationality: Yup.string(),
-  period: Yup.string().required('Required'),
+  periodStart: Yup.string().required('Required'),
+  periodEnd: Yup.string(),
   biography: Yup.string().required('Required'),
   //ArtWork Data
   category: Yup.string().required('Required'),
@@ -113,9 +116,9 @@ const validationSchema = Yup.object().shape({
   tags: Yup.array(),
   portfolio: Yup.string().url().required('Required'),
   //Verification data
-  originalArt: Yup.boolean(),
-  trainingConsent: Yup.boolean(),
-  legalContent: Yup.boolean(),
+  originalArt: Yup.boolean().required('Required'),
+  trainingConsent: Yup.boolean().required('Consent required'),
+  legalContent: Yup.boolean().required('Required'),
   //Images
   // avatar:
   // thumbnails:
@@ -153,9 +156,19 @@ const steps = ['Personal Information', 'Art Information', 'Upload & Verify'];
 
 const ArtistSignup: React.FC<{}> = () => {
   const { handleNavigation } = useNavigation();
-  const [thumbnails, setThumbnails] = useState<ArtistThumbnail[]>([]);
+  // const [thumbnails, setThumbnails] = useState<ArtistThumbnail[]>([]);
+  const [thumbnails, setThumbnails] = useState<
+    Array<File & { preview: string }>
+  >([]);
+  const [artFiles, setArtFiles] = useState<Array<File & { preview: string }>>(
+    []
+  );
   const [tags, setTags] = useState<string[]>([]);
   const [activeStep, setActiveStep] = useState(0);
+
+  useEffect(() => {
+    console.log('thumbnails', thumbnails.length);
+  }, [thumbnails]);
 
   //stepper functions
   const handleNext = () => {
@@ -362,7 +375,16 @@ const ArtistSignup: React.FC<{}> = () => {
               </Box>
             )}
             {activeStep === 1 && (
-              <Box key={steps[1]} sx={{ width: '100%' }}>
+              <Box
+                key={steps[1]}
+                sx={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
                 <Typography color="primary" variant="h5">
                   Artwork Details
                 </Typography>
@@ -398,6 +420,7 @@ const ArtistSignup: React.FC<{}> = () => {
                   freeSolo
                   options={ArtStyleTags}
                   value={tags}
+                  fullWidth
                   onChange={(event, newValue) => {
                     if (newValue.length < 5) {
                       // only set tags if there are 4 or fewer
@@ -464,53 +487,75 @@ const ArtistSignup: React.FC<{}> = () => {
                   />
                 </Tooltip>
 
-                {/* put a year drop down in. */}
-                <Tooltip
-                  title="Enter artwork creation dates eg. 1991 - current"
-                  placement="top-start"
-                  // arrow
-                >
-                  <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <Field name="period">
-                      {({ field, form }) => (
-                        <DatePicker
-                          {...field}
-                          label="Period"
-                          views={['year']}
-                          openTo="year"
-                          format="yyyy"
-                          minDate={new Date(1200, 0, 1)}
-                          maxDate={new Date()}
-                          value={field.value || null}
-                          onChange={(newValue) =>
-                            form.setFieldValue(field.name, newValue)
-                          }
-                          error={
-                            form.touched[field.name] &&
-                            Boolean(form.errors[field.name])
-                          }
-                          helperText={
-                            form.touched[field.name] && form.errors[field.name]
-                          }
-                        />
-                      )}
-                    </Field>
-                  </LocalizationProvider>
-                  {/* <TextField
-                    id="period"
-                    name="period"
-                    label="Period"
-                    placeholder="1991 - current"
-                    variant="outlined"
-                    fullWidth
-                    value={formik.values.period}
-                    onChange={formik.handleChange}
-                    error={
-                      formik.touched.period && Boolean(formik.errors.period)
-                    }
-                    helperText={formik.touched.period && formik.errors.period}
-                  /> */}
-                </Tooltip>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <Tooltip
+                    title="Enter artwork creation dates eg. 1981 - 2020. Leave end date blank if still creating"
+                    placement="top-start"
+                    // arrow
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        width: '81.4%',
+                      }}
+                    >
+                      <Field
+                        name="periodStart"
+                        sx={{ '& .MuiTextField-root': { marginLeft: 0 } }}
+                      >
+                        {({ field, form }) => (
+                          <DatePicker
+                            {...field}
+                            label="Period Start"
+                            views={['year']}
+                            openTo="year"
+                            format="yyyy"
+                            minDate={new Date(1200, 0, 1)}
+                            maxDate={new Date()}
+                            value={field.value || null}
+                            onChange={(newValue) =>
+                              form.setFieldValue(field.name, newValue)
+                            }
+                            error={
+                              form.touched[field.name] &&
+                              Boolean(form.errors[field.name])
+                            }
+                            helperText={
+                              form.touched[field.name] &&
+                              form.errors[field.name]
+                            }
+                          />
+                        )}
+                      </Field>
+                      <Field name="periodEnd">
+                        {({ field, form }) => (
+                          <DatePicker
+                            {...field}
+                            label="Period End"
+                            views={['year']}
+                            openTo="year"
+                            format="yyyy"
+                            minDate={new Date(1200, 0, 1)}
+                            maxDate={new Date()}
+                            value={field.value || null}
+                            onChange={(newValue) =>
+                              form.setFieldValue(field.name, newValue)
+                            }
+                            error={
+                              form.touched[field.name] &&
+                              Boolean(form.errors[field.name])
+                            }
+                            helperText={
+                              form.touched[field.name] &&
+                              form.errors[field.name]
+                            }
+                          />
+                        )}
+                      </Field>
+                    </Box>
+                  </Tooltip>
+                </LocalizationProvider>
 
                 <TextField
                   id="portfolio"
@@ -528,17 +573,21 @@ const ArtistSignup: React.FC<{}> = () => {
                     formik.touched.portfolio && formik.errors.portfolio
                   }
                 />
-                <Typography>Images</Typography>
-                {/* <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <Box sx={{ width: '80%' }}>
-                <ArtistThumbnailUploader />
-              </Box>
-            </Box> */}
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <Box sx={{ width: '80%' }}>
-                    <Typography>Art Thumbnails</Typography>
-                    <ArtistUpload />
-                  </Box>
+                <Typography
+                  color="primary"
+                  variant="h5"
+                  sx={{ padding: '1rem' }}
+                >
+                  Display Images
+                </Typography>
+
+                <Box sx={{ width: '80%' }}>
+                  <ArtistUpload
+                    files={thumbnails}
+                    setFiles={setThumbnails}
+                    maxFiles={5}
+                    dropText="Drag and drop up to 5 examples of your artwork here, or"
+                  />
                 </Box>
               </Box>
             )}
@@ -549,7 +598,12 @@ const ArtistSignup: React.FC<{}> = () => {
                 </Typography>
                 {/* TODO: refactor to a component */}
                 <Box sx={{ justifyContent: 'left', paddingTop: '1rem' }}>
-                  <ArtistUpload />
+                  <ArtistUpload
+                    files={artFiles}
+                    setFiles={setArtFiles}
+                    maxFiles={1}
+                    dropText="Drag and drop a zip file of at least 50 artworks, or"
+                  />
                   <FormControlLabel
                     value="originalArt"
                     control={<Checkbox />}
