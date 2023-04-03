@@ -29,8 +29,8 @@ const downloadStyle = {
 };
 
 interface ImageCardProps {
-  image: { link: string; alt: string };
-  ipfs?: { link: string; alt: string };
+  image: { link: string; alt: string; minted?: boolean };
+  ipfs?: { link: string; alt: string; minted?: boolean };
   idx: number | string;
   sx?: SxProps;
 }

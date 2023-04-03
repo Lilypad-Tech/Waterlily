@@ -1,10 +1,7 @@
 import React, {
   FC,
   ReactElement,
-  useEffect,
   useMemo,
-  Dispatch,
-  SetStateAction,
   createRef,
   CSSProperties,
   useContext,
@@ -12,7 +9,7 @@ import React, {
 import Dropzone from 'react-dropzone';
 import { Box, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { ArtistContext, ArtistContextProvider } from '@/context';
+import { ArtistContext } from '@/context';
 
 const baseStyle = {
   flex: 1,
@@ -111,9 +108,12 @@ const aStyle: CSSProperties = {
   flexDirection: 'row',
   flexWrap: 'wrap',
   marginTop: 16,
+  justifyContent: 'center',
 };
 
 interface Props {
+  files: File[];
+  setFiles: (files: File[]) => void;
   maxFiles: number;
   dropText: string;
   formik: any;
@@ -123,10 +123,17 @@ interface Props {
 const ArtistPreview: FC<{
   file: any;
   onRemove: () => void;
-}> = ({ file, onRemove }) => {
+  name: string;
+}> = ({ file, onRemove, name }) => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <Box sx={thumb}>
+      <Box
+        sx={
+          name === 'avatar'
+            ? { ...thumb, width: '150px', borderRadius: '50%' }
+            : thumb
+        }
+      >
         <Box style={thumbInner}>
           <IconButton onClick={onRemove} sx={iconStyle}>
             <CloseIcon />
@@ -140,6 +147,8 @@ const ArtistPreview: FC<{
 };
 
 export const ArtistUpload: FC<Props> = ({
+  files,
+  setFiles,
   maxFiles,
   dropText,
   formik,
@@ -159,7 +168,7 @@ export const ArtistUpload: FC<Props> = ({
   const removeFile = (fileIndex: number) => {
     const newFiles = [...files];
     newFiles.splice(fileIndex, 1);
-    setFiles(newFiles);
+    formik.setFieldValue(name, newFiles);
   };
 
   const style: any = useMemo(
@@ -171,34 +180,6 @@ export const ArtistUpload: FC<Props> = ({
     }),
     []
   );
-
-  // const addWatermark = async (imgSrc: string) => {
-  //   const image = new Image();
-  //   image.src = imgSrc;
-  //   await new Promise((resolve, reject) => {
-  //     image.onload = resolve;
-  //     image.onerror = reject;
-  //   });
-
-  //   const canvas = document.createElement('canvas');
-  //   canvas.width = image.width;
-  //   canvas.height = image.height;
-
-  //   const ctx = canvas.getContext('2d');
-  //   ctx?.drawImage(image, 0, 0);
-
-  //   // Add text watermark
-  //   const text = formik.values.name || 'Waterlily';
-  //   const fontSize = image.height / 12;
-  //   const color = '#fff';
-  //   ctx.font = `${fontSize}px serif`;
-  //   ctx.fillStyle = color;
-  //   const textWidth = ctx?.measureText(text).width;
-  //   const x = image.width / 2 - textWidth / 2;
-  //   const y = image.height - fontSize / 2;
-  //   ctx?.fillText(text, x, y);
-  //   return canvas.toDataURL('image/jpeg');
-  // };
 
   const handleAcceptedFiles = async (acceptedFiles: File[]) => {
     const existingFiles = formik.values[name];
@@ -225,22 +206,6 @@ export const ArtistUpload: FC<Props> = ({
 
     formik.setFieldValue(name, [...existingFiles, ...newFilesWithPreviews]);
   };
-
-  // const getBase64 = (file: File) => {
-  //   return new Promise<string>((resolve, reject) => {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(file);
-  //     reader.onload = () => {
-  //       const result = reader.result?.toString();
-  //       if (result) {
-  //         resolve(result);
-  //       } else {
-  //         reject(new Error('Failed to read file as base64'));
-  //       }
-  //     };
-  //     reader.onerror = (error) => reject(error);
-  //   });
-  // };
 
   return (
     <section style={container}>
@@ -275,6 +240,7 @@ export const ArtistUpload: FC<Props> = ({
                         key={file.name}
                         file={file}
                         onRemove={() => removeFile(i)}
+                        name={name}
                       />
                     ))}
                   </aside>

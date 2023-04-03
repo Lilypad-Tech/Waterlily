@@ -70,7 +70,7 @@ interface FormData {
   trainingConsent: Boolean;
   legalContent: Boolean;
   //Images
-  avatar: File;
+  avatar: File[];
   thumbnails: File[]; //up to 3 images, cropped // change this type
   images: File[];
 }
@@ -97,7 +97,7 @@ const initialValues: FormData = {
   trainingConsent: false,
   legalContent: false,
   //images
-  avatar: {} as File,
+  avatar: [],
   images: [],
 };
 
@@ -108,7 +108,7 @@ const validationSchema = Yup.object().shape({
   walletAddress: Yup.string().required('Required'),
   nationality: Yup.string(), //opt
   biography: Yup.string().required('Required'),
-  avatar: Yup.object<File>(), //opt
+  avatar: Yup.array<File>(), //opt
   //ArtWork Data
   category: Yup.string().required('Required'),
   style: Yup.string().required('Required'),
@@ -352,6 +352,29 @@ const ArtistSignup: React.FC<{}> = () => {
                     }}
                   />
                 </Tooltip>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Box sx={{ width: '80%' }}>
+                    <ArtistUpload
+                      files={formik.values.avatar}
+                      setFiles={(files) =>
+                        formik.setFieldValue(
+                          'avatar',
+                          Array.isArray(files) ? files : []
+                        )
+                      }
+                      maxFiles={1}
+                      dropText="Upload an Artist Profile picture (opt)"
+                      formik={formik}
+                      name="avatar"
+                    />
+                  </Box>
+                </Box>
               </Box>
             )}
             {activeStep === 1 && (
