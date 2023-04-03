@@ -6,8 +6,6 @@ import React, {
   Dispatch,
   SetStateAction,
   createRef,
-  Ref,
-  useRef,
   CSSProperties,
 } from 'react';
 import Dropzone from 'react-dropzone';
@@ -150,7 +148,6 @@ export const ArtistUpload: FC<Props> = ({
   formik,
   name,
 }: Props): ReactElement => {
-  console.log('formik', formik);
   const dropzoneRef: any = createRef();
 
   const openDialog = () => {
@@ -184,14 +181,37 @@ export const ArtistUpload: FC<Props> = ({
     const newFiles = acceptedFiles.filter(
       (file) => !existingFiles.some((f: File) => f.name === file.name)
     );
-    // .map((file) =>
-    //   Object.assign(file, { preview: URL.createObjectURL(file) })
-    // );
 
     const newFilesWithPreviews = await Promise.all(
       newFiles.map(async (file) => {
         const base64 = await getBase64(file);
-        return Object.assign(file, { preview: base64 });
+        const image = new Image();
+        image.src = base64;
+        await new Promise((resolve, reject) => {
+          image.onload = resolve;
+          image.onerror = reject;
+        });
+
+        const canvas = document.createElement('canvas');
+        canvas.width = image.width;
+        canvas.height = image.height;
+
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(image, 0, 0);
+
+        // Add text watermark
+        const text = 'Waterlily';
+        const fontSize = image.height / 10;
+        const color = '#fff';
+        ctx.font = `${fontSize}px serif`;
+        ctx.fillStyle = color;
+        const textWidth = ctx?.measureText(text).width;
+        const x = image.width / 2 - textWidth / 2;
+        const y = image.height - fontSize / 2;
+        ctx?.fillText(text, x, y);
+
+        const watermarkedBase64 = canvas.toDataURL('image/jpeg');
+        return Object.assign(file, { preview: watermarkedBase64 });
       })
     );
 

@@ -582,24 +582,28 @@ const ArtistSignup: React.FC<{}> = () => {
                 >
                   Display Images
                 </Typography>
-
-                <Box sx={{ width: '80%' }}>
-                  <ArtistUpload
-                    // files={thumbnails}
-                    // setFiles={setThumbnails}
-                    files={formik.values.thumbnails}
-                    setFiles={(files) =>
-                      formik.setFieldValue(
-                        'thumbnails',
-                        Array.isArray(files) ? files : []
-                      )
-                    }
-                    maxFiles={5}
-                    dropText="Drag and drop up to 5 examples of your artwork here, or"
-                    formik={formik}
-                    name="thumbnails"
-                  />
-                </Box>
+                <Tooltip
+                  title="Artwork is displayed in a 3:2 aspect ratio frame as shown in the preview below. For example a 900px x 600px image has a 3:2 ratio. These images are watermarked before being saved."
+                  placement="top-start"
+                >
+                  <Box sx={{ width: '80%' }}>
+                    <ArtistUpload
+                      // files={thumbnails}
+                      // setFiles={setThumbnails}
+                      files={formik.values.thumbnails}
+                      setFiles={(files) =>
+                        formik.setFieldValue(
+                          'thumbnails',
+                          Array.isArray(files) ? files : []
+                        )
+                      }
+                      maxFiles={5}
+                      dropText="Drag and drop up to 5 examples of your artwork here, or"
+                      formik={formik}
+                      name="thumbnails"
+                    />
+                  </Box>
+                </Tooltip>
               </Box>
             )}
             {activeStep === 2 && (
