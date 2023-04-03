@@ -71,8 +71,8 @@ interface FormData {
   legalContent: Boolean;
   //Images
   avatar: '';
-  thumbnails: ArtistThumbnail[]; //up to 3 images, cropped // change this type
-  images: '';
+  thumbnails: File[]; //up to 3 images, cropped // change this type
+  images: File[];
 }
 
 const initialValues: FormData = {
@@ -83,22 +83,22 @@ const initialValues: FormData = {
   email: '',
   walletAddress: '',
   nationality: '',
-  periodStart: '',
-  periodEnd: '',
   biography: '',
   //ArtWork Data
   category: ArtistCategory.PostModern, //empty really
   style: '',
   tags: [],
+  periodStart: '',
+  periodEnd: '',
   portfolio: '', //link to portfolio
+  thumbnails: [], //up to 5 images, best 668x504 =
   //verification data
   originalArt: false,
   trainingConsent: false,
   legalContent: false,
   //images
   avatar: '',
-  thumbnails: [], //up to 3 images, cropped
-  images: '',
+  images: [],
 };
 
 const validationSchema = Yup.object().shape({
@@ -107,18 +107,20 @@ const validationSchema = Yup.object().shape({
   email: Yup.string().email().required('Required'),
   walletAddress: Yup.string().required('Required'),
   nationality: Yup.string(),
-  periodStart: Yup.string().required('Required'),
-  periodEnd: Yup.string(),
   biography: Yup.string().required('Required'),
   //ArtWork Data
   category: Yup.string().required('Required'),
   style: Yup.string().required('Required'),
   tags: Yup.array(),
+  periodStart: Yup.string().required('Required'),
+  periodEnd: Yup.string(),
   portfolio: Yup.string().url().required('Required'),
+  thumbnails: Yup.array<File>().required('Required'),
   //Verification data
   originalArt: Yup.boolean().required('Required'),
   trainingConsent: Yup.boolean().required('Consent required'),
   legalContent: Yup.boolean().required('Required'),
+  images: Yup.array<File>().required('Required'),
   //Images
   // avatar:
   // thumbnails:
@@ -583,10 +585,19 @@ const ArtistSignup: React.FC<{}> = () => {
 
                 <Box sx={{ width: '80%' }}>
                   <ArtistUpload
-                    files={thumbnails}
-                    setFiles={setThumbnails}
+                    // files={thumbnails}
+                    // setFiles={setThumbnails}
+                    files={formik.values.thumbnails}
+                    setFiles={(files) =>
+                      formik.setFieldValue(
+                        'thumbnails',
+                        Array.isArray(files) ? files : []
+                      )
+                    }
                     maxFiles={5}
                     dropText="Drag and drop up to 5 examples of your artwork here, or"
+                    formik={formik}
+                    name="thumbnails"
                   />
                 </Box>
               </Box>
@@ -599,10 +610,17 @@ const ArtistSignup: React.FC<{}> = () => {
                 {/* TODO: refactor to a component */}
                 <Box sx={{ justifyContent: 'left', paddingTop: '1rem' }}>
                   <ArtistUpload
-                    files={artFiles}
-                    setFiles={setArtFiles}
-                    maxFiles={1}
-                    dropText="Drag and drop a zip file of at least 50 artworks, or"
+                    files={formik.values.images}
+                    setFiles={(files) =>
+                      formik.setFieldValue(
+                        'images',
+                        Array.isArray(files) ? files : []
+                      )
+                    }
+                    maxFiles={200}
+                    dropText="Drag and drop at least 50 original artworks, or"
+                    formik={formik}
+                    name="images"
                   />
                   <FormControlLabel
                     value="originalArt"

@@ -7,6 +7,8 @@ import React, {
   SetStateAction,
   createRef,
   Ref,
+  useRef,
+  CSSProperties,
 } from 'react';
 import Dropzone from 'react-dropzone';
 import { Box, Button, IconButton, TextField } from '@mui/material';
@@ -18,8 +20,8 @@ const baseStyle = {
   flexDirection: 'column',
   alignItems: 'center',
   padding: '20px',
-  borderWidth: 2,
-  borderRadius: 2,
+  // borderWidth: 2,
+  // borderRadius: 2,
   borderColor: 'rgba(255, 255, 255, 0.23)',
   borderStyle: 'dashed',
   outline: 'none',
@@ -40,7 +42,7 @@ const rejectStyle = {
   borderColor: '#ff1744',
 };
 
-const container: React.CSSProperties = {
+const container: CSSProperties = {
   flex: '1',
   display: 'flex',
   flexDirection: 'column',
@@ -58,20 +60,20 @@ const container: React.CSSProperties = {
   // width: '80%',
 };
 
-const thumb: React.CSSProperties = {
+const thumb: CSSProperties = {
   display: 'inline-flex',
   borderRadius: 2,
   border: '1px solid #eaeaea',
-  marginBottom: 2,
+  marginBottom: 1,
   marginRight: 2,
-  width: 668 / 4,
-  height: 504 / 4,
+  width: 675 / 3,
+  height: 450 / 3,
   padding: 0,
   boxSizing: 'border-box',
   overflow: 'hidden',
 };
 
-const thumbInner: React.CSSProperties = {
+const thumbInner: CSSProperties = {
   display: 'flex',
   minWidth: '100%',
   overflow: 'hidden',
@@ -79,7 +81,7 @@ const thumbInner: React.CSSProperties = {
   position: 'relative',
 };
 
-const img: React.CSSProperties = {
+const imgStyle: CSSProperties = {
   display: 'block',
   width: 'auto',
   height: '100%',
@@ -87,7 +89,7 @@ const img: React.CSSProperties = {
   objectPosition: 'center',
 };
 
-const icon: React.CSSProperties = {
+const iconStyle: CSSProperties = {
   position: 'absolute',
   top: 2,
   right: 2,
@@ -97,7 +99,14 @@ const icon: React.CSSProperties = {
   padding: 0,
 };
 
-const aStyle: React.CSSProperties = {
+const filenameStyle: CSSProperties = {
+  display: 'block',
+  padding: 0,
+  marginBottom: 1,
+  // color: 'white',
+};
+
+const aStyle: CSSProperties = {
   display: 'flex',
   flexDirection: 'row',
   flexWrap: 'wrap',
@@ -109,30 +118,26 @@ interface Props {
   setFiles: Dispatch<SetStateAction<any[]>>;
   maxFiles: number;
   dropText: string;
+  formik: any;
+  name: string;
 }
 
 const ArtistPreview: FC<{
   file: any;
   onRemove: () => void;
   key: string;
-}> = ({ file, onRemove, key }) => {
-  console.log('file', file.preview);
+}> = ({ file, onRemove }) => {
   return (
-    <Box sx={thumb} key={key}>
-      <Box style={thumbInner}>
-        <IconButton onClick={onRemove} sx={icon}>
-          <CloseIcon />
-        </IconButton>
-        <img
-          src={file.preview}
-          style={img}
-          // Revoke data uri after image is loaded
-          onLoad={() => {
-            URL.revokeObjectURL(file.preview);
-          }}
-          alt={file.name}
-        />
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <Box sx={thumb}>
+        <Box style={thumbInner}>
+          <IconButton onClick={onRemove} sx={iconStyle}>
+            <CloseIcon />
+          </IconButton>
+          <img src={file.preview} style={imgStyle} alt={file.name} />
+        </Box>
       </Box>
+      <Box sx={filenameStyle}>{file.path}</Box>
     </Box>
   );
 };
@@ -142,7 +147,10 @@ export const ArtistUpload: FC<Props> = ({
   setFiles,
   maxFiles,
   dropText,
+  formik,
+  name,
 }: Props): ReactElement => {
+  console.log('formik', formik);
   const dropzoneRef: any = createRef();
 
   const openDialog = () => {
@@ -169,16 +177,41 @@ export const ArtistUpload: FC<Props> = ({
     []
   );
 
-  const handleAcceptedFiles = (acceptedFiles: File[]) => {
-    console.log('handle files', files, acceptedFiles);
-    setFiles((prevFiles) => [
-      ...prevFiles,
-      ...acceptedFiles.map((file) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        })
-      ),
-    ]);
+  const handleAcceptedFiles = async (acceptedFiles: File[]) => {
+    const existingFiles = formik.values[name];
+
+    //remove any duplicates
+    const newFiles = acceptedFiles.filter(
+      (file) => !existingFiles.some((f: File) => f.name === file.name)
+    );
+    // .map((file) =>
+    //   Object.assign(file, { preview: URL.createObjectURL(file) })
+    // );
+
+    const newFilesWithPreviews = await Promise.all(
+      newFiles.map(async (file) => {
+        const base64 = await getBase64(file);
+        return Object.assign(file, { preview: base64 });
+      })
+    );
+
+    formik.setFieldValue(name, [...existingFiles, ...newFilesWithPreviews]);
+  };
+
+  const getBase64 = (file: File) => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const result = reader.result?.toString();
+        if (result) {
+          resolve(result);
+        } else {
+          reject(new Error('Failed to read file as base64'));
+        }
+      };
+      reader.onerror = (error) => reject(error);
+    });
   };
 
   useEffect(() => {
@@ -194,6 +227,7 @@ export const ArtistUpload: FC<Props> = ({
         noClick
         noKeyboard
         // maxFiles={maxFiles}
+        // accept={{ accept: ['image/jpeg', 'image/png', 'image/jpg'] }} //{ accept: ['image/*', ".zip"] }
         onDrop={handleAcceptedFiles}
       >
         {({ getRootProps, getInputProps }) => {
@@ -207,7 +241,7 @@ export const ArtistUpload: FC<Props> = ({
                 </Button>
               </Box>
               {files.length > 0 && (
-                <aside>
+                <>
                   <h4>Files</h4>
                   {/* Change to Grid */}
                   <aside style={aStyle}>
@@ -219,14 +253,7 @@ export const ArtistUpload: FC<Props> = ({
                       />
                     ))}
                   </aside>
-                  <ul>
-                    {files.map((file) => (
-                      <li key={file.path}>
-                        {file.path} - {file.size} bytes
-                      </li>
-                    ))}
-                  </ul>
-                </aside>
+                </>
               )}
             </Box>
           );
