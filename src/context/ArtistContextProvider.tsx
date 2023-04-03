@@ -46,7 +46,6 @@ export const ArtStyleTags = [
   'Bauhaus',
   'Conceptual Art',
   'Constructivism',
-  'Cubism',
   'Expressionism',
   'Fauvism',
   'Futurism',

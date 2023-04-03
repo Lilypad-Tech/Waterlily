@@ -158,19 +158,8 @@ const steps = ['Personal Information', 'Art Information', 'Upload & Verify'];
 
 const ArtistSignup: React.FC<{}> = () => {
   const { handleNavigation } = useNavigation();
-  // const [thumbnails, setThumbnails] = useState<ArtistThumbnail[]>([]);
-  const [thumbnails, setThumbnails] = useState<
-    Array<File & { preview: string }>
-  >([]);
-  const [artFiles, setArtFiles] = useState<Array<File & { preview: string }>>(
-    []
-  );
-  const [tags, setTags] = useState<string[]>([]);
+  // const [tags, setTags] = useState<string[]>([]);
   const [activeStep, setActiveStep] = useState(0);
-
-  useEffect(() => {
-    console.log('thumbnails', thumbnails.length);
-  }, [thumbnails]);
 
   //stepper functions
   const handleNext = () => {
@@ -183,17 +172,6 @@ const ArtistSignup: React.FC<{}> = () => {
 
   const handleReset = () => {
     setActiveStep(0);
-  };
-
-  // tag chip functions
-  const handleAddTag = (newTag: string) => {
-    if (!tags.includes(newTag) && newTag.trim() !== '') {
-      setTags([...tags, newTag.trim()]);
-    }
-  };
-
-  const handleDeleteTag = (tagToDelete: string) => {
-    setTags(tags.filter((tag) => tag !== tagToDelete));
   };
 
   //form functions
@@ -420,13 +398,12 @@ const ArtistSignup: React.FC<{}> = () => {
                 <Autocomplete
                   multiple
                   freeSolo
-                  options={ArtStyleTags}
-                  value={tags}
+                  options={Array.from(new Set(ArtStyleTags)).sort()} //make sure its unique and alphabetise
+                  value={formik.values.tags}
                   fullWidth
                   onChange={(event, newValue) => {
                     if (newValue.length < 5) {
-                      // only set tags if there are 4 or fewer
-                      setTags(newValue);
+                      formik.setFieldValue('tags', newValue);
                     }
                   }}
                   renderTags={(tagValue, getTagProps) =>
@@ -435,7 +412,12 @@ const ArtistSignup: React.FC<{}> = () => {
                         color="primary"
                         {...getTagProps({ index })}
                         label={option}
-                        onDelete={() => handleDeleteTag(option)}
+                        onDelete={() =>
+                          formik.setFieldValue(
+                            'tags',
+                            formik.values.tags.filter((tag) => tag !== option)
+                          )
+                        }
                         key={option}
                       />
                     ))
@@ -451,22 +433,29 @@ const ArtistSignup: React.FC<{}> = () => {
                         variant="outlined"
                         label="Tags"
                         placeholder={
-                          tags.length >= 4
+                          formik.values.tags.length >= 4
                             ? 'Only 4 tags allowable'
                             : 'Select or add tags'
                         }
                         onKeyPress={(event) => {
                           if (event.key === 'Enter') {
                             event.preventDefault();
-                            if (tags.length < 5) {
-                              handleAddTag(
-                                (event.target as HTMLInputElement).value
-                              );
-                              (event.target as HTMLInputElement).value = '';
+                            if (formik.values.tags.length < 5) {
+                              let e = event.target as HTMLInputElement;
+                              let newTag = e.value;
+                              if (
+                                !formik.values.tags.includes(newTag) &&
+                                newTag.trim() !== ''
+                              ) {
+                                formik.setFieldValue('tags', [
+                                  ...formik.values.tags,
+                                  newTag.trim(),
+                                ]);
+                              }
                             }
                           }
                         }}
-                        disabled={tags.length >= 4}
+                        disabled={formik.values.tags.length >= 4}
                       />
                     </Tooltip>
                   )}
