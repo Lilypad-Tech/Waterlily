@@ -185,6 +185,10 @@ export const ArtistUpload: FC<Props> = ({
     const newFilesWithPreviews = await Promise.all(
       newFiles.map(async (file) => {
         const base64 = await getBase64(file);
+        if (name !== 'thumbnails') {
+          return Object.assign(file, { preview: base64 });
+        }
+
         const image = new Image();
         image.src = base64;
         await new Promise((resolve, reject) => {
