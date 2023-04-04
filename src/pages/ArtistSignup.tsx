@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Formik,
   useFormikContext,
@@ -29,30 +29,30 @@ import {
 } from '@mui/material';
 import {
   ArrowRightAltOutlined,
+  CategoryOutlined,
   DescriptionOutlined,
   EmailOutlined,
+  LanguageOutlined,
+  MonochromePhotosOutlined,
+  PaletteOutlined,
   PermIdentityOutlined,
+  PhotoCameraFrontOutlined,
+  PhotoCameraOutlined,
   PublicOutlined,
+  StyleOutlined,
   WalletOutlined,
 } from '@mui/icons-material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+const adapter = new AdapterDateFns();
 import {
-  ArtistData,
   ArtistCategory,
   ArtistType,
   ArtStyleTags,
   useNavigation,
 } from '@/context';
 import { HeaderLayout, TitleLayout } from '@/layouts';
-import {
-  Description,
-  Subtitle,
-  Title,
-  WalletButton,
-  ArtistUpload,
-} from '@/components';
+import { Subtitle, Title, WalletButton, ArtistUpload } from '@/components';
 
 interface FormData {
   //Personal Data
@@ -96,7 +96,7 @@ const initialValues: FormData = {
   style: '',
   tags: [],
   periodStart: '',
-  periodEnd: '',
+  periodEnd: '', //new Date().getFullYear().toString(),
   portfolio: '', //link to portfolio
   thumbnails: [], //up to 5 images, best 668x504 =
   //verification data
@@ -126,15 +126,15 @@ const validationSchema: Yup.ObjectSchema<FormData> = Yup.object().shape({
   tags: Yup.array().optional(), //opt
   style: Yup.string().required('Required'),
   periodStart: Yup.string().required('Required'), //Yup.date ?
-  periodEnd: Yup.string().optional(), //if blank = "current"
+  periodEnd: Yup.string().required('Required'), //default = "2023 date"
   portfolio: Yup.string().url().required('Required'),
   thumbnails: Yup.array<File>()
     .required('Required')
     .min(1, 'At least one thumbnail image required'),
   //Verification data
-  originalArt: Yup.boolean().required('Required'),
-  trainingConsent: Yup.boolean().required('Consent required'),
-  legalContent: Yup.boolean().required('Required'),
+  originalArt: Yup.boolean().oneOf([true]).required(),
+  trainingConsent: Yup.boolean().oneOf([true]).required(),
+  legalContent: Yup.boolean().oneOf([true]).required(),
   images: Yup.array<File>()
     .required('Required')
     .min(50, 'At least 50 unique images required to train'),
@@ -143,15 +143,17 @@ const validationSchema: Yup.ObjectSchema<FormData> = Yup.object().shape({
   artistId: Yup.string(),
 });
 
-const onSubmit = (values: FormData) => {
-  console.log(values);
-  // You can send form data to a backend API or handle it in any way you want
-};
-
 const steps = ['Personal Information', 'Art Information', 'Upload & Verify'];
-const stepValues = {
-  0: ['name', 'email', 'walletAddress', 'nationality', 'biography', 'avatar'],
-  1: [
+const stepValues: { [key: string]: string[] } = {
+  values0: [
+    'name',
+    'email',
+    'walletAddress',
+    'nationality',
+    'biography',
+    'avatar',
+  ],
+  values1: [
     'category',
     'tags',
     'style',
@@ -160,7 +162,7 @@ const stepValues = {
     'portfolio',
     'thumbnails',
   ],
-  2: ['images', 'originalArt', 'trainingConsent', ' legalContent'],
+  values2: ['images', 'originalArt', 'trainingConsent', ' legalContent'],
 };
 
 const LinkTo: React.FC<{
@@ -196,32 +198,16 @@ const LinkTo: React.FC<{
 
 const ArtistSignup: React.FC<{}> = () => {
   const { handleNavigation } = useNavigation();
-  // const [tags, setTags] = useState<string[]>([]);
   const [activeStep, setActiveStep] = useState(0);
-
-  //stepper functions
-  const handleNext = (values: FormData) => {
-    //validate inputs here
-    //check no errors is all.
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
-  };
 
   //form functions
   const handleFormSubmit = async (values: FormData) => {
     console.log(values);
     // Validate inputs
-    await validationSchema
-      .validate(values)
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+    // await validationSchema
+    //   .validate(values)
+    //   .then((res) => console.log(res))
+    //   .catch((err) => console.log(err));
     // do something with the form data, e.g. submit it to a backend API
   };
 
@@ -256,36 +242,35 @@ const ArtistSignup: React.FC<{}> = () => {
         validationSchema={validationSchema}
         // validateOnChange
         validateOnBlur
-        onSubmit={(values: FormData, actions: FormikHelpers<FormData>) => {
-          console.log('Submitting', values);
-          // await sleep(1500);
-          // alert(JSON.stringify(values, null, 2));
-          // setTimeout(() => {
-          //   alert(JSON.stringify(values, null, 2));
-          //   actions.setSubmitting(false);
-          // }, 500);
-          // handleFormSubmit(values).then(() => {
-          //   actions.setSubmitting(false);
-          //   actions.resetForm({
-          //     values: values, //initialValues,
-          //     // you can also set the other form states here
-          //   });
-          // });
-        }}
-        // validate={(values) => {
-        //   const errors = {};
-        //   if (!values.name) {
-        //     errors.name = 'Required';
-        //   }
-        //   return errors;
+        // onSubmit={async (values, { setSubmitting, resetForm }) => {
+        //   setSubmitting(true);
+        //   // async request
+        //   // --> if wanted to reset on submit: resetForm();
+        //   console.log(values);
+        //   setSubmitting(false);
         // }}
+        onSubmit={(values) => console.log(values)}
       >
         {(
           formik,
-          { values, errors, touched, handleBlur, handleChange } = formik
+          {
+            values,
+            errors,
+            touched,
+            handleBlur,
+            handleChange,
+            handleSubmit,
+            isValid,
+          } = formik
         ) => (
           <Box
             component="form"
+            autoComplete="off"
+            noValidate
+            onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
+              event.preventDefault();
+              handleSubmit();
+            }}
             sx={{
               '& .MuiTextField-root': { m: 1, width: '80%' },
               padding: '2rem',
@@ -368,7 +353,7 @@ const ArtistSignup: React.FC<{}> = () => {
                     }}
                   />
                 </Tooltip>
-                {/* TODO: turn into dependent - can choose charity instead */}
+                {/* TODO: turn into dependent - can choose charity instead + better validation */}
                 <Tooltip
                   title="The address payments will be sent to. Must be an f4 ethereum address"
                   placement="top-start"
@@ -410,6 +395,7 @@ const ArtistSignup: React.FC<{}> = () => {
                     fullWidth
                     value={values.nationality}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     error={touched.nationality && Boolean(errors.nationality)}
                     helperText={touched.nationality && errors.nationality}
                     InputProps={{
@@ -437,10 +423,11 @@ const ArtistSignup: React.FC<{}> = () => {
                     fullWidth
                     multiline
                     minRows={3}
-                    value={formik.values.biography}
-                    onChange={formik.handleChange}
-                    error={Boolean(formik.errors.biography)}
-                    helperText={formik.errors.biography}
+                    value={values.biography}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    error={touched.biography && Boolean(errors.biography)}
+                    helperText={touched.biography && errors.biography}
                     InputProps={{
                       startAdornment: (
                         <Box
@@ -484,6 +471,7 @@ const ArtistSignup: React.FC<{}> = () => {
                     alignItems: 'center',
                   }}
                 >
+                  {/* TODO: add error handling & fix this */}
                   <Box sx={{ width: '80%' }}>
                     <ArtistUpload
                       files={formik.values.avatar}
@@ -526,15 +514,22 @@ const ArtistSignup: React.FC<{}> = () => {
                     label="Category"
                     variant="outlined"
                     fullWidth
+                    required
                     select
-                    value={formik.values.category}
-                    onChange={formik.handleChange}
-                    error={
-                      formik.touched.category && Boolean(formik.errors.category)
-                    }
-                    helperText={
-                      formik.touched.category && formik.errors.category
-                    }
+                    value={values.category}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.category && Boolean(errors.category)}
+                    helperText={touched.category && errors.category}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <MonochromePhotosOutlined
+                            sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
                   >
                     {Object.values(ArtistCategory).map((category) => (
                       <MenuItem key={category} value={category}>
@@ -563,7 +558,7 @@ const ArtistSignup: React.FC<{}> = () => {
                         onDelete={() =>
                           formik.setFieldValue(
                             'tags',
-                            formik.values.tags.filter((tag) => tag !== option)
+                            values.tags.filter((tag) => tag !== option)
                           )
                         }
                         key={option}
@@ -581,29 +576,29 @@ const ArtistSignup: React.FC<{}> = () => {
                         variant="outlined"
                         label="Tags"
                         placeholder={
-                          formik.values.tags.length >= 4
+                          values.tags.length >= 4
                             ? 'Only 4 tags allowable'
-                            : 'Select or add tags'
+                            : 'Select or type in artwork style tags'
                         }
                         onKeyPress={(event) => {
                           if (event.key === 'Enter') {
                             event.preventDefault();
-                            if (formik.values.tags.length < 5) {
+                            if (values.tags.length < 5) {
                               let e = event.target as HTMLInputElement;
                               let newTag = e.value;
                               if (
-                                !formik.values.tags.includes(newTag) &&
+                                !values.tags.includes(newTag) &&
                                 newTag.trim() !== ''
                               ) {
-                                formik.setFieldValue('tags', [
-                                  ...formik.values.tags,
+                                setFieldValue('tags', [
+                                  ...values.tags,
                                   newTag.trim(),
                                 ]);
                               }
                             }
                           }
                         }}
-                        disabled={formik.values.tags.length >= 4}
+                        disabled={values.tags.length >= 4}
                       />
                     </Tooltip>
                   )}
@@ -618,11 +613,22 @@ const ArtistSignup: React.FC<{}> = () => {
                     name="style"
                     label="Style"
                     variant="outlined"
+                    required
                     fullWidth
-                    value={formik.values.style}
-                    onChange={formik.handleChange}
-                    error={formik.touched.style && Boolean(formik.errors.style)}
-                    helperText={formik.touched.style && formik.errors.style}
+                    value={values.style}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.style && Boolean(errors.style)}
+                    helperText={touched.style && errors.style}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <PaletteOutlined
+                            sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Tooltip>
 
@@ -639,31 +645,46 @@ const ArtistSignup: React.FC<{}> = () => {
                         width: '81.4%',
                       }}
                     >
-                      <Field
-                        name="periodStart"
-                        sx={{ '& .MuiTextField-root': { marginLeft: 0 } }}
-                      >
-                        {({ field, form }) => (
+                      <Field name="periodStart">
+                        {({ field }) => (
                           <DatePicker
                             {...field}
-                            label="Period Start"
+                            label="Period Start *"
                             views={['year']}
                             openTo="year"
                             format="yyyy"
+                            disableFuture
                             minDate={new Date(1200, 0, 1)}
                             maxDate={new Date()}
-                            value={field.value || null}
-                            onChange={(newValue) =>
-                              form.setFieldValue(field.name, newValue)
-                            }
-                            error={
-                              form.touched[field.name] &&
-                              Boolean(form.errors[field.name])
-                            }
-                            helperText={
-                              form.touched[field.name] &&
-                              form.errors[field.name]
-                            }
+                            value={field.value || new Date(1880, 0, 1)}
+                            onChange={(newValue, errContext) => {
+                              console.log('on change', newValue, errContext);
+                              console.log(
+                                'on change',
+                                formik.touched,
+                                formik.errors,
+                                formik.values,
+                                formik
+                              );
+                              //not working shrugs
+                              errContext.validationError &&
+                                formik.setFieldError(
+                                  field.name,
+                                  errContext.validationError
+                                );
+                              formik.setFieldValue(field.name, newValue);
+                              formik.setFieldTouched(field.name, true);
+                            }}
+                            slots={{
+                              TextField,
+                            }}
+                            slotProps={{
+                              textField: {
+                                helperText:
+                                  formik.touched.periodStart &&
+                                  formik.errors.periodStart, //'Select a Date',
+                              },
+                            }}
                           />
                         )}
                       </Field>
@@ -675,43 +696,74 @@ const ArtistSignup: React.FC<{}> = () => {
                             views={['year']}
                             openTo="year"
                             format="yyyy"
+                            disableFuture
                             minDate={new Date(1200, 0, 1)}
                             maxDate={new Date()}
-                            value={field.value || null}
-                            onChange={(newValue) =>
-                              form.setFieldValue(field.name, newValue)
-                            }
-                            error={
-                              form.touched[field.name] &&
-                              Boolean(form.errors[field.name])
-                            }
-                            helperText={
-                              form.touched[field.name] &&
-                              form.errors[field.name]
-                            }
+                            value={field.value || new Date()}
+                            onChange={(newValue, errContext) => {
+                              console.log('on change', newValue, errContext);
+                              console.log(
+                                'on change',
+                                formik.touched,
+                                formik.errors,
+                                formik.values,
+                                form
+                              );
+                              //not working shrugs
+                              form.setFieldError(
+                                field.name,
+                                errContext?.validationError
+                              );
+                              form.setFieldValue(field.name, newValue);
+                              form.setFieldTouched(field.name, true);
+                            }}
+                            slots={{
+                              TextField,
+                            }}
+                            slotProps={{
+                              textField: {
+                                helperText: `${
+                                  form.errors.periodEnd &&
+                                  form.touched.periodEnd
+                                    ? 'Help me'
+                                    : ''
+                                }`,
+                              },
+                            }}
                           />
                         )}
                       </Field>
                     </Box>
                   </Tooltip>
                 </LocalizationProvider>
-
-                <TextField
-                  id="portfolio"
-                  name="portfolio"
-                  label="Portfolio"
-                  placeholder="Enter your portfolio link"
-                  variant="outlined"
-                  fullWidth
-                  value={formik.values.portfolio}
-                  onChange={formik.handleChange}
-                  error={
-                    formik.touched.portfolio && Boolean(formik.errors.portfolio)
-                  }
-                  helperText={
-                    formik.touched.portfolio && formik.errors.portfolio
-                  }
-                />
+                <Tooltip
+                  title="Portfolio or Art Sales link"
+                  placement="top-start"
+                  // arrow
+                >
+                  <TextField
+                    id="portfolio"
+                    name="portfolio"
+                    label="Portfolio"
+                    placeholder="https://www.waterlily.ai"
+                    variant="outlined"
+                    fullWidth
+                    value={values.portfolio}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.portfolio && Boolean(errors.portfolio)}
+                    helperText={touched.portfolio && errors.portfolio}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LanguageOutlined
+                            sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
+                          />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Tooltip>
                 <Typography
                   color="primary"
                   variant="h5"
@@ -778,8 +830,19 @@ const ArtistSignup: React.FC<{}> = () => {
                     </Box>
                   </Tooltip>
                   <FormControlLabel
+                    id="originalArt"
+                    name="originalArt"
                     value="originalArt"
-                    control={<Checkbox />}
+                    control={
+                      <Checkbox
+                        checked={values.originalArt || false}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={
+                          touched.originalArt && Boolean(errors.originalArt)
+                        }
+                      />
+                    }
                     label="Is your art your own original work?"
                     labelPlacement="start"
                     sx={{
@@ -789,15 +852,38 @@ const ArtistSignup: React.FC<{}> = () => {
                     }}
                   />
                   <FormControlLabel
+                    id="trainingConsent"
+                    name="trainingConsent"
                     value="trainingConsent"
-                    control={<Checkbox />}
+                    control={
+                      <Checkbox
+                        checked={values.trainingConsent || false}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={
+                          touched.trainingConsent &&
+                          Boolean(errors.trainingConsent)
+                        }
+                      />
+                    }
                     label="Do you consent to having an ML Model trained on your artworks?"
                     labelPlacement="start"
                     sx={{ width: '80%', justifyContent: 'space-between' }}
                   />
                   <FormControlLabel
+                    id="legalConent"
+                    name="leglContent"
                     value="legalContent"
-                    control={<Checkbox />}
+                    control={
+                      <Checkbox
+                        checked={values.legalContent || false}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={
+                          touched.legalContent && Boolean(errors.legalContent)
+                        }
+                      />
+                    }
                     label="Is this art legal content?"
                     labelPlacement="start"
                     sx={{ width: '80%', justifyContent: 'space-between' }}
@@ -812,8 +898,7 @@ const ArtistSignup: React.FC<{}> = () => {
                   color="primary"
                   type="submit"
                   // disabled={formik.actions.isSubmitting}
-                  disabled={!formik.isValid}
-                  onClick={() => onSubmit(formik.values)}
+                  disabled={Boolean(!isValid)}
                 >
                   Submit
                 </Button>
@@ -827,9 +912,6 @@ const ArtistSignup: React.FC<{}> = () => {
                 justifyContent: 'center',
               }}
             >
-              {/* <Typography sx={{ mt: 2, mb: 1 }}>
-                  Step {activeStep + 1}
-                </Typography> */}
               <Box
                 sx={{
                   display: 'flex',
@@ -842,14 +924,27 @@ const ArtistSignup: React.FC<{}> = () => {
                 <Button
                   color="inherit"
                   disabled={activeStep === 0}
-                  onClick={handleBack}
+                  onClick={() =>
+                    setActiveStep((prevActiveStep) => prevActiveStep - 1)
+                  }
                   sx={{ mr: 1 }}
                 >
                   Back
                 </Button>
                 <Button
-                  onClick={() => handleNext(formik.values)}
-                  disabled={activeStep === steps.length - 1}
+                  onClick={() => {
+                    console.log(formik);
+                    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                  }}
+                  //only disable if partial errors on this part of the form
+                  disabled={
+                    activeStep === steps.length - 1
+                    // || // Disable on last step
+                    // !Object.keys(touched).length ||
+                    // stepValues[`values${activeStep}`].some((fieldName) =>
+                    //   Boolean(errors[fieldName])
+                    // )
+                  }
                 >
                   Next
                 </Button>
