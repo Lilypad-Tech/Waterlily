@@ -7,8 +7,9 @@ import React, {
   useContext,
 } from 'react';
 import Dropzone from 'react-dropzone';
-import { Box, Button, IconButton } from '@mui/material';
+import { Box, Button, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import { ArtistContext } from '@/context';
 
 const baseStyle = {
@@ -112,7 +113,7 @@ const aStyle: CSSProperties = {
 };
 
 interface Props {
-  files: File[];
+  files: File[] | undefined;
   setFiles: (files: File[]) => void;
   maxFiles: number;
   dropText: string;
@@ -126,22 +127,52 @@ const ArtistPreview: FC<{
   name: string;
 }> = ({ file, onRemove, name }) => {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: 'fit-contents',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <Box
         sx={
           name === 'avatar'
-            ? { ...thumb, width: '150px', borderRadius: '50%' }
+            ? { ...thumb, width: '150px', borderRadius: '50%', marginRight: 0 }
             : thumb
         }
       >
         <Box style={thumbInner}>
-          <IconButton onClick={onRemove} sx={iconStyle}>
-            <CloseIcon />
-          </IconButton>
+          {name !== 'avatar' && (
+            <IconButton onClick={onRemove} sx={iconStyle}>
+              <CloseIcon />
+            </IconButton>
+          )}
           <img src={file.preview} style={imgStyle} alt={file.name} />
         </Box>
       </Box>
-      <Box sx={filenameStyle}>{file.path}</Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-evenly',
+          paddingBottom: '1rem',
+        }}
+      >
+        <Typography sx={{ ...filenameStyle, padding: 0, margin: 0 }}>
+          {file.path}
+        </Typography>
+        {name === 'avatar' && (
+          <IconButton
+            onClick={onRemove}
+            sx={{ padding: 0, margin: '0 0 0 1rem' }}
+          >
+            <DeleteOutlinedIcon />
+          </IconButton>
+        )}
+      </Box>
     </Box>
   );
 };
@@ -185,9 +216,14 @@ export const ArtistUpload: FC<Props> = ({
     const existingFiles = formik.values[name];
 
     //remove any duplicates
-    const newFiles = acceptedFiles.filter(
+    let newFiles = acceptedFiles.filter(
       (file) => !existingFiles.some((f: File) => f.name === file.name)
     );
+
+    if (newFiles.length + existingFiles.length >= maxFiles) {
+      const cutAt = maxFiles - existingFiles.length;
+      newFiles.splice(cutAt);
+    }
 
     const newFilesWithPreviews = await Promise.all(
       newFiles.map(async (file) => {
@@ -219,20 +255,26 @@ export const ArtistUpload: FC<Props> = ({
           // 'application/pdf': ['.pdf'],
         }}
         onDrop={handleAcceptedFiles}
+        disabled={formik.values[name].length >= maxFiles}
       >
         {({ getRootProps, getInputProps }) => {
           return (
             <Box style={{ width: '100%' }}>
               <Box {...getRootProps({ style })}>
                 <input {...getInputProps()} />
+                {/* TODO: change to html input */}
                 <p>{dropText}</p>
-                <Button variant="outlined" onClick={openDialog}>
+                <Button
+                  variant="outlined"
+                  onClick={openDialog}
+                  disabled={formik.values[name].length >= maxFiles}
+                >
                   Open File Dialog
                 </Button>
               </Box>
               {formik.values[name].length > 0 && (
                 <>
-                  <h4>Files</h4>
+                  <h4>{`Files (${formik.values[name].length})`}</h4>
                   {/* Change to Grid */}
                   <aside style={aStyle}>
                     {formik.values[name].map((file: any, i: number) => (
