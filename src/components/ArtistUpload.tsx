@@ -1,18 +1,16 @@
 import React, {
   FC,
   ReactElement,
-  useEffect,
   useMemo,
-  Dispatch,
-  SetStateAction,
   createRef,
   CSSProperties,
   useContext,
 } from 'react';
 import Dropzone from 'react-dropzone';
-import { Box, Button, IconButton } from '@mui/material';
+import { Box, Button, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { ArtistContext, ArtistContextProvider } from '@/context';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import { ArtistContext } from '@/context';
 
 const baseStyle = {
   flex: 1,
@@ -111,9 +109,12 @@ const aStyle: CSSProperties = {
   flexDirection: 'row',
   flexWrap: 'wrap',
   marginTop: 16,
+  justifyContent: 'center',
 };
 
 interface Props {
+  files: File[] | undefined;
+  setFiles: (files: File[]) => void;
   maxFiles: number;
   dropText: string;
   formik: any;
@@ -123,23 +124,62 @@ interface Props {
 const ArtistPreview: FC<{
   file: any;
   onRemove: () => void;
-}> = ({ file, onRemove }) => {
+  name: string;
+}> = ({ file, onRemove, name }) => {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <Box sx={thumb}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: 'fit-contents',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Box
+        sx={
+          name === 'avatar'
+            ? { ...thumb, width: '150px', borderRadius: '50%', marginRight: 0 }
+            : thumb
+        }
+      >
         <Box style={thumbInner}>
-          <IconButton onClick={onRemove} sx={iconStyle}>
-            <CloseIcon />
-          </IconButton>
+          {name !== 'avatar' && (
+            <IconButton onClick={onRemove} sx={iconStyle}>
+              <CloseIcon />
+            </IconButton>
+          )}
           <img src={file.preview} style={imgStyle} alt={file.name} />
         </Box>
       </Box>
-      <Box sx={filenameStyle}>{file.path}</Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-evenly',
+          paddingBottom: '1rem',
+        }}
+      >
+        <Typography sx={{ ...filenameStyle, padding: 0, margin: 0 }}>
+          {file.path}
+        </Typography>
+        {name === 'avatar' && (
+          <IconButton
+            onClick={onRemove}
+            sx={{ padding: 0, margin: '0 0 0 1rem' }}
+          >
+            <DeleteOutlinedIcon />
+          </IconButton>
+        )}
+      </Box>
     </Box>
   );
 };
 
 export const ArtistUpload: FC<Props> = ({
+  files,
+  setFiles,
   maxFiles,
   dropText,
   formik,
@@ -159,7 +199,7 @@ export const ArtistUpload: FC<Props> = ({
   const removeFile = (fileIndex: number) => {
     const newFiles = [...files];
     newFiles.splice(fileIndex, 1);
-    setFiles(newFiles);
+    formik.setFieldValue(name, newFiles);
   };
 
   const style: any = useMemo(
@@ -172,41 +212,18 @@ export const ArtistUpload: FC<Props> = ({
     []
   );
 
-  // const addWatermark = async (imgSrc: string) => {
-  //   const image = new Image();
-  //   image.src = imgSrc;
-  //   await new Promise((resolve, reject) => {
-  //     image.onload = resolve;
-  //     image.onerror = reject;
-  //   });
-
-  //   const canvas = document.createElement('canvas');
-  //   canvas.width = image.width;
-  //   canvas.height = image.height;
-
-  //   const ctx = canvas.getContext('2d');
-  //   ctx?.drawImage(image, 0, 0);
-
-  //   // Add text watermark
-  //   const text = formik.values.name || 'Waterlily';
-  //   const fontSize = image.height / 12;
-  //   const color = '#fff';
-  //   ctx.font = `${fontSize}px serif`;
-  //   ctx.fillStyle = color;
-  //   const textWidth = ctx?.measureText(text).width;
-  //   const x = image.width / 2 - textWidth / 2;
-  //   const y = image.height - fontSize / 2;
-  //   ctx?.fillText(text, x, y);
-  //   return canvas.toDataURL('image/jpeg');
-  // };
-
   const handleAcceptedFiles = async (acceptedFiles: File[]) => {
     const existingFiles = formik.values[name];
 
     //remove any duplicates
-    const newFiles = acceptedFiles.filter(
+    let newFiles = acceptedFiles.filter(
       (file) => !existingFiles.some((f: File) => f.name === file.name)
     );
+
+    if (newFiles.length + existingFiles.length >= maxFiles) {
+      const cutAt = maxFiles - existingFiles.length;
+      newFiles.splice(cutAt);
+    }
 
     const newFilesWithPreviews = await Promise.all(
       newFiles.map(async (file) => {
@@ -226,22 +243,6 @@ export const ArtistUpload: FC<Props> = ({
     formik.setFieldValue(name, [...existingFiles, ...newFilesWithPreviews]);
   };
 
-  // const getBase64 = (file: File) => {
-  //   return new Promise<string>((resolve, reject) => {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(file);
-  //     reader.onload = () => {
-  //       const result = reader.result?.toString();
-  //       if (result) {
-  //         resolve(result);
-  //       } else {
-  //         reject(new Error('Failed to read file as base64'));
-  //       }
-  //     };
-  //     reader.onerror = (error) => reject(error);
-  //   });
-  // };
-
   return (
     <section style={container}>
       <Dropzone
@@ -254,20 +255,26 @@ export const ArtistUpload: FC<Props> = ({
           // 'application/pdf': ['.pdf'],
         }}
         onDrop={handleAcceptedFiles}
+        disabled={formik.values[name].length >= maxFiles}
       >
         {({ getRootProps, getInputProps }) => {
           return (
             <Box style={{ width: '100%' }}>
               <Box {...getRootProps({ style })}>
                 <input {...getInputProps()} />
+                {/* TODO: change to html input */}
                 <p>{dropText}</p>
-                <Button variant="outlined" onClick={openDialog}>
+                <Button
+                  variant="outlined"
+                  onClick={openDialog}
+                  disabled={formik.values[name].length >= maxFiles}
+                >
                   Open File Dialog
                 </Button>
               </Box>
               {formik.values[name].length > 0 && (
                 <>
-                  <h4>Files</h4>
+                  <h4>{`Files (${formik.values[name].length})`}</h4>
                   {/* Change to Grid */}
                   <aside style={aStyle}>
                     {formik.values[name].map((file: any, i: number) => (
@@ -275,6 +282,7 @@ export const ArtistUpload: FC<Props> = ({
                         key={file.name}
                         file={file}
                         onRemove={() => removeFile(i)}
+                        name={name}
                       />
                     ))}
                   </aside>

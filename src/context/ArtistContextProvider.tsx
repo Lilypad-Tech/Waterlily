@@ -209,7 +209,7 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
     // Add text watermark
     let text = wmText || 'Waterlily';
     const fontSize = image.height / 12;
-    const color = 'rgba(255, 255, 255, 0.75)';
+    const color = 'rgba(255, 255, 255, 0.8)';
     const outlineColor = 'rgba(0, 0, 0, 0.3)';
     const outlineWidth = 4;
 
@@ -220,9 +220,8 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
 
     let textWidth = ctx?.measureText(text).width;
 
-    console.log('textwidth', textWidth, image.width, canvas.width);
+    // console.log('textwidth', textWidth, image.width, canvas.width);
     if (textWidth > image.width) {
-      console.log('too big');
       const words = wmText.split(' ');
       //KuKula (Nataly Abramovitch)
       console.log('words', words);

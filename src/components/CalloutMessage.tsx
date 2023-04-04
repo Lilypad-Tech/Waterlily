@@ -2,6 +2,7 @@ import { Box, Typography, Link } from '@mui/material';
 import ArrowRightAltOutlinedIcon from '@mui/icons-material/ArrowRightAltOutlined';
 import { useNavigation } from '@/context';
 
+//extend this params: href, text, navigate()?
 export const CalloutMessage = () => {
   const { handleNavigation } = useNavigation();
 
