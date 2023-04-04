@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import {
   Formik,
-  useFormikContext,
-  FormikHelpers,
-  FormikProps,
-  Form,
   Field,
-  FieldProps,
-  ErrorMessage,
+  // useFormikContext,
+  // FormikHelpers,
+  // FormikProps,
+  // Form,
+  // FieldProps,
+  // ErrorMessage,
 } from 'formik';
 import * as Yup from 'yup';
 import {
@@ -29,27 +29,24 @@ import {
 } from '@mui/material';
 import {
   ArrowRightAltOutlined,
-  CategoryOutlined,
   DescriptionOutlined,
   EmailOutlined,
   LanguageOutlined,
   MonochromePhotosOutlined,
   PaletteOutlined,
   PermIdentityOutlined,
-  PhotoCameraFrontOutlined,
-  PhotoCameraOutlined,
   PublicOutlined,
-  StyleOutlined,
   WalletOutlined,
 } from '@mui/icons-material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-const adapter = new AdapterDateFns();
 import {
   ArtistCategory,
   ArtistType,
   ArtStyleTags,
+  defaultWalletState,
   useNavigation,
+  WalletContext,
 } from '@/context';
 import { HeaderLayout, TitleLayout } from '@/layouts';
 import { Subtitle, Title, WalletButton, ArtistUpload } from '@/components';
@@ -198,6 +195,7 @@ const LinkTo: React.FC<{
 
 const ArtistSignup: React.FC<{}> = () => {
   const { handleNavigation } = useNavigation();
+  const { walletState = defaultWalletState } = useContext(WalletContext);
   const [activeStep, setActiveStep] = useState(0);
 
   //form functions
@@ -365,8 +363,9 @@ const ArtistSignup: React.FC<{}> = () => {
                     variant="outlined"
                     required
                     fullWidth
-                    value={values.walletAddress}
+                    value={(values.walletAddress = walletState.accounts[0])}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     error={
                       touched.walletAddress && Boolean(errors.walletAddress)
                     }
@@ -646,7 +645,7 @@ const ArtistSignup: React.FC<{}> = () => {
                       }}
                     >
                       <Field name="periodStart">
-                        {({ field }) => (
+                        {({ field, form }) => (
                           <DatePicker
                             {...field}
                             label="Period Start *"
@@ -871,8 +870,8 @@ const ArtistSignup: React.FC<{}> = () => {
                     sx={{ width: '80%', justifyContent: 'space-between' }}
                   />
                   <FormControlLabel
-                    id="legalConent"
-                    name="leglContent"
+                    id="legalContent"
+                    name="legalContent"
                     value="legalContent"
                     control={
                       <Checkbox
