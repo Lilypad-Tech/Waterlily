@@ -227,3 +227,21 @@ If you need to upload anything to the filestore:
 ```
 curl -F "uploads=@cecnstyle.png" -F "path=artist_thumbnails" https://ai-art-files.cluster.world/upload?access_token=XXX
 ```
+
+## compiling smart contracts
+
+First we need to make sure we have abigen in our path:
+
+```bash
+go install github.com/ethereum/go-ethereum/cmd/abigen@v1.10.26
+```
+
+You will also need jq installed.
+
+Then we can compile the contracts:
+
+```bash
+cd hardhat
+npm run compile
+```
+

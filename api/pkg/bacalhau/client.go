@@ -10,8 +10,14 @@ import (
 	"github.com/pkg/errors"
 )
 
+type BacalhauOptions struct {
+	Host string
+	Port int
+}
+
 type BacalhauClient struct {
-	Client *publicapi.RequesterAPIClient
+	Options BacalhauOptions
+	Client  *publicapi.RequesterAPIClient
 }
 
 func init() {
@@ -22,13 +28,13 @@ func init() {
 }
 
 func NewBacalhauClient(
-	apiHost string,
-	apiPort int,
-) *BacalhauClient {
-	client := publicapi.NewRequesterAPIClient(apiHost, uint16(apiPort))
+	options BacalhauOptions,
+) (*BacalhauClient, error) {
+	client := publicapi.NewRequesterAPIClient(options.Host, uint16(options.Port))
 	return &BacalhauClient{
-		Client: client,
-	}
+		Options: options,
+		Client:  client,
+	}, nil
 }
 
 func (r *BacalhauClient) CreateJob(

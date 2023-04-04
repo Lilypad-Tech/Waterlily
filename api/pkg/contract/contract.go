@@ -1,227 +1,266 @@
 package contract
 
 import (
+	"context"
 	"crypto/ecdsa"
+	"fmt"
+	"math/big"
+	"strconv"
+	"strings"
+	"time"
 
-	"github.com/bacalhau-project/lilypad/hardhat/artifacts/contracts/LilypadEvents.sol"
+	"github.com/bacalhau-project/waterlily/api/pkg/types"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/rs/zerolog/log"
 )
 
-// type SmartContract interface {
-// 	Listen(context.Context, chan<- ContractSubmittedEvent) error
-
-// 	Complete(context.Context, BacalhauJobCompletedEvent) (ContractPaidEvent, error)
-
-// 	Refund(context.Context, ContractFailedEvent) (ContractRefundedEvent, error)
-// }
-
-type realContract struct {
-	client     *ethclient.Client
-	contract   *LilypadEvents.LilypadEvents
-	privateKey *ecdsa.PrivateKey
-
-	maxSeenBlock uint64
+type ContractOptions struct {
+	Address     string
+	PrivateKey  string
+	RPCEndpoint string
+	ChainID     string
 }
 
-// func (r *realContract) publicKey() *ecdsa.PublicKey {
-// 	return r.privateKey.Public().(*ecdsa.PublicKey)
-// }
+type realContract struct {
+	client       *ethclient.Client
+	contract     *ArtistAttribution
+	address      common.Address
+	chainID      *big.Int
+	privateKey   *ecdsa.PrivateKey
+	maxSeenBlock uint64
+	tickerTime   time.Duration
+}
 
-// func (r *realContract) wallet() common.Address {
-// 	return crypto.PubkeyToAddress(*r.publicKey())
-// }
+func NewContract(options ContractOptions) (Contract, error) {
+	if options.Address == "" {
+		return nil, fmt.Errorf("address option must be set")
+	}
 
-// func (r *realContract) pendingNonce(ctx context.Context) (uint64, error) {
-// 	return r.client.PendingNonceAt(ctx, r.wallet())
-// }
+	if options.PrivateKey == "" {
+		return nil, fmt.Errorf("private key option must be set")
+	}
 
-// func (r *realContract) prepareTransaction(ctx context.Context) (*bind.TransactOpts, error) {
-// 	nonce, err := r.pendingNonce(ctx)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	if options.RPCEndpoint == "" {
+		return nil, fmt.Errorf("rpc endpoint option must be set")
+	}
 
-// 	chainIdStr, found := os.LookupEnv("CHAIN_ID")
-// 	if !found {
-// 		return nil, fmt.Errorf("CHAIN_ID env var must be set")
-// 	}
+	if options.ChainID == "" {
+		return nil, fmt.Errorf("chain id option must be set")
+	}
 
-// 	chainId, err := strconv.ParseInt(chainIdStr, 10, 32)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	address := common.HexToAddress(options.Address)
+	privateKey, err := crypto.HexToECDSA(strings.Replace(options.PrivateKey, "0x", "", 1))
+	if err != nil {
+		return nil, err
+	}
 
-// 	opts, err := bind.NewKeyedTransactorWithChainID(r.privateKey, big.NewInt(chainId))
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	log.Debug().
+		Str("endpoint", options.RPCEndpoint).
+		Str("chainID", options.ChainID).
+		Str("address", options.Address).
+		Msg("Dial")
+	client, err := ethclient.Dial(options.RPCEndpoint)
+	if err != nil {
+		return nil, err
+	}
 
-// 	opts.Nonce = big.NewInt(int64(nonce))
-// 	opts.Value = big.NewInt(0)
-// 	opts.Context = ctx
+	chainId, err := strconv.ParseInt(options.ChainID, 10, 32)
+	if err != nil {
+		return nil, err
+	}
 
-// 	return opts, nil
-// }
+	contract, err := NewArtistAttribution(address, client)
+	if err != nil {
+		return nil, err
+	}
 
-// // Complete implements SmartContract
-// func (r *realContract) Complete(ctx context.Context, event BacalhauJobCompletedEvent) (ContractPaidEvent, error) {
-// 	opts, err := r.prepareTransaction(ctx)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	number, err := client.BlockNumber(context.Background())
+	if err != nil {
+		return nil, err
+	}
 
-// 	var result string
-// 	switch event.OrderResultType() {
-// 	case ResultTypeCID:
-// 		result = event.Result().String()
-// 	case ResultTypeStdOut:
-// 		result = event.StdOut()
-// 	case ResultTypeStdErr:
-// 		result = event.StdErr()
-// 	case ResultTypeExitCode:
-// 		result = fmt.Sprint(event.ExitCode())
-// 	}
+	return &realContract{
+		client:       client,
+		contract:     contract,
+		chainID:      big.NewInt(chainId),
+		privateKey:   privateKey,
+		maxSeenBlock: number,
+	}, nil
+}
 
-// 	txn, err := r.contract.LilypadEventsTransactor.ReturnBacalhauResults(
-// 		opts,
-// 		event.OrderRequestor(),
-// 		big.NewInt(event.OrderNumber()),
-// 		uint8(event.OrderResultType()),
-// 		result,
-// 	)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+// Complete implements SmartContract
+func (r *realContract) Complete(ctx context.Context, id int, result string) error {
+	opts, err := r.prepareTransaction(ctx)
+	if err != nil {
+		return err
+	}
 
-// 	log.Ctx(ctx).Info().Stringer("txn", txn.Hash()).Msg("Results returned")
-// 	return event.Paid(), nil
-// }
+	txn, err := r.contract.ArtistAttributionTransactor.ImageComplete(
+		opts,
+		big.NewInt(int64(id)),
+		result,
+	)
+	if err != nil {
+		return err
+	}
 
-// // Refund implements SmartContract
-// func (r *realContract) Refund(ctx context.Context, event ContractFailedEvent) (ContractRefundedEvent, error) {
-// 	opts, err := r.prepareTransaction(ctx)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	log.Ctx(ctx).Info().Stringer("txn", txn.Hash()).Msgf("Results returned: %d", id)
+	return nil
+}
 
-// 	txn, err := r.contract.LilypadEventsTransactor.ReturnBacalhauError(
-// 		opts,
-// 		event.OrderRequestor(),
-// 		big.NewInt(event.OrderNumber()),
-// 		event.Error(),
-// 	)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+// Refund implements SmartContract
+func (r *realContract) Cancel(ctx context.Context, id int, errorString string) error {
+	opts, err := r.prepareTransaction(ctx)
+	if err != nil {
+		return err
+	}
 
-// 	log.Ctx(ctx).Info().Stringer("txn", txn.Hash()).Msgf("Error returned: %s", event.Error())
-// 	return event.Refunded(), nil
-// }
+	txn, err := r.contract.ArtistAttributionTransactor.ImageCancelled(
+		opts,
+		big.NewInt(int64(id)),
+		errorString,
+	)
+	if err != nil {
+		return err
+	}
 
-// // Listen implements SmartContract
-// func (r *realContract) Listen(ctx context.Context, out chan<- ContractSubmittedEvent) error {
-// 	scheduler := gocron.NewScheduler(time.UTC)
-// 	_, err := scheduler.Every(15*time.Second).SingletonMode().Do(r.ReadLogs, ctx, out)
-// 	if err != nil {
-// 		return err
-// 	}
+	log.Ctx(ctx).Info().Stringer("txn", txn.Hash()).Msgf("Error returned: %d %s", id, errorString)
+	return nil
+}
 
-// 	scheduler.StartAsync()
-// 	defer scheduler.Stop()
+func (r *realContract) Listen(
+	ctx context.Context,
+	imageChan chan<- *types.ImageCreatedEvent,
+	artistChan chan<- *types.ArtistCreatedEvent,
+) error {
 
-// 	<-ctx.Done()
-// 	return nil
-// }
+	t := time.NewTicker(r.tickerTime)
+	defer t.Stop()
 
-// func (r *realContract) ReadLogs(ctx context.Context, out chan<- ContractSubmittedEvent) {
-// 	log.Ctx(ctx).Debug().Uint64("fromBlock", r.maxSeenBlock+1).Msg("Polling for smart contract events")
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		case <-t.C:
+			err := r.ReadEvents(ctx, imageChan, artistChan)
+			if err != nil {
+				return err
+			}
+		}
+	}
+}
 
-// 	// We deliberately ask for the current block *before* we make the events
-// 	// call. It's possible that a block will be written between the two calls:
-// 	//
-// 	//    FilterNewJobs(block: #1) -> seen block #1
-// 	//    block #2 gets written
-// 	//    BlockNumber() -> block #3
-// 	//    ...
-// 	//    FilterNewJobs(block: #3)
-// 	//
-// 	// In this case we would never see any events in block #2. So we instead
-// 	// remember the block number before the events call, and if a block is
-// 	// written between them, we will get it again next time we ask for events.
-// 	currentBlock, err := r.client.BlockNumber(ctx)
-// 	if err != nil {
-// 		log.Ctx(ctx).Error().Err(err).Send()
-// 	}
+func (r *realContract) ReadEvents(
+	ctx context.Context,
+	imageChan chan<- *types.ImageCreatedEvent,
+	artistChan chan<- *types.ArtistCreatedEvent,
+) error {
+	log.Ctx(ctx).Debug().Uint64("fromBlock", r.maxSeenBlock+1).Msg("Polling for smart contract image and artist events")
 
-// 	opts := bind.FilterOpts{Start: uint64(r.maxSeenBlock + 1), Context: ctx}
-// 	logs, err := r.contract.LilypadEventsFilterer.FilterNewBacalhauJobSubmitted(&opts)
-// 	if err != nil {
-// 		log.Ctx(ctx).Error().Err(err).Send()
-// 		// if we have an error here we should exit and restart
-// 		// this avoids problems if the network is down and we are holding onto a previous
-// 		// block number that is later than 24 hours and we get into a death loop
-// 		// if the network is down or for whatever other reason we are unable
-// 		// to list the events we should exit and restart to try and start again
-// 		os.Exit(1)
-// 	}
-// 	defer logs.Close()
+	// We deliberately ask for the current block *before* we make the events
+	// call. It's possible that a block will be written between the two calls:
+	//
+	//    FilterNewJobs(block: #1) -> seen block #1
+	//    block #2 gets written
+	//    BlockNumber() -> block #3
+	//    ...
+	//    FilterNewJobs(block: #3)
+	//
+	// In this case we would never see any events in block #2. So we instead
+	// remember the block number before the events call, and if a block is
+	// written between them, we will get it again next time we ask for events.
+	currentBlock, err := r.client.BlockNumber(ctx)
+	if err != nil {
+		log.Ctx(ctx).Error().Err(err).Send()
+		return err
+	}
 
-// 	r.maxSeenBlock = currentBlock
+	opts := bind.FilterOpts{Start: uint64(r.maxSeenBlock + 1), Context: ctx}
 
-// 	for logs.Next() {
-// 		recvEvent := logs.Event
-// 		log.Ctx(ctx).Debug().
-// 			Stringer("txn", recvEvent.Raw.TxHash).
-// 			Uint64("block#", recvEvent.Raw.BlockNumber).
-// 			Str("spec", recvEvent.Job.Spec).
-// 			Bool("removed", recvEvent.Raw.Removed).
-// 			Msg("Event")
+	imageLogs, err := r.contract.ArtistAttributionFilterer.FilterImageCreated(&opts)
+	if err != nil {
+		log.Ctx(ctx).Error().Err(err).Send()
+		return err
+	}
+	defer imageLogs.Close()
 
-// 		if recvEvent.Raw.Removed {
-// 			continue
-// 		}
+	artistLogs, err := r.contract.ArtistAttributionFilterer.FilterArtistCreated(&opts)
+	if err != nil {
+		log.Ctx(ctx).Error().Err(err).Send()
+		return err
+	}
+	defer artistLogs.Close()
 
-// 		if !ResultType(recvEvent.Job.ResultType).Valid() {
-// 			log.Ctx(ctx).Warn().Uint8("resultType", recvEvent.Job.ResultType).Msg("invalid ResultType")
-// 			continue
-// 		}
+	r.maxSeenBlock = currentBlock
 
-// 		out <- &event{
-// 			orderId:         recvEvent.Raw.TxHash.Bytes(),
-// 			orderOwner:      recvEvent.Job.Requestor.Bytes(),
-// 			orderNumber:     recvEvent.Job.Id.Int64(),
-// 			orderResultType: recvEvent.Job.ResultType,
-// 			state:           OrderStateSubmitted,
-// 			jobSpec:         []byte(recvEvent.Job.Spec),
-// 		}
+	for imageLogs.Next() {
+		recvEvent := imageLogs.Event
+		// IMPORTANT: this means the log was reverted, so we should ignore it
+		if recvEvent.Raw.Removed {
+			continue
+		}
+		log.Ctx(ctx).Info().
+			Stringer("txn", recvEvent.Raw.TxHash).
+			Uint64("block#", recvEvent.Raw.BlockNumber).
+			Uint64("id", recvEvent.Raw.BlockNumber).
+			Str("artist", recvEvent.Image.Artist).
+			Str("prompt", recvEvent.Image.Prompt).
+			Msg("Image")
+		imageChan <- &types.ImageCreatedEvent{
+			ContractID: int(recvEvent.Image.Id.Int64()),
+			ArtistCode: recvEvent.Image.Artist,
+			Prompt:     recvEvent.Image.Prompt,
+		}
+	}
 
-// 		r.maxSeenBlock = recvEvent.Raw.BlockNumber
-// 	}
-// }
+	for artistLogs.Next() {
+		recvEvent := artistLogs.Event
+		// IMPORTANT: this means the log was reverted, so we should ignore it
+		if recvEvent.Raw.Removed {
+			continue
+		}
+		log.Ctx(ctx).Info().
+			Stringer("txn", recvEvent.Raw.TxHash).
+			Uint64("block#", recvEvent.Raw.BlockNumber).
+			Str("artist", recvEvent.Artist.Id).
+			Msg("Artist")
+		artistChan <- &types.ArtistCreatedEvent{
+			ArtistCode: recvEvent.Artist.Id,
+		}
+	}
 
-// func NewContract(contractAddr common.Address, privateKey *ecdsa.PrivateKey) (SmartContract, error) {
-// 	rpcEndpoint, found := os.LookupEnv("RPC_ENDPOINT")
-// 	if !found {
-// 		return nil, fmt.Errorf("RPC_ENDPOINT env var must be specified")
-// 	}
+	return nil
+}
 
-// 	log.Debug().Str("endpoint", rpcEndpoint).Msg("Dial")
-// 	client, err := ethclient.Dial(rpcEndpoint)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (r *realContract) publicKey() *ecdsa.PublicKey {
+	return r.privateKey.Public().(*ecdsa.PublicKey)
+}
 
-// 	log.Debug().Str("contract", contractAddr.String()).Msg("Contract Address")
+func (r *realContract) wallet() common.Address {
+	return crypto.PubkeyToAddress(*r.publicKey())
+}
 
-// 	contract, err := LilypadEvents.NewLilypadEvents(contractAddr, client)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (r *realContract) pendingNonce(ctx context.Context) (uint64, error) {
+	return r.client.PendingNonceAt(ctx, r.wallet())
+}
 
-// 	number, err := client.BlockNumber(context.Background())
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (r *realContract) prepareTransaction(ctx context.Context) (*bind.TransactOpts, error) {
+	nonce, err := r.pendingNonce(ctx)
+	if err != nil {
+		return nil, err
+	}
 
-// 	return &realContract{client, contract, privateKey, number}, nil
-// }
+	opts, err := bind.NewKeyedTransactorWithChainID(r.privateKey, r.chainID)
+	if err != nil {
+		return nil, err
+	}
+
+	opts.Nonce = big.NewInt(int64(nonce))
+	opts.Value = big.NewInt(0)
+	opts.Context = ctx
+
+	return opts, nil
+}

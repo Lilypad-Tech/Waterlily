@@ -2,9 +2,8 @@
 pragma solidity >=0.8.4;
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "./LilypadEvents.sol";
-import "./LilypadCallerInterface.sol";
 
 // this is the default cost of an image
 // it's about 50 cents
@@ -15,8 +14,9 @@ uint256 constant DEFAULT_ARTIST_COMMISSION = 650000000000000 * 250;
 /**
     @notice An experimental contract for POC work to call Bacalhau jobs from FVM smart contracts
 */
-contract ArtistAttribution is LilypadCallerInterface, Ownable {
-    LilypadEvents public bridge;
+contract ArtistAttribution is Ownable {
+    using Counters for Counters.Counter; // create job id's?
+    Counters.Counter private _jobIds;
 
     uint256 public computeProviderEscrow;
     uint256 public computeProviderRevenue;
@@ -49,6 +49,11 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         uint256 escrow; // amount of FIL owed that can be withdrawn right now
         uint256 revenue; // total amount of revenue earned
         uint256 numJobsRun; // total numbner of jobs run
+
+        // have we completed the artist training job?
+        // only the admin can update this
+        // (because it's the bridge that is updating this value)
+        bool isTrained;
     }
 
     // mapping of image id onto the image
@@ -68,34 +73,25 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
     // a map of customer address onto images they have submitted
     mapping (address => uint[]) customerImages;
 
+    event ImageCreated(StableDiffusionImage image);
     event ImageGenerated(StableDiffusionImage image);
     event ImageCancelled(StableDiffusionImage image);
+    event ArtistCreated(Artist artist);
 
     constructor(
-      address _eventsContractAddress,
       uint256 _imageCost,
       uint256 _artistCommission
     ) {
         _updateCost(_imageCost, _artistCommission);
-        bridge = LilypadEvents(_eventsContractAddress);
     }
 
-    function StableDiffusion(string calldata _artistID, string calldata _prompt) external payable {
+    function CreateImage(string calldata _artistID, string calldata _prompt) external payable {
         require(bytes(artists[_artistID].id).length > 0, "artist does not exist");
         require(msg.value >= imageCost, "not enough FIL sent to pay for image");
 
-        uint currentID = bridge.currentJobID();
-        uint nextID = currentID + 1;
+        _jobIds.increment();
+        uint id = _jobIds.current();
 
-        // TODO: replace double quotes in the prompt otherwise our JSON breaks
-        // TODO: do proper json encoding, look out for quotes in _prompt
-        string memory spec = string.concat('{"_lilypad_template": "waterlily", "prompt": "', _prompt, '", "artistid": "', _artistID, '", "imageid": "', Strings.toString(nextID), '"}');
-
-        // run the job in lilypad and get the id back
-        // record the image so we can reference it when the callbacks are triggered
-        uint id = bridge.runBacalhauJob(address(this), spec, LilypadResultType.CID);
-
-        require(id == nextID, "we ended up with different image ids");
         images[id] = StableDiffusionImage({
             id: id,
             customer: msg.sender,
@@ -108,6 +104,7 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         });
         imageIDs.push(id);
         customerImages[msg.sender].push(id);
+        emit ImageCreated(images[id]);
 
         // if they have paid too much then refund the difference
         uint excess = msg.value - imageCost;
@@ -115,10 +112,6 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
           address payable to = payable(msg.sender);
           to.transfer(excess);
         }
-    }
-
-    function changeBridge(address _newBridgeAddress) public onlyOwner () {
-        bridge = LilypadEvents(_newBridgeAddress);
     }
 
     function getArtistIDs() public view returns (string[] memory) {
@@ -183,7 +176,8 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
           metadata: metadata,
           escrow: 0,
           revenue: 0,
-          numJobsRun: 0
+          numJobsRun: 0,
+          isTrained: false
         });
         artistAddresses[wallet] = id;
     }
@@ -221,15 +215,9 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         to.transfer(escrowToSend);
     }
 
-    function lilypadFulfilled(address _from, uint _jobId, LilypadResultType _resultType, string calldata _result) external override {
-        //need some checks here that it a legitimate result
-        require(_from == address(bridge)); // TODO: really not secure
-
-        // we onlt care about results types with IPFS CIDs
-        require(_resultType == LilypadResultType.CID);
-
+    function imageComplete(uint _id, string calldata _result) public onlyOwner {
         // get a reference to the image
-        StableDiffusionImage storage image = images[_jobId];
+        StableDiffusionImage storage image = images[_id];
 
         // sanity check that the image exists with that ID
         require(image.id > 0, "image does not exist");
@@ -262,11 +250,9 @@ contract ArtistAttribution is LilypadCallerInterface, Ownable {
         emit ImageGenerated(image);
     }
 
-    function lilypadCancelled(address _from, uint _jobId, string calldata _errorMsg) external override {
-        require(_from == address(bridge)); // TODO: really not secure
-
+    function imageCancelled(uint _id, string calldata _errorMsg) public onlyOwner {
         // get a reference to the image
-        StableDiffusionImage storage image = images[_jobId];
+        StableDiffusionImage storage image = images[_id];
 
         // sanity check that the image exists with that ID
         require(image.id > 0, "image does not exist");
