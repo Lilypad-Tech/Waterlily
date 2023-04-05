@@ -37,8 +37,8 @@ type ArtistAttributionArtist struct {
 	IsTrained  bool
 }
 
-// ArtistAttributionStableDiffusionImage is an auto generated low-level Go binding around an user-defined struct.
-type ArtistAttributionStableDiffusionImage struct {
+// ArtistAttributionImage is an auto generated low-level Go binding around an user-defined struct.
+type ArtistAttributionImage struct {
 	Id           *big.Int
 	Customer     common.Address
 	Artist       string
@@ -50,7 +50,7 @@ type ArtistAttributionStableDiffusionImage struct {
 }
 
 // ArtistAttributionABI is the input ABI used to generate the binding from.
-const ArtistAttributionABI = "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_imageCost\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_artistCommission\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"wallet\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"metadata\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"escrow\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"revenue\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"numJobsRun\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isTrained\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structArtistAttribution.Artist\",\"name\":\"artist\",\"type\":\"tuple\"}],\"name\":\"ArtistCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"customer\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"artist\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"prompt\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ipfsResult\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"errorMessage\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"isComplete\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isCancelled\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structArtistAttribution.StableDiffusionImage\",\"name\":\"image\",\"type\":\"tuple\"}],\"name\":\"ImageCancelled\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"customer\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"artist\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"prompt\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ipfsResult\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"errorMessage\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"isComplete\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isCancelled\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structArtistAttribution.StableDiffusionImage\",\"name\":\"image\",\"type\":\"tuple\"}],\"name\":\"ImageCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"customer\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"artist\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"prompt\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ipfsResult\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"errorMessage\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"isComplete\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isCancelled\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structArtistAttribution.StableDiffusionImage\",\"name\":\"image\",\"type\":\"tuple\"}],\"name\":\"ImageGenerated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_artistID\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_prompt\",\"type\":\"string\"}],\"name\":\"CreateImage\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"adminWithdraw\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"artistCommission\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"artistWithdraw\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"computeProviderEscrow\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"computeProviderRevenue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"}],\"name\":\"deleteArtist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"}],\"name\":\"getArtist\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"wallet\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"metadata\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"escrow\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"revenue\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"numJobsRun\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isTrained\",\"type\":\"bool\"}],\"internalType\":\"structArtistAttribution.Artist\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getArtistCommission\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getArtistIDs\",\"outputs\":[{\"internalType\":\"string[]\",\"name\":\"\",\"type\":\"string[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"customerAddress\",\"type\":\"address\"}],\"name\":\"getCustomerImages\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"}],\"name\":\"getImage\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"customer\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"artist\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"prompt\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ipfsResult\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"errorMessage\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"isComplete\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isCancelled\",\"type\":\"bool\"}],\"internalType\":\"structArtistAttribution.StableDiffusionImage\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getImageCost\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getImageIDs\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"_errorMsg\",\"type\":\"string\"}],\"name\":\"imageCancelled\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"_result\",\"type\":\"string\"}],\"name\":\"imageComplete\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"imageCost\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"wallet\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"metadata\",\"type\":\"string\"}],\"name\":\"updateArtist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_imageCost\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_artistCommission\",\"type\":\"uint256\"}],\"name\":\"updateCost\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
+const ArtistAttributionABI = "[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_artistCost\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_imageCost\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_artistCommission\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"wallet\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"metadata\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"escrow\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"revenue\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"numJobsRun\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isTrained\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structArtistAttribution.Artist\",\"name\":\"artist\",\"type\":\"tuple\"}],\"name\":\"EventArtistCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"customer\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"artist\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"prompt\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ipfsResult\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"errorMessage\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"isComplete\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isCancelled\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structArtistAttribution.Image\",\"name\":\"image\",\"type\":\"tuple\"}],\"name\":\"EventImageCancelled\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"customer\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"artist\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"prompt\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ipfsResult\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"errorMessage\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"isComplete\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isCancelled\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structArtistAttribution.Image\",\"name\":\"image\",\"type\":\"tuple\"}],\"name\":\"EventImageComplete\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"customer\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"artist\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"prompt\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ipfsResult\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"errorMessage\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"isComplete\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isCancelled\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structArtistAttribution.Image\",\"name\":\"image\",\"type\":\"tuple\"}],\"name\":\"EventImageCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"metadata\",\"type\":\"string\"}],\"name\":\"CreateArtist\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_artistID\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_prompt\",\"type\":\"string\"}],\"name\":\"CreateImage\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"_errorMsg\",\"type\":\"string\"}],\"name\":\"ImageCancelled\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_id\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"_result\",\"type\":\"string\"}],\"name\":\"ImageComplete\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"adminWithdraw\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"newWallet\",\"type\":\"address\"}],\"name\":\"artistChangeWallet\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"artistCommission\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"artistCost\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"}],\"name\":\"artistTrained\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"}],\"name\":\"artistWithdraw\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"computeProviderEscrow\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"computeProviderRevenue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"}],\"name\":\"deleteArtist\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"}],\"name\":\"getArtist\",\"outputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"internalType\":\"address\",\"name\":\"wallet\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"metadata\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"escrow\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"revenue\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"numJobsRun\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isTrained\",\"type\":\"bool\"}],\"internalType\":\"structArtistAttribution.Artist\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getArtistCommission\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getArtistIDs\",\"outputs\":[{\"internalType\":\"string[]\",\"name\":\"\",\"type\":\"string[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"customerAddress\",\"type\":\"address\"}],\"name\":\"getCustomerImages\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"}],\"name\":\"getImage\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"customer\",\"type\":\"address\"},{\"internalType\":\"string\",\"name\":\"artist\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"prompt\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"ipfsResult\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"errorMessage\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"isComplete\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"isCancelled\",\"type\":\"bool\"}],\"internalType\":\"structArtistAttribution.Image\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getImageCost\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getImageIDs\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"imageCost\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_artistCost\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_imageCost\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_artistCommission\",\"type\":\"uint256\"}],\"name\":\"updateCost\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]"
 
 // ArtistAttribution is an auto generated Go binding around an Ethereum contract.
 type ArtistAttribution struct {
@@ -223,6 +223,37 @@ func (_ArtistAttribution *ArtistAttributionSession) ArtistCommission() (*big.Int
 // Solidity: function artistCommission() view returns(uint256)
 func (_ArtistAttribution *ArtistAttributionCallerSession) ArtistCommission() (*big.Int, error) {
 	return _ArtistAttribution.Contract.ArtistCommission(&_ArtistAttribution.CallOpts)
+}
+
+// ArtistCost is a free data retrieval call binding the contract method 0x19856742.
+//
+// Solidity: function artistCost() view returns(uint256)
+func (_ArtistAttribution *ArtistAttributionCaller) ArtistCost(opts *bind.CallOpts) (*big.Int, error) {
+	var out []interface{}
+	err := _ArtistAttribution.contract.Call(opts, &out, "artistCost")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// ArtistCost is a free data retrieval call binding the contract method 0x19856742.
+//
+// Solidity: function artistCost() view returns(uint256)
+func (_ArtistAttribution *ArtistAttributionSession) ArtistCost() (*big.Int, error) {
+	return _ArtistAttribution.Contract.ArtistCost(&_ArtistAttribution.CallOpts)
+}
+
+// ArtistCost is a free data retrieval call binding the contract method 0x19856742.
+//
+// Solidity: function artistCost() view returns(uint256)
+func (_ArtistAttribution *ArtistAttributionCallerSession) ArtistCost() (*big.Int, error) {
+	return _ArtistAttribution.Contract.ArtistCost(&_ArtistAttribution.CallOpts)
 }
 
 // ComputeProviderEscrow is a free data retrieval call binding the contract method 0xfeadcdeb.
@@ -414,15 +445,15 @@ func (_ArtistAttribution *ArtistAttributionCallerSession) GetCustomerImages(cust
 // GetImage is a free data retrieval call binding the contract method 0x2607aafa.
 //
 // Solidity: function getImage(uint256 id) view returns((uint256,address,string,string,string,string,bool,bool))
-func (_ArtistAttribution *ArtistAttributionCaller) GetImage(opts *bind.CallOpts, id *big.Int) (ArtistAttributionStableDiffusionImage, error) {
+func (_ArtistAttribution *ArtistAttributionCaller) GetImage(opts *bind.CallOpts, id *big.Int) (ArtistAttributionImage, error) {
 	var out []interface{}
 	err := _ArtistAttribution.contract.Call(opts, &out, "getImage", id)
 
 	if err != nil {
-		return *new(ArtistAttributionStableDiffusionImage), err
+		return *new(ArtistAttributionImage), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new(ArtistAttributionStableDiffusionImage)).(*ArtistAttributionStableDiffusionImage)
+	out0 := *abi.ConvertType(out[0], new(ArtistAttributionImage)).(*ArtistAttributionImage)
 
 	return out0, err
 
@@ -431,14 +462,14 @@ func (_ArtistAttribution *ArtistAttributionCaller) GetImage(opts *bind.CallOpts,
 // GetImage is a free data retrieval call binding the contract method 0x2607aafa.
 //
 // Solidity: function getImage(uint256 id) view returns((uint256,address,string,string,string,string,bool,bool))
-func (_ArtistAttribution *ArtistAttributionSession) GetImage(id *big.Int) (ArtistAttributionStableDiffusionImage, error) {
+func (_ArtistAttribution *ArtistAttributionSession) GetImage(id *big.Int) (ArtistAttributionImage, error) {
 	return _ArtistAttribution.Contract.GetImage(&_ArtistAttribution.CallOpts, id)
 }
 
 // GetImage is a free data retrieval call binding the contract method 0x2607aafa.
 //
 // Solidity: function getImage(uint256 id) view returns((uint256,address,string,string,string,string,bool,bool))
-func (_ArtistAttribution *ArtistAttributionCallerSession) GetImage(id *big.Int) (ArtistAttributionStableDiffusionImage, error) {
+func (_ArtistAttribution *ArtistAttributionCallerSession) GetImage(id *big.Int) (ArtistAttributionImage, error) {
 	return _ArtistAttribution.Contract.GetImage(&_ArtistAttribution.CallOpts, id)
 }
 
@@ -566,6 +597,27 @@ func (_ArtistAttribution *ArtistAttributionCallerSession) Owner() (common.Addres
 	return _ArtistAttribution.Contract.Owner(&_ArtistAttribution.CallOpts)
 }
 
+// CreateArtist is a paid mutator transaction binding the contract method 0xe95b9bf4.
+//
+// Solidity: function CreateArtist(string id, string metadata) payable returns()
+func (_ArtistAttribution *ArtistAttributionTransactor) CreateArtist(opts *bind.TransactOpts, id string, metadata string) (*types.Transaction, error) {
+	return _ArtistAttribution.contract.Transact(opts, "CreateArtist", id, metadata)
+}
+
+// CreateArtist is a paid mutator transaction binding the contract method 0xe95b9bf4.
+//
+// Solidity: function CreateArtist(string id, string metadata) payable returns()
+func (_ArtistAttribution *ArtistAttributionSession) CreateArtist(id string, metadata string) (*types.Transaction, error) {
+	return _ArtistAttribution.Contract.CreateArtist(&_ArtistAttribution.TransactOpts, id, metadata)
+}
+
+// CreateArtist is a paid mutator transaction binding the contract method 0xe95b9bf4.
+//
+// Solidity: function CreateArtist(string id, string metadata) payable returns()
+func (_ArtistAttribution *ArtistAttributionTransactorSession) CreateArtist(id string, metadata string) (*types.Transaction, error) {
+	return _ArtistAttribution.Contract.CreateArtist(&_ArtistAttribution.TransactOpts, id, metadata)
+}
+
 // CreateImage is a paid mutator transaction binding the contract method 0x7b232660.
 //
 // Solidity: function CreateImage(string _artistID, string _prompt) payable returns()
@@ -585,6 +637,48 @@ func (_ArtistAttribution *ArtistAttributionSession) CreateImage(_artistID string
 // Solidity: function CreateImage(string _artistID, string _prompt) payable returns()
 func (_ArtistAttribution *ArtistAttributionTransactorSession) CreateImage(_artistID string, _prompt string) (*types.Transaction, error) {
 	return _ArtistAttribution.Contract.CreateImage(&_ArtistAttribution.TransactOpts, _artistID, _prompt)
+}
+
+// ImageCancelled is a paid mutator transaction binding the contract method 0x782beca8.
+//
+// Solidity: function ImageCancelled(uint256 _id, string _errorMsg) returns()
+func (_ArtistAttribution *ArtistAttributionTransactor) ImageCancelled(opts *bind.TransactOpts, _id *big.Int, _errorMsg string) (*types.Transaction, error) {
+	return _ArtistAttribution.contract.Transact(opts, "ImageCancelled", _id, _errorMsg)
+}
+
+// ImageCancelled is a paid mutator transaction binding the contract method 0x782beca8.
+//
+// Solidity: function ImageCancelled(uint256 _id, string _errorMsg) returns()
+func (_ArtistAttribution *ArtistAttributionSession) ImageCancelled(_id *big.Int, _errorMsg string) (*types.Transaction, error) {
+	return _ArtistAttribution.Contract.ImageCancelled(&_ArtistAttribution.TransactOpts, _id, _errorMsg)
+}
+
+// ImageCancelled is a paid mutator transaction binding the contract method 0x782beca8.
+//
+// Solidity: function ImageCancelled(uint256 _id, string _errorMsg) returns()
+func (_ArtistAttribution *ArtistAttributionTransactorSession) ImageCancelled(_id *big.Int, _errorMsg string) (*types.Transaction, error) {
+	return _ArtistAttribution.Contract.ImageCancelled(&_ArtistAttribution.TransactOpts, _id, _errorMsg)
+}
+
+// ImageComplete is a paid mutator transaction binding the contract method 0xc0ed368e.
+//
+// Solidity: function ImageComplete(uint256 _id, string _result) returns()
+func (_ArtistAttribution *ArtistAttributionTransactor) ImageComplete(opts *bind.TransactOpts, _id *big.Int, _result string) (*types.Transaction, error) {
+	return _ArtistAttribution.contract.Transact(opts, "ImageComplete", _id, _result)
+}
+
+// ImageComplete is a paid mutator transaction binding the contract method 0xc0ed368e.
+//
+// Solidity: function ImageComplete(uint256 _id, string _result) returns()
+func (_ArtistAttribution *ArtistAttributionSession) ImageComplete(_id *big.Int, _result string) (*types.Transaction, error) {
+	return _ArtistAttribution.Contract.ImageComplete(&_ArtistAttribution.TransactOpts, _id, _result)
+}
+
+// ImageComplete is a paid mutator transaction binding the contract method 0xc0ed368e.
+//
+// Solidity: function ImageComplete(uint256 _id, string _result) returns()
+func (_ArtistAttribution *ArtistAttributionTransactorSession) ImageComplete(_id *big.Int, _result string) (*types.Transaction, error) {
+	return _ArtistAttribution.Contract.ImageComplete(&_ArtistAttribution.TransactOpts, _id, _result)
 }
 
 // AdminWithdraw is a paid mutator transaction binding the contract method 0xa28835b6.
@@ -608,25 +702,67 @@ func (_ArtistAttribution *ArtistAttributionTransactorSession) AdminWithdraw(to c
 	return _ArtistAttribution.Contract.AdminWithdraw(&_ArtistAttribution.TransactOpts, to)
 }
 
-// ArtistWithdraw is a paid mutator transaction binding the contract method 0xd8c76606.
+// ArtistChangeWallet is a paid mutator transaction binding the contract method 0x009eb7e7.
 //
-// Solidity: function artistWithdraw() payable returns()
-func (_ArtistAttribution *ArtistAttributionTransactor) ArtistWithdraw(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _ArtistAttribution.contract.Transact(opts, "artistWithdraw")
+// Solidity: function artistChangeWallet(string id, address newWallet) returns()
+func (_ArtistAttribution *ArtistAttributionTransactor) ArtistChangeWallet(opts *bind.TransactOpts, id string, newWallet common.Address) (*types.Transaction, error) {
+	return _ArtistAttribution.contract.Transact(opts, "artistChangeWallet", id, newWallet)
 }
 
-// ArtistWithdraw is a paid mutator transaction binding the contract method 0xd8c76606.
+// ArtistChangeWallet is a paid mutator transaction binding the contract method 0x009eb7e7.
 //
-// Solidity: function artistWithdraw() payable returns()
-func (_ArtistAttribution *ArtistAttributionSession) ArtistWithdraw() (*types.Transaction, error) {
-	return _ArtistAttribution.Contract.ArtistWithdraw(&_ArtistAttribution.TransactOpts)
+// Solidity: function artistChangeWallet(string id, address newWallet) returns()
+func (_ArtistAttribution *ArtistAttributionSession) ArtistChangeWallet(id string, newWallet common.Address) (*types.Transaction, error) {
+	return _ArtistAttribution.Contract.ArtistChangeWallet(&_ArtistAttribution.TransactOpts, id, newWallet)
 }
 
-// ArtistWithdraw is a paid mutator transaction binding the contract method 0xd8c76606.
+// ArtistChangeWallet is a paid mutator transaction binding the contract method 0x009eb7e7.
 //
-// Solidity: function artistWithdraw() payable returns()
-func (_ArtistAttribution *ArtistAttributionTransactorSession) ArtistWithdraw() (*types.Transaction, error) {
-	return _ArtistAttribution.Contract.ArtistWithdraw(&_ArtistAttribution.TransactOpts)
+// Solidity: function artistChangeWallet(string id, address newWallet) returns()
+func (_ArtistAttribution *ArtistAttributionTransactorSession) ArtistChangeWallet(id string, newWallet common.Address) (*types.Transaction, error) {
+	return _ArtistAttribution.Contract.ArtistChangeWallet(&_ArtistAttribution.TransactOpts, id, newWallet)
+}
+
+// ArtistTrained is a paid mutator transaction binding the contract method 0x82a6633f.
+//
+// Solidity: function artistTrained(string id) returns()
+func (_ArtistAttribution *ArtistAttributionTransactor) ArtistTrained(opts *bind.TransactOpts, id string) (*types.Transaction, error) {
+	return _ArtistAttribution.contract.Transact(opts, "artistTrained", id)
+}
+
+// ArtistTrained is a paid mutator transaction binding the contract method 0x82a6633f.
+//
+// Solidity: function artistTrained(string id) returns()
+func (_ArtistAttribution *ArtistAttributionSession) ArtistTrained(id string) (*types.Transaction, error) {
+	return _ArtistAttribution.Contract.ArtistTrained(&_ArtistAttribution.TransactOpts, id)
+}
+
+// ArtistTrained is a paid mutator transaction binding the contract method 0x82a6633f.
+//
+// Solidity: function artistTrained(string id) returns()
+func (_ArtistAttribution *ArtistAttributionTransactorSession) ArtistTrained(id string) (*types.Transaction, error) {
+	return _ArtistAttribution.Contract.ArtistTrained(&_ArtistAttribution.TransactOpts, id)
+}
+
+// ArtistWithdraw is a paid mutator transaction binding the contract method 0xd41b5485.
+//
+// Solidity: function artistWithdraw(string id) payable returns()
+func (_ArtistAttribution *ArtistAttributionTransactor) ArtistWithdraw(opts *bind.TransactOpts, id string) (*types.Transaction, error) {
+	return _ArtistAttribution.contract.Transact(opts, "artistWithdraw", id)
+}
+
+// ArtistWithdraw is a paid mutator transaction binding the contract method 0xd41b5485.
+//
+// Solidity: function artistWithdraw(string id) payable returns()
+func (_ArtistAttribution *ArtistAttributionSession) ArtistWithdraw(id string) (*types.Transaction, error) {
+	return _ArtistAttribution.Contract.ArtistWithdraw(&_ArtistAttribution.TransactOpts, id)
+}
+
+// ArtistWithdraw is a paid mutator transaction binding the contract method 0xd41b5485.
+//
+// Solidity: function artistWithdraw(string id) payable returns()
+func (_ArtistAttribution *ArtistAttributionTransactorSession) ArtistWithdraw(id string) (*types.Transaction, error) {
+	return _ArtistAttribution.Contract.ArtistWithdraw(&_ArtistAttribution.TransactOpts, id)
 }
 
 // DeleteArtist is a paid mutator transaction binding the contract method 0xd415380e.
@@ -648,48 +784,6 @@ func (_ArtistAttribution *ArtistAttributionSession) DeleteArtist(id string) (*ty
 // Solidity: function deleteArtist(string id) returns()
 func (_ArtistAttribution *ArtistAttributionTransactorSession) DeleteArtist(id string) (*types.Transaction, error) {
 	return _ArtistAttribution.Contract.DeleteArtist(&_ArtistAttribution.TransactOpts, id)
-}
-
-// ImageCancelled is a paid mutator transaction binding the contract method 0x31167a63.
-//
-// Solidity: function imageCancelled(uint256 _id, string _errorMsg) returns()
-func (_ArtistAttribution *ArtistAttributionTransactor) ImageCancelled(opts *bind.TransactOpts, _id *big.Int, _errorMsg string) (*types.Transaction, error) {
-	return _ArtistAttribution.contract.Transact(opts, "imageCancelled", _id, _errorMsg)
-}
-
-// ImageCancelled is a paid mutator transaction binding the contract method 0x31167a63.
-//
-// Solidity: function imageCancelled(uint256 _id, string _errorMsg) returns()
-func (_ArtistAttribution *ArtistAttributionSession) ImageCancelled(_id *big.Int, _errorMsg string) (*types.Transaction, error) {
-	return _ArtistAttribution.Contract.ImageCancelled(&_ArtistAttribution.TransactOpts, _id, _errorMsg)
-}
-
-// ImageCancelled is a paid mutator transaction binding the contract method 0x31167a63.
-//
-// Solidity: function imageCancelled(uint256 _id, string _errorMsg) returns()
-func (_ArtistAttribution *ArtistAttributionTransactorSession) ImageCancelled(_id *big.Int, _errorMsg string) (*types.Transaction, error) {
-	return _ArtistAttribution.Contract.ImageCancelled(&_ArtistAttribution.TransactOpts, _id, _errorMsg)
-}
-
-// ImageComplete is a paid mutator transaction binding the contract method 0x36b02c1e.
-//
-// Solidity: function imageComplete(uint256 _id, string _result) returns()
-func (_ArtistAttribution *ArtistAttributionTransactor) ImageComplete(opts *bind.TransactOpts, _id *big.Int, _result string) (*types.Transaction, error) {
-	return _ArtistAttribution.contract.Transact(opts, "imageComplete", _id, _result)
-}
-
-// ImageComplete is a paid mutator transaction binding the contract method 0x36b02c1e.
-//
-// Solidity: function imageComplete(uint256 _id, string _result) returns()
-func (_ArtistAttribution *ArtistAttributionSession) ImageComplete(_id *big.Int, _result string) (*types.Transaction, error) {
-	return _ArtistAttribution.Contract.ImageComplete(&_ArtistAttribution.TransactOpts, _id, _result)
-}
-
-// ImageComplete is a paid mutator transaction binding the contract method 0x36b02c1e.
-//
-// Solidity: function imageComplete(uint256 _id, string _result) returns()
-func (_ArtistAttribution *ArtistAttributionTransactorSession) ImageComplete(_id *big.Int, _result string) (*types.Transaction, error) {
-	return _ArtistAttribution.Contract.ImageComplete(&_ArtistAttribution.TransactOpts, _id, _result)
 }
 
 // RenounceOwnership is a paid mutator transaction binding the contract method 0x715018a6.
@@ -734,51 +828,30 @@ func (_ArtistAttribution *ArtistAttributionTransactorSession) TransferOwnership(
 	return _ArtistAttribution.Contract.TransferOwnership(&_ArtistAttribution.TransactOpts, newOwner)
 }
 
-// UpdateArtist is a paid mutator transaction binding the contract method 0xc3791332.
+// UpdateCost is a paid mutator transaction binding the contract method 0x6f55475d.
 //
-// Solidity: function updateArtist(string id, address wallet, string metadata) returns()
-func (_ArtistAttribution *ArtistAttributionTransactor) UpdateArtist(opts *bind.TransactOpts, id string, wallet common.Address, metadata string) (*types.Transaction, error) {
-	return _ArtistAttribution.contract.Transact(opts, "updateArtist", id, wallet, metadata)
+// Solidity: function updateCost(uint256 _artistCost, uint256 _imageCost, uint256 _artistCommission) returns()
+func (_ArtistAttribution *ArtistAttributionTransactor) UpdateCost(opts *bind.TransactOpts, _artistCost *big.Int, _imageCost *big.Int, _artistCommission *big.Int) (*types.Transaction, error) {
+	return _ArtistAttribution.contract.Transact(opts, "updateCost", _artistCost, _imageCost, _artistCommission)
 }
 
-// UpdateArtist is a paid mutator transaction binding the contract method 0xc3791332.
+// UpdateCost is a paid mutator transaction binding the contract method 0x6f55475d.
 //
-// Solidity: function updateArtist(string id, address wallet, string metadata) returns()
-func (_ArtistAttribution *ArtistAttributionSession) UpdateArtist(id string, wallet common.Address, metadata string) (*types.Transaction, error) {
-	return _ArtistAttribution.Contract.UpdateArtist(&_ArtistAttribution.TransactOpts, id, wallet, metadata)
+// Solidity: function updateCost(uint256 _artistCost, uint256 _imageCost, uint256 _artistCommission) returns()
+func (_ArtistAttribution *ArtistAttributionSession) UpdateCost(_artistCost *big.Int, _imageCost *big.Int, _artistCommission *big.Int) (*types.Transaction, error) {
+	return _ArtistAttribution.Contract.UpdateCost(&_ArtistAttribution.TransactOpts, _artistCost, _imageCost, _artistCommission)
 }
 
-// UpdateArtist is a paid mutator transaction binding the contract method 0xc3791332.
+// UpdateCost is a paid mutator transaction binding the contract method 0x6f55475d.
 //
-// Solidity: function updateArtist(string id, address wallet, string metadata) returns()
-func (_ArtistAttribution *ArtistAttributionTransactorSession) UpdateArtist(id string, wallet common.Address, metadata string) (*types.Transaction, error) {
-	return _ArtistAttribution.Contract.UpdateArtist(&_ArtistAttribution.TransactOpts, id, wallet, metadata)
+// Solidity: function updateCost(uint256 _artistCost, uint256 _imageCost, uint256 _artistCommission) returns()
+func (_ArtistAttribution *ArtistAttributionTransactorSession) UpdateCost(_artistCost *big.Int, _imageCost *big.Int, _artistCommission *big.Int) (*types.Transaction, error) {
+	return _ArtistAttribution.Contract.UpdateCost(&_ArtistAttribution.TransactOpts, _artistCost, _imageCost, _artistCommission)
 }
 
-// UpdateCost is a paid mutator transaction binding the contract method 0x35314461.
-//
-// Solidity: function updateCost(uint256 _imageCost, uint256 _artistCommission) returns()
-func (_ArtistAttribution *ArtistAttributionTransactor) UpdateCost(opts *bind.TransactOpts, _imageCost *big.Int, _artistCommission *big.Int) (*types.Transaction, error) {
-	return _ArtistAttribution.contract.Transact(opts, "updateCost", _imageCost, _artistCommission)
-}
-
-// UpdateCost is a paid mutator transaction binding the contract method 0x35314461.
-//
-// Solidity: function updateCost(uint256 _imageCost, uint256 _artistCommission) returns()
-func (_ArtistAttribution *ArtistAttributionSession) UpdateCost(_imageCost *big.Int, _artistCommission *big.Int) (*types.Transaction, error) {
-	return _ArtistAttribution.Contract.UpdateCost(&_ArtistAttribution.TransactOpts, _imageCost, _artistCommission)
-}
-
-// UpdateCost is a paid mutator transaction binding the contract method 0x35314461.
-//
-// Solidity: function updateCost(uint256 _imageCost, uint256 _artistCommission) returns()
-func (_ArtistAttribution *ArtistAttributionTransactorSession) UpdateCost(_imageCost *big.Int, _artistCommission *big.Int) (*types.Transaction, error) {
-	return _ArtistAttribution.Contract.UpdateCost(&_ArtistAttribution.TransactOpts, _imageCost, _artistCommission)
-}
-
-// ArtistAttributionArtistCreatedIterator is returned from FilterArtistCreated and is used to iterate over the raw logs and unpacked data for ArtistCreated events raised by the ArtistAttribution contract.
-type ArtistAttributionArtistCreatedIterator struct {
-	Event *ArtistAttributionArtistCreated // Event containing the contract specifics and raw log
+// ArtistAttributionEventArtistCreatedIterator is returned from FilterEventArtistCreated and is used to iterate over the raw logs and unpacked data for EventArtistCreated events raised by the ArtistAttribution contract.
+type ArtistAttributionEventArtistCreatedIterator struct {
+	Event *ArtistAttributionEventArtistCreated // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -792,7 +865,7 @@ type ArtistAttributionArtistCreatedIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *ArtistAttributionArtistCreatedIterator) Next() bool {
+func (it *ArtistAttributionEventArtistCreatedIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -801,7 +874,7 @@ func (it *ArtistAttributionArtistCreatedIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(ArtistAttributionArtistCreated)
+			it.Event = new(ArtistAttributionEventArtistCreated)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -816,7 +889,7 @@ func (it *ArtistAttributionArtistCreatedIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(ArtistAttributionArtistCreated)
+		it.Event = new(ArtistAttributionEventArtistCreated)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -832,41 +905,41 @@ func (it *ArtistAttributionArtistCreatedIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *ArtistAttributionArtistCreatedIterator) Error() error {
+func (it *ArtistAttributionEventArtistCreatedIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *ArtistAttributionArtistCreatedIterator) Close() error {
+func (it *ArtistAttributionEventArtistCreatedIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// ArtistAttributionArtistCreated represents a ArtistCreated event raised by the ArtistAttribution contract.
-type ArtistAttributionArtistCreated struct {
+// ArtistAttributionEventArtistCreated represents a EventArtistCreated event raised by the ArtistAttribution contract.
+type ArtistAttributionEventArtistCreated struct {
 	Artist ArtistAttributionArtist
 	Raw    types.Log // Blockchain specific contextual infos
 }
 
-// FilterArtistCreated is a free log retrieval operation binding the contract event 0x0fd67fd089be5be56e1302950a2ac17c5bbb4e5aebd91a04b464116031a6c387.
+// FilterEventArtistCreated is a free log retrieval operation binding the contract event 0x2601d70ca2b2a461f319bc3045fc9b845b0c5e2442eb0d8f419ed57a2359964f.
 //
-// Solidity: event ArtistCreated((string,address,string,uint256,uint256,uint256,bool) artist)
-func (_ArtistAttribution *ArtistAttributionFilterer) FilterArtistCreated(opts *bind.FilterOpts) (*ArtistAttributionArtistCreatedIterator, error) {
+// Solidity: event EventArtistCreated((string,address,string,uint256,uint256,uint256,bool) artist)
+func (_ArtistAttribution *ArtistAttributionFilterer) FilterEventArtistCreated(opts *bind.FilterOpts) (*ArtistAttributionEventArtistCreatedIterator, error) {
 
-	logs, sub, err := _ArtistAttribution.contract.FilterLogs(opts, "ArtistCreated")
+	logs, sub, err := _ArtistAttribution.contract.FilterLogs(opts, "EventArtistCreated")
 	if err != nil {
 		return nil, err
 	}
-	return &ArtistAttributionArtistCreatedIterator{contract: _ArtistAttribution.contract, event: "ArtistCreated", logs: logs, sub: sub}, nil
+	return &ArtistAttributionEventArtistCreatedIterator{contract: _ArtistAttribution.contract, event: "EventArtistCreated", logs: logs, sub: sub}, nil
 }
 
-// WatchArtistCreated is a free log subscription operation binding the contract event 0x0fd67fd089be5be56e1302950a2ac17c5bbb4e5aebd91a04b464116031a6c387.
+// WatchEventArtistCreated is a free log subscription operation binding the contract event 0x2601d70ca2b2a461f319bc3045fc9b845b0c5e2442eb0d8f419ed57a2359964f.
 //
-// Solidity: event ArtistCreated((string,address,string,uint256,uint256,uint256,bool) artist)
-func (_ArtistAttribution *ArtistAttributionFilterer) WatchArtistCreated(opts *bind.WatchOpts, sink chan<- *ArtistAttributionArtistCreated) (event.Subscription, error) {
+// Solidity: event EventArtistCreated((string,address,string,uint256,uint256,uint256,bool) artist)
+func (_ArtistAttribution *ArtistAttributionFilterer) WatchEventArtistCreated(opts *bind.WatchOpts, sink chan<- *ArtistAttributionEventArtistCreated) (event.Subscription, error) {
 
-	logs, sub, err := _ArtistAttribution.contract.WatchLogs(opts, "ArtistCreated")
+	logs, sub, err := _ArtistAttribution.contract.WatchLogs(opts, "EventArtistCreated")
 	if err != nil {
 		return nil, err
 	}
@@ -876,8 +949,8 @@ func (_ArtistAttribution *ArtistAttributionFilterer) WatchArtistCreated(opts *bi
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(ArtistAttributionArtistCreated)
-				if err := _ArtistAttribution.contract.UnpackLog(event, "ArtistCreated", log); err != nil {
+				event := new(ArtistAttributionEventArtistCreated)
+				if err := _ArtistAttribution.contract.UnpackLog(event, "EventArtistCreated", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -898,21 +971,21 @@ func (_ArtistAttribution *ArtistAttributionFilterer) WatchArtistCreated(opts *bi
 	}), nil
 }
 
-// ParseArtistCreated is a log parse operation binding the contract event 0x0fd67fd089be5be56e1302950a2ac17c5bbb4e5aebd91a04b464116031a6c387.
+// ParseEventArtistCreated is a log parse operation binding the contract event 0x2601d70ca2b2a461f319bc3045fc9b845b0c5e2442eb0d8f419ed57a2359964f.
 //
-// Solidity: event ArtistCreated((string,address,string,uint256,uint256,uint256,bool) artist)
-func (_ArtistAttribution *ArtistAttributionFilterer) ParseArtistCreated(log types.Log) (*ArtistAttributionArtistCreated, error) {
-	event := new(ArtistAttributionArtistCreated)
-	if err := _ArtistAttribution.contract.UnpackLog(event, "ArtistCreated", log); err != nil {
+// Solidity: event EventArtistCreated((string,address,string,uint256,uint256,uint256,bool) artist)
+func (_ArtistAttribution *ArtistAttributionFilterer) ParseEventArtistCreated(log types.Log) (*ArtistAttributionEventArtistCreated, error) {
+	event := new(ArtistAttributionEventArtistCreated)
+	if err := _ArtistAttribution.contract.UnpackLog(event, "EventArtistCreated", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// ArtistAttributionImageCancelledIterator is returned from FilterImageCancelled and is used to iterate over the raw logs and unpacked data for ImageCancelled events raised by the ArtistAttribution contract.
-type ArtistAttributionImageCancelledIterator struct {
-	Event *ArtistAttributionImageCancelled // Event containing the contract specifics and raw log
+// ArtistAttributionEventImageCancelledIterator is returned from FilterEventImageCancelled and is used to iterate over the raw logs and unpacked data for EventImageCancelled events raised by the ArtistAttribution contract.
+type ArtistAttributionEventImageCancelledIterator struct {
+	Event *ArtistAttributionEventImageCancelled // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -926,7 +999,7 @@ type ArtistAttributionImageCancelledIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *ArtistAttributionImageCancelledIterator) Next() bool {
+func (it *ArtistAttributionEventImageCancelledIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -935,7 +1008,7 @@ func (it *ArtistAttributionImageCancelledIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(ArtistAttributionImageCancelled)
+			it.Event = new(ArtistAttributionEventImageCancelled)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -950,7 +1023,7 @@ func (it *ArtistAttributionImageCancelledIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(ArtistAttributionImageCancelled)
+		it.Event = new(ArtistAttributionEventImageCancelled)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -966,41 +1039,41 @@ func (it *ArtistAttributionImageCancelledIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *ArtistAttributionImageCancelledIterator) Error() error {
+func (it *ArtistAttributionEventImageCancelledIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *ArtistAttributionImageCancelledIterator) Close() error {
+func (it *ArtistAttributionEventImageCancelledIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// ArtistAttributionImageCancelled represents a ImageCancelled event raised by the ArtistAttribution contract.
-type ArtistAttributionImageCancelled struct {
-	Image ArtistAttributionStableDiffusionImage
+// ArtistAttributionEventImageCancelled represents a EventImageCancelled event raised by the ArtistAttribution contract.
+type ArtistAttributionEventImageCancelled struct {
+	Image ArtistAttributionImage
 	Raw   types.Log // Blockchain specific contextual infos
 }
 
-// FilterImageCancelled is a free log retrieval operation binding the contract event 0xc33d7af141f1c5d8de8bb9961e0dcd4f378c1f0e4eee5856b51514fad5828528.
+// FilterEventImageCancelled is a free log retrieval operation binding the contract event 0xe96570608b3d10656e0834bfc3fcc45b1e15f1659a0f95f0bd514ea112af3b50.
 //
-// Solidity: event ImageCancelled((uint256,address,string,string,string,string,bool,bool) image)
-func (_ArtistAttribution *ArtistAttributionFilterer) FilterImageCancelled(opts *bind.FilterOpts) (*ArtistAttributionImageCancelledIterator, error) {
+// Solidity: event EventImageCancelled((uint256,address,string,string,string,string,bool,bool) image)
+func (_ArtistAttribution *ArtistAttributionFilterer) FilterEventImageCancelled(opts *bind.FilterOpts) (*ArtistAttributionEventImageCancelledIterator, error) {
 
-	logs, sub, err := _ArtistAttribution.contract.FilterLogs(opts, "ImageCancelled")
+	logs, sub, err := _ArtistAttribution.contract.FilterLogs(opts, "EventImageCancelled")
 	if err != nil {
 		return nil, err
 	}
-	return &ArtistAttributionImageCancelledIterator{contract: _ArtistAttribution.contract, event: "ImageCancelled", logs: logs, sub: sub}, nil
+	return &ArtistAttributionEventImageCancelledIterator{contract: _ArtistAttribution.contract, event: "EventImageCancelled", logs: logs, sub: sub}, nil
 }
 
-// WatchImageCancelled is a free log subscription operation binding the contract event 0xc33d7af141f1c5d8de8bb9961e0dcd4f378c1f0e4eee5856b51514fad5828528.
+// WatchEventImageCancelled is a free log subscription operation binding the contract event 0xe96570608b3d10656e0834bfc3fcc45b1e15f1659a0f95f0bd514ea112af3b50.
 //
-// Solidity: event ImageCancelled((uint256,address,string,string,string,string,bool,bool) image)
-func (_ArtistAttribution *ArtistAttributionFilterer) WatchImageCancelled(opts *bind.WatchOpts, sink chan<- *ArtistAttributionImageCancelled) (event.Subscription, error) {
+// Solidity: event EventImageCancelled((uint256,address,string,string,string,string,bool,bool) image)
+func (_ArtistAttribution *ArtistAttributionFilterer) WatchEventImageCancelled(opts *bind.WatchOpts, sink chan<- *ArtistAttributionEventImageCancelled) (event.Subscription, error) {
 
-	logs, sub, err := _ArtistAttribution.contract.WatchLogs(opts, "ImageCancelled")
+	logs, sub, err := _ArtistAttribution.contract.WatchLogs(opts, "EventImageCancelled")
 	if err != nil {
 		return nil, err
 	}
@@ -1010,8 +1083,8 @@ func (_ArtistAttribution *ArtistAttributionFilterer) WatchImageCancelled(opts *b
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(ArtistAttributionImageCancelled)
-				if err := _ArtistAttribution.contract.UnpackLog(event, "ImageCancelled", log); err != nil {
+				event := new(ArtistAttributionEventImageCancelled)
+				if err := _ArtistAttribution.contract.UnpackLog(event, "EventImageCancelled", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -1032,21 +1105,21 @@ func (_ArtistAttribution *ArtistAttributionFilterer) WatchImageCancelled(opts *b
 	}), nil
 }
 
-// ParseImageCancelled is a log parse operation binding the contract event 0xc33d7af141f1c5d8de8bb9961e0dcd4f378c1f0e4eee5856b51514fad5828528.
+// ParseEventImageCancelled is a log parse operation binding the contract event 0xe96570608b3d10656e0834bfc3fcc45b1e15f1659a0f95f0bd514ea112af3b50.
 //
-// Solidity: event ImageCancelled((uint256,address,string,string,string,string,bool,bool) image)
-func (_ArtistAttribution *ArtistAttributionFilterer) ParseImageCancelled(log types.Log) (*ArtistAttributionImageCancelled, error) {
-	event := new(ArtistAttributionImageCancelled)
-	if err := _ArtistAttribution.contract.UnpackLog(event, "ImageCancelled", log); err != nil {
+// Solidity: event EventImageCancelled((uint256,address,string,string,string,string,bool,bool) image)
+func (_ArtistAttribution *ArtistAttributionFilterer) ParseEventImageCancelled(log types.Log) (*ArtistAttributionEventImageCancelled, error) {
+	event := new(ArtistAttributionEventImageCancelled)
+	if err := _ArtistAttribution.contract.UnpackLog(event, "EventImageCancelled", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// ArtistAttributionImageCreatedIterator is returned from FilterImageCreated and is used to iterate over the raw logs and unpacked data for ImageCreated events raised by the ArtistAttribution contract.
-type ArtistAttributionImageCreatedIterator struct {
-	Event *ArtistAttributionImageCreated // Event containing the contract specifics and raw log
+// ArtistAttributionEventImageCompleteIterator is returned from FilterEventImageComplete and is used to iterate over the raw logs and unpacked data for EventImageComplete events raised by the ArtistAttribution contract.
+type ArtistAttributionEventImageCompleteIterator struct {
+	Event *ArtistAttributionEventImageComplete // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -1060,7 +1133,7 @@ type ArtistAttributionImageCreatedIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *ArtistAttributionImageCreatedIterator) Next() bool {
+func (it *ArtistAttributionEventImageCompleteIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -1069,7 +1142,7 @@ func (it *ArtistAttributionImageCreatedIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(ArtistAttributionImageCreated)
+			it.Event = new(ArtistAttributionEventImageComplete)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -1084,7 +1157,7 @@ func (it *ArtistAttributionImageCreatedIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(ArtistAttributionImageCreated)
+		it.Event = new(ArtistAttributionEventImageComplete)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -1100,41 +1173,41 @@ func (it *ArtistAttributionImageCreatedIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *ArtistAttributionImageCreatedIterator) Error() error {
+func (it *ArtistAttributionEventImageCompleteIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *ArtistAttributionImageCreatedIterator) Close() error {
+func (it *ArtistAttributionEventImageCompleteIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// ArtistAttributionImageCreated represents a ImageCreated event raised by the ArtistAttribution contract.
-type ArtistAttributionImageCreated struct {
-	Image ArtistAttributionStableDiffusionImage
+// ArtistAttributionEventImageComplete represents a EventImageComplete event raised by the ArtistAttribution contract.
+type ArtistAttributionEventImageComplete struct {
+	Image ArtistAttributionImage
 	Raw   types.Log // Blockchain specific contextual infos
 }
 
-// FilterImageCreated is a free log retrieval operation binding the contract event 0xce924b75f140e3ebaf737643559607d1e6032c1e2a276d56026937178cca1a27.
+// FilterEventImageComplete is a free log retrieval operation binding the contract event 0x879c785b27857739316681a9c0aa7ab79114f2fb3bfc8c7eaa733dfedea46ad2.
 //
-// Solidity: event ImageCreated((uint256,address,string,string,string,string,bool,bool) image)
-func (_ArtistAttribution *ArtistAttributionFilterer) FilterImageCreated(opts *bind.FilterOpts) (*ArtistAttributionImageCreatedIterator, error) {
+// Solidity: event EventImageComplete((uint256,address,string,string,string,string,bool,bool) image)
+func (_ArtistAttribution *ArtistAttributionFilterer) FilterEventImageComplete(opts *bind.FilterOpts) (*ArtistAttributionEventImageCompleteIterator, error) {
 
-	logs, sub, err := _ArtistAttribution.contract.FilterLogs(opts, "ImageCreated")
+	logs, sub, err := _ArtistAttribution.contract.FilterLogs(opts, "EventImageComplete")
 	if err != nil {
 		return nil, err
 	}
-	return &ArtistAttributionImageCreatedIterator{contract: _ArtistAttribution.contract, event: "ImageCreated", logs: logs, sub: sub}, nil
+	return &ArtistAttributionEventImageCompleteIterator{contract: _ArtistAttribution.contract, event: "EventImageComplete", logs: logs, sub: sub}, nil
 }
 
-// WatchImageCreated is a free log subscription operation binding the contract event 0xce924b75f140e3ebaf737643559607d1e6032c1e2a276d56026937178cca1a27.
+// WatchEventImageComplete is a free log subscription operation binding the contract event 0x879c785b27857739316681a9c0aa7ab79114f2fb3bfc8c7eaa733dfedea46ad2.
 //
-// Solidity: event ImageCreated((uint256,address,string,string,string,string,bool,bool) image)
-func (_ArtistAttribution *ArtistAttributionFilterer) WatchImageCreated(opts *bind.WatchOpts, sink chan<- *ArtistAttributionImageCreated) (event.Subscription, error) {
+// Solidity: event EventImageComplete((uint256,address,string,string,string,string,bool,bool) image)
+func (_ArtistAttribution *ArtistAttributionFilterer) WatchEventImageComplete(opts *bind.WatchOpts, sink chan<- *ArtistAttributionEventImageComplete) (event.Subscription, error) {
 
-	logs, sub, err := _ArtistAttribution.contract.WatchLogs(opts, "ImageCreated")
+	logs, sub, err := _ArtistAttribution.contract.WatchLogs(opts, "EventImageComplete")
 	if err != nil {
 		return nil, err
 	}
@@ -1144,8 +1217,8 @@ func (_ArtistAttribution *ArtistAttributionFilterer) WatchImageCreated(opts *bin
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(ArtistAttributionImageCreated)
-				if err := _ArtistAttribution.contract.UnpackLog(event, "ImageCreated", log); err != nil {
+				event := new(ArtistAttributionEventImageComplete)
+				if err := _ArtistAttribution.contract.UnpackLog(event, "EventImageComplete", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -1166,21 +1239,21 @@ func (_ArtistAttribution *ArtistAttributionFilterer) WatchImageCreated(opts *bin
 	}), nil
 }
 
-// ParseImageCreated is a log parse operation binding the contract event 0xce924b75f140e3ebaf737643559607d1e6032c1e2a276d56026937178cca1a27.
+// ParseEventImageComplete is a log parse operation binding the contract event 0x879c785b27857739316681a9c0aa7ab79114f2fb3bfc8c7eaa733dfedea46ad2.
 //
-// Solidity: event ImageCreated((uint256,address,string,string,string,string,bool,bool) image)
-func (_ArtistAttribution *ArtistAttributionFilterer) ParseImageCreated(log types.Log) (*ArtistAttributionImageCreated, error) {
-	event := new(ArtistAttributionImageCreated)
-	if err := _ArtistAttribution.contract.UnpackLog(event, "ImageCreated", log); err != nil {
+// Solidity: event EventImageComplete((uint256,address,string,string,string,string,bool,bool) image)
+func (_ArtistAttribution *ArtistAttributionFilterer) ParseEventImageComplete(log types.Log) (*ArtistAttributionEventImageComplete, error) {
+	event := new(ArtistAttributionEventImageComplete)
+	if err := _ArtistAttribution.contract.UnpackLog(event, "EventImageComplete", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// ArtistAttributionImageGeneratedIterator is returned from FilterImageGenerated and is used to iterate over the raw logs and unpacked data for ImageGenerated events raised by the ArtistAttribution contract.
-type ArtistAttributionImageGeneratedIterator struct {
-	Event *ArtistAttributionImageGenerated // Event containing the contract specifics and raw log
+// ArtistAttributionEventImageCreatedIterator is returned from FilterEventImageCreated and is used to iterate over the raw logs and unpacked data for EventImageCreated events raised by the ArtistAttribution contract.
+type ArtistAttributionEventImageCreatedIterator struct {
+	Event *ArtistAttributionEventImageCreated // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -1194,7 +1267,7 @@ type ArtistAttributionImageGeneratedIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *ArtistAttributionImageGeneratedIterator) Next() bool {
+func (it *ArtistAttributionEventImageCreatedIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -1203,7 +1276,7 @@ func (it *ArtistAttributionImageGeneratedIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(ArtistAttributionImageGenerated)
+			it.Event = new(ArtistAttributionEventImageCreated)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -1218,7 +1291,7 @@ func (it *ArtistAttributionImageGeneratedIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(ArtistAttributionImageGenerated)
+		it.Event = new(ArtistAttributionEventImageCreated)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -1234,41 +1307,41 @@ func (it *ArtistAttributionImageGeneratedIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *ArtistAttributionImageGeneratedIterator) Error() error {
+func (it *ArtistAttributionEventImageCreatedIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *ArtistAttributionImageGeneratedIterator) Close() error {
+func (it *ArtistAttributionEventImageCreatedIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// ArtistAttributionImageGenerated represents a ImageGenerated event raised by the ArtistAttribution contract.
-type ArtistAttributionImageGenerated struct {
-	Image ArtistAttributionStableDiffusionImage
+// ArtistAttributionEventImageCreated represents a EventImageCreated event raised by the ArtistAttribution contract.
+type ArtistAttributionEventImageCreated struct {
+	Image ArtistAttributionImage
 	Raw   types.Log // Blockchain specific contextual infos
 }
 
-// FilterImageGenerated is a free log retrieval operation binding the contract event 0x84a70d8000b8b36bd87f29f22b5399429e5f81a3ef3b1ee0414035bc9e2235c7.
+// FilterEventImageCreated is a free log retrieval operation binding the contract event 0x894fec21971efec05c3480d0e1893e2384f8d07a22587ae28f7adcf1afc63f0d.
 //
-// Solidity: event ImageGenerated((uint256,address,string,string,string,string,bool,bool) image)
-func (_ArtistAttribution *ArtistAttributionFilterer) FilterImageGenerated(opts *bind.FilterOpts) (*ArtistAttributionImageGeneratedIterator, error) {
+// Solidity: event EventImageCreated((uint256,address,string,string,string,string,bool,bool) image)
+func (_ArtistAttribution *ArtistAttributionFilterer) FilterEventImageCreated(opts *bind.FilterOpts) (*ArtistAttributionEventImageCreatedIterator, error) {
 
-	logs, sub, err := _ArtistAttribution.contract.FilterLogs(opts, "ImageGenerated")
+	logs, sub, err := _ArtistAttribution.contract.FilterLogs(opts, "EventImageCreated")
 	if err != nil {
 		return nil, err
 	}
-	return &ArtistAttributionImageGeneratedIterator{contract: _ArtistAttribution.contract, event: "ImageGenerated", logs: logs, sub: sub}, nil
+	return &ArtistAttributionEventImageCreatedIterator{contract: _ArtistAttribution.contract, event: "EventImageCreated", logs: logs, sub: sub}, nil
 }
 
-// WatchImageGenerated is a free log subscription operation binding the contract event 0x84a70d8000b8b36bd87f29f22b5399429e5f81a3ef3b1ee0414035bc9e2235c7.
+// WatchEventImageCreated is a free log subscription operation binding the contract event 0x894fec21971efec05c3480d0e1893e2384f8d07a22587ae28f7adcf1afc63f0d.
 //
-// Solidity: event ImageGenerated((uint256,address,string,string,string,string,bool,bool) image)
-func (_ArtistAttribution *ArtistAttributionFilterer) WatchImageGenerated(opts *bind.WatchOpts, sink chan<- *ArtistAttributionImageGenerated) (event.Subscription, error) {
+// Solidity: event EventImageCreated((uint256,address,string,string,string,string,bool,bool) image)
+func (_ArtistAttribution *ArtistAttributionFilterer) WatchEventImageCreated(opts *bind.WatchOpts, sink chan<- *ArtistAttributionEventImageCreated) (event.Subscription, error) {
 
-	logs, sub, err := _ArtistAttribution.contract.WatchLogs(opts, "ImageGenerated")
+	logs, sub, err := _ArtistAttribution.contract.WatchLogs(opts, "EventImageCreated")
 	if err != nil {
 		return nil, err
 	}
@@ -1278,8 +1351,8 @@ func (_ArtistAttribution *ArtistAttributionFilterer) WatchImageGenerated(opts *b
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(ArtistAttributionImageGenerated)
-				if err := _ArtistAttribution.contract.UnpackLog(event, "ImageGenerated", log); err != nil {
+				event := new(ArtistAttributionEventImageCreated)
+				if err := _ArtistAttribution.contract.UnpackLog(event, "EventImageCreated", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -1300,12 +1373,12 @@ func (_ArtistAttribution *ArtistAttributionFilterer) WatchImageGenerated(opts *b
 	}), nil
 }
 
-// ParseImageGenerated is a log parse operation binding the contract event 0x84a70d8000b8b36bd87f29f22b5399429e5f81a3ef3b1ee0414035bc9e2235c7.
+// ParseEventImageCreated is a log parse operation binding the contract event 0x894fec21971efec05c3480d0e1893e2384f8d07a22587ae28f7adcf1afc63f0d.
 //
-// Solidity: event ImageGenerated((uint256,address,string,string,string,string,bool,bool) image)
-func (_ArtistAttribution *ArtistAttributionFilterer) ParseImageGenerated(log types.Log) (*ArtistAttributionImageGenerated, error) {
-	event := new(ArtistAttributionImageGenerated)
-	if err := _ArtistAttribution.contract.UnpackLog(event, "ImageGenerated", log); err != nil {
+// Solidity: event EventImageCreated((uint256,address,string,string,string,string,bool,bool) image)
+func (_ArtistAttribution *ArtistAttributionFilterer) ParseEventImageCreated(log types.Log) (*ArtistAttributionEventImageCreated, error) {
+	event := new(ArtistAttributionEventImageCreated)
+	if err := _ArtistAttribution.contract.UnpackLog(event, "EventImageCreated", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log

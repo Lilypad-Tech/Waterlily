@@ -6,6 +6,9 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 // this is the default cost of an image
+// it's about $5 cents
+uint256 constant DEFAULT_ARTIST_COST = 650000000000000 * 2500;
+// this is the default cost of an image
 // it's about 50 cents
 uint256 constant DEFAULT_IMAGE_COST = 650000000000000 * 250;
 // this is 100% of the image cost – compute providers get nothing
@@ -22,9 +25,10 @@ contract ArtistAttribution is Ownable {
     uint256 public computeProviderRevenue;
 
     uint256 public imageCost;
+    uint256 public artistCost;
     uint256 public artistCommission;
 
-    struct StableDiffusionImage {
+    struct Image {
         uint id;
         address customer;
         string artist;
@@ -57,61 +61,30 @@ contract ArtistAttribution is Ownable {
     }
 
     // mapping of image id onto the image
-    mapping (uint => StableDiffusionImage) images;
+    mapping (uint => Image) images;
 
     // array of all previous image ids
     uint[] imageIDs;
 
     // mapping of artist id onto artist struct
     mapping (string => Artist) artists;
-    // mapping of artist address onto their ID
-    // this makes withdraw easier where we only know thier address
-    mapping (address => string) artistAddresses;
     // we need this so we can itetate over the artists
     string[] artistIDs;
 
     // a map of customer address onto images they have submitted
     mapping (address => uint[]) customerImages;
 
-    event ImageCreated(StableDiffusionImage image);
-    event ImageGenerated(StableDiffusionImage image);
-    event ImageCancelled(StableDiffusionImage image);
-    event ArtistCreated(Artist artist);
+    event EventImageCreated(Image image);
+    event EventImageComplete(Image image);
+    event EventImageCancelled(Image image);
+    event EventArtistCreated(Artist artist);
 
     constructor(
+      uint256 _artistCost,
       uint256 _imageCost,
       uint256 _artistCommission
     ) {
-        _updateCost(_imageCost, _artistCommission);
-    }
-
-    function CreateImage(string calldata _artistID, string calldata _prompt) external payable {
-        require(bytes(artists[_artistID].id).length > 0, "artist does not exist");
-        require(msg.value >= imageCost, "not enough FIL sent to pay for image");
-
-        _jobIds.increment();
-        uint id = _jobIds.current();
-
-        images[id] = StableDiffusionImage({
-            id: id,
-            customer: msg.sender,
-            artist: _artistID,
-            prompt: _prompt,
-            ipfsResult: "",
-            errorMessage: "",
-            isComplete: false,
-            isCancelled: false
-        });
-        imageIDs.push(id);
-        customerImages[msg.sender].push(id);
-        emit ImageCreated(images[id]);
-
-        // if they have paid too much then refund the difference
-        uint excess = msg.value - imageCost;
-        if (excess > 0) {
-          address payable to = payable(msg.sender);
-          to.transfer(excess);
-        }
+        _updateCost(_artistCost, _imageCost, _artistCommission);
     }
 
     function getArtistIDs() public view returns (string[] memory) {
@@ -134,7 +107,7 @@ contract ArtistAttribution is Ownable {
         return imageIDs;
     }
 
-    function getImage(uint id) public view returns (StableDiffusionImage memory) {
+    function getImage(uint id) public view returns (Image memory) {
         return images[id];
     }
 
@@ -142,12 +115,17 @@ contract ArtistAttribution is Ownable {
         return customerImages[customerAddress];
     }
 
-    function updateCost(uint256 _imageCost, uint256 _artistCommission) public onlyOwner {
-      _updateCost(_imageCost, _artistCommission);
+    function updateCost(uint256 _artistCost, uint256 _imageCost, uint256 _artistCommission) public onlyOwner {
+      _updateCost(_artistCost, _imageCost, _artistCommission);
     }
 
-    function _updateCost(uint256 _imageCost, uint256 _artistCommission) private {
+    function _updateCost(uint256 _artistCost, uint256 _imageCost, uint256 _artistCommission) private {
         require(_artistCommission <= _imageCost, "artist commission must be less than or equal to image cost");
+        if(_artistCost == 0) {
+          // how much gwei does it cost to register as an artist?
+          _artistCost = DEFAULT_ARTIST_COST;
+        }
+
         if(_imageCost == 0) {
           // how much gwei does it cost to run a job?
           // this is 0.00065 ETH then converted to Filecoin
@@ -161,32 +139,22 @@ contract ArtistAttribution is Ownable {
           _artistCommission = DEFAULT_ARTIST_COMMISSION;
         }
 
+        artistCost = _artistCost;
         imageCost = _imageCost;
         artistCommission = _artistCommission;
     }
 
-    function updateArtist(string calldata id, address wallet, string calldata metadata) public onlyOwner {
-        require(bytes(id).length > 0, "please provide an id");
-        if(bytes(artists[id].id).length == 0) {
-          artistIDs.push(id);
-        }
-        artists[id] = Artist({
-          id: id,
-          wallet: wallet,
-          metadata: metadata,
-          escrow: 0,
-          revenue: 0,
-          numJobsRun: 0,
-          isTrained: false
-        });
-        artistAddresses[wallet] = id;
+    function artistChangeWallet(string calldata id, address newWallet) public {
+        require(bytes(artists[id].id).length > 0, "artist does not exist");
+        Artist storage artist = artists[id];
+        require(artist.wallet == msg.sender, "only the artist's wallet can call this function");
+        artist.wallet = newWallet;
     }
 
     function deleteArtist(string calldata id) public onlyOwner {
         require(bytes(artists[id].id).length > 0, "artist does not exist");
         Artist storage artist = artists[id];
         require(artist.escrow == 0, "please have the artist withdraw escrow first"); // they have money still to claim
-        delete(artistAddresses[artist.wallet]);
         delete(artists[id]);
         // remove from artistIDs
         for (uint i = 0; i < artistIDs.length; i++) {
@@ -198,10 +166,10 @@ contract ArtistAttribution is Ownable {
         }
     }
 
-    function artistWithdraw() public payable {
-        string memory artistID = artistAddresses[msg.sender];
-        require(bytes(artists[artistID].id).length > 0, "artist does not exist");
-        Artist storage artist = artists[artistID];
+    function artistWithdraw(string calldata id) public payable {
+        require(bytes(artists[id].id).length > 0, "artist does not exist");
+        Artist storage artist = artists[id];
+        require(artist.wallet == msg.sender, "only the artist's wallet can call this function");
         require(artist.escrow > 0, "artist does not have any money to withdraw");
         uint256 escrowToSend = artist.escrow;
         artist.escrow = 0;
@@ -215,9 +183,73 @@ contract ArtistAttribution is Ownable {
         to.transfer(escrowToSend);
     }
 
-    function imageComplete(uint _id, string calldata _result) public onlyOwner {
+    function CreateArtist(string calldata id, string calldata metadata) external payable {
+        require(bytes(id).length > 0, "please provide an id");
+        require(bytes(artists[id].id).length == 0, "artist already exists");
+        require(msg.value >= artistCost, "not enough FIL sent to pay for training artist");
+        if(bytes(artists[id].id).length == 0) {
+          artistIDs.push(id);
+        }
+        artists[id] = Artist({
+          id: id,
+          wallet: msg.sender,
+          metadata: metadata,
+          escrow: 0,
+          revenue: 0,
+          numJobsRun: 0,
+          isTrained: false
+        });
+    }
+
+    // the training step has completed - update this artist as "isTrained"
+    function ArtistComplete(string calldata id) public onlyOwner {
+        require(bytes(artists[id].id).length > 0, "artist does not exist");
+        Artist storage artist = artists[id];
+        require(artist.isTrained == false, "artisthas already been trained");
+        artist.isTrained = true;
+    }
+
+    function ArtistCancelled(string calldata id) public onlyOwner {
+        require(bytes(artists[id].id).length > 0, "artist does not exist");
+        deleteArtist(id);
+        Artist storage artist = artists[id];
+        address payable to = payable(artist.wallet);
+        to.transfer(artistCost);
+    }
+
+    function CreateImage(string calldata _artistID, string calldata _prompt) external payable {
+        require(bytes(artists[_artistID].id).length > 0, "artist does not exist");
+        require(artists[_artistID].isTrained, "artist has not been trained");
+        require(msg.value >= imageCost, "not enough FIL sent to pay for image");
+
+        _jobIds.increment();
+        uint id = _jobIds.current();
+
+        images[id] = Image({
+            id: id,
+            customer: msg.sender,
+            artist: _artistID,
+            prompt: _prompt,
+            ipfsResult: "",
+            errorMessage: "",
+            isComplete: false,
+            isCancelled: false
+        });
+        imageIDs.push(id);
+        customerImages[msg.sender].push(id);
+        emit EventImageCreated(images[id]);
+
+        // if they have paid too much then refund the difference
+        uint excess = msg.value - imageCost;
+        if (excess > 0) {
+          address payable to = payable(msg.sender);
+          to.transfer(excess);
+        }
+    }
+
+    function ImageComplete(uint _id, string calldata _result) public onlyOwner {
         // get a reference to the image
-        StableDiffusionImage storage image = images[_id];
+        Image storage image = images[_id];
 
         // sanity check that the image exists with that ID
         require(image.id > 0, "image does not exist");
@@ -247,12 +279,12 @@ contract ArtistAttribution is Ownable {
         // if computeProviderEscrow > Y
         // this means we don't pay the gas and it's automatic
 
-        emit ImageGenerated(image);
+        emit EventImageComplete(image);
     }
 
-    function imageCancelled(uint _id, string calldata _errorMsg) public onlyOwner {
+    function ImageCancelled(uint _id, string calldata _errorMsg) public onlyOwner {
         // get a reference to the image
-        StableDiffusionImage storage image = images[_id];
+        Image storage image = images[_id];
 
         // sanity check that the image exists with that ID
         require(image.id > 0, "image does not exist");
@@ -269,6 +301,6 @@ contract ArtistAttribution is Ownable {
         // TODO: let's keep a small percentage of the fee
         // to cover bridge gas costs
 
-        emit ImageCancelled(image);
+        emit EventImageCancelled(image);
     }
 }

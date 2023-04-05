@@ -13,9 +13,9 @@ import (
 )
 
 type ServerOptions struct {
-	Host            string
-	Port            int
-	FilestoreSecret string
+	Host           string
+	Port           int
+	FilestoreToken string
 }
 
 type WaterlilyAPIServer struct {
@@ -31,8 +31,8 @@ func NewServer(
 	if options.Port == 0 {
 		return nil, fmt.Errorf("port is required")
 	}
-	if options.FilestoreSecret == "" {
-		return nil, fmt.Errorf("filestore secret is required")
+	if options.FilestoreToken == "" {
+		return nil, fmt.Errorf("filestore token is required")
 	}
 	return &WaterlilyAPIServer{
 		Options: options,

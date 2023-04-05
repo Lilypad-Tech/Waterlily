@@ -2,6 +2,7 @@ package bacalhau
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/bacalhau-project/bacalhau/pkg/model"
 	"github.com/bacalhau-project/bacalhau/pkg/requester/publicapi"
@@ -30,6 +31,12 @@ func init() {
 func NewBacalhauClient(
 	options BacalhauOptions,
 ) (*BacalhauClient, error) {
+	if options.Host == "" {
+		return nil, fmt.Errorf("host option must be set")
+	}
+	if options.Port <= 0 {
+		return nil, fmt.Errorf("port option must be set")
+	}
 	client := publicapi.NewRequesterAPIClient(options.Host, uint16(options.Port))
 	return &BacalhauClient{
 		Options: options,

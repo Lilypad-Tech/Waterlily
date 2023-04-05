@@ -180,14 +180,14 @@ func (r *realContract) ReadEvents(
 
 	opts := bind.FilterOpts{Start: uint64(r.maxSeenBlock + 1), Context: ctx}
 
-	imageLogs, err := r.contract.ArtistAttributionFilterer.FilterImageCreated(&opts)
+	imageLogs, err := r.contract.ArtistAttributionFilterer.FilterEventImageCreated(&opts)
 	if err != nil {
 		log.Ctx(ctx).Error().Err(err).Send()
 		return err
 	}
 	defer imageLogs.Close()
 
-	artistLogs, err := r.contract.ArtistAttributionFilterer.FilterArtistCreated(&opts)
+	artistLogs, err := r.contract.ArtistAttributionFilterer.FilterEventArtistCreated(&opts)
 	if err != nil {
 		log.Ctx(ctx).Error().Err(err).Send()
 		return err

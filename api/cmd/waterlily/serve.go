@@ -5,21 +5,35 @@ import (
 	"os/signal"
 
 	"github.com/bacalhau-project/bacalhau/pkg/system"
+	"github.com/bacalhau-project/waterlily/api/pkg/bacalhau"
+	"github.com/bacalhau-project/waterlily/api/pkg/contract"
 	"github.com/bacalhau-project/waterlily/api/pkg/server"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
 type AllOptions struct {
-	ServerOptions server.ServerOptions
+	ServerOptions   server.ServerOptions
+	BacalhauOptions bacalhau.BacalhauOptions
+	ContractOptions contract.ContractOptions
 }
 
 func NewAllOptions() *AllOptions {
 	return &AllOptions{
 		ServerOptions: server.ServerOptions{
-			Host:            getDefaultServeOptionString("HOST", "0.0.0.0"),
-			Port:            getDefaultServeOptionInt("PORT", 80), //nolint:gomnd
-			FilestoreSecret: getDefaultServeOptionString("FILESTORE_SECRET", ""),
+			Host:           getDefaultServeOptionString("BIND_HOST", "0.0.0.0"),
+			Port:           getDefaultServeOptionInt("BIND_PORT", 80), //nolint:gomnd
+			FilestoreToken: getDefaultServeOptionString("FILESTORE_TOKEN", ""),
+		},
+		BacalhauOptions: bacalhau.BacalhauOptions{
+			Host: getDefaultServeOptionString("BACALHAU_HOST", "ai-art-requester.cluster.world"),
+			Port: getDefaultServeOptionInt("BACALHAU_PORT", 1234),
+		},
+		ContractOptions: contract.ContractOptions{
+			Address:     getDefaultServeOptionString("CONTRACT_ADDRESS", ""),
+			PrivateKey:  getDefaultServeOptionString("PRIVATE_KEY", ""),
+			RPCEndpoint: getDefaultServeOptionString("RPC_ENDPOINT", ""),
+			ChainID:     getDefaultServeOptionString("CHAIN_ID", ""),
 		},
 	}
 }
@@ -46,7 +60,7 @@ func newServeCmd() *cobra.Command {
 		`The host to bind the dashboard server to.`,
 	)
 	serveCmd.PersistentFlags().StringVar(
-		&allOptions.ServerOptions.FilestoreSecret, "filestore-secret", allOptions.ServerOptions.FilestoreSecret,
+		&allOptions.ServerOptions.FilestoreToken, "filestore-token", allOptions.ServerOptions.FilestoreToken,
 		`The secret for the filestore.`,
 	)
 
