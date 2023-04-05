@@ -5,6 +5,7 @@ import {
   DescriptionOutlined,
   EmailOutlined,
   LanguageOutlined,
+  MonochromePhotosOutlined,
   PaletteOutlined,
   PermIdentityOutlined,
   PublicOutlined,
@@ -38,6 +39,7 @@ interface FieldType {
   tooltip: string;
   multiline?: boolean;
   minRows?: number;
+  select?: boolean;
   required: boolean;
 }
 
@@ -127,6 +129,23 @@ export const artistSignupFields: FormType<keyof FormData> = {
   ],
   values1: [
     {
+      category: {
+        component: 'textfield',
+        id: 'category',
+        name: 'category',
+        label: 'Category',
+        required: true,
+        select: true,
+        inputProps: [IconInputType.START],
+        icons: {
+          start: (
+            <InputAdornment position="start">
+              <MonochromePhotosOutlined sx={iconStyle} />
+            </InputAdornment>
+          ),
+        },
+        tooltip: 'New artists will be post-modern or digital',
+      },
       style: {
         component: 'textfield',
         id: 'style',
@@ -170,10 +189,12 @@ export const FormTextField = ({
   fieldKey,
   formik: { values, errors, touched, handleChange, handleBlur },
   step,
+  children,
 }: {
   fieldKey: keyof FormData;
   formik: FormikProps<FormData>;
   step: number;
+  children?: React.ReactNode;
 }) => {
   // const { values, errors, touched, handleChange, handleBlur } = formik;
   let stepKey: string = 'values' + step;
@@ -202,6 +223,7 @@ export const FormTextField = ({
         variant="outlined"
         required={data?.required}
         fullWidth
+        select={data?.select}
         multiline={data?.multiline}
         minRows={data?.minRows}
         value={values[fieldKey]}
@@ -214,7 +236,9 @@ export const FormTextField = ({
             : undefined
         }
         InputProps={inputProps}
-      />
+      >
+        {children}
+      </TextField>
     );
   };
 

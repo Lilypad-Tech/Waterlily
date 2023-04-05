@@ -5,9 +5,16 @@ import React, {
   createRef,
   CSSProperties,
   useContext,
+  useEffect,
 } from 'react';
 import Dropzone from 'react-dropzone';
-import { Box, Button, IconButton, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  IconButton,
+  Typography,
+  FormControl,
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import { ArtistContext } from '@/context';
@@ -48,14 +55,10 @@ const container: CSSProperties = {
   padding: '20px',
   borderWidth: '1px',
   borderRadius: '4px',
-  // borderColor: ${props => getColor(props)},
   borderStyle: 'solid',
-  // backgroundColor: '#fafafa',
-  // color: '#bdbdbd',
   borderColor: 'rgba(255, 255, 255, 0.23)',
   outline: 'none',
   transition: 'border .24s ease-in-out',
-  // width: '80%',
 };
 
 const thumb: CSSProperties = {
@@ -114,7 +117,6 @@ const aStyle: CSSProperties = {
 
 interface Props {
   files: File[] | undefined;
-  setFiles: (files: File[]) => void;
   maxFiles: number;
   dropText: string;
   formik: any;
@@ -179,7 +181,6 @@ const ArtistPreview: FC<{
 
 export const ArtistUpload: FC<Props> = ({
   files,
-  setFiles,
   maxFiles,
   dropText,
   formik,
@@ -191,6 +192,7 @@ export const ArtistUpload: FC<Props> = ({
   const openDialog = () => {
     // Note that the ref is set async,
     // so it might be null at some point
+    formik.setTouched({ [name]: true });
     if (dropzoneRef.current) {
       dropzoneRef.current.open();
     }
@@ -213,6 +215,7 @@ export const ArtistUpload: FC<Props> = ({
   );
 
   const handleAcceptedFiles = async (acceptedFiles: File[]) => {
+    formik.setTouched({ [name]: true });
     const existingFiles = formik.values[name];
 
     //remove any duplicates
@@ -243,8 +246,19 @@ export const ArtistUpload: FC<Props> = ({
     formik.setFieldValue(name, [...existingFiles, ...newFilesWithPreviews]);
   };
 
+  useEffect(() => {
+    console.log(formik);
+  }, [formik.touched]);
+
   return (
-    <section style={container}>
+    <FormControl
+      style={{
+        ...container,
+        ...(formik.touched[name] &&
+          Boolean(formik.errors[name]) && { borderColor: '#f44336' }),
+      }}
+      error={formik.touched[name] && Boolean(formik.errors[name])}
+    >
       <Dropzone
         ref={dropzoneRef}
         noClick
@@ -292,6 +306,11 @@ export const ArtistUpload: FC<Props> = ({
           );
         }}
       </Dropzone>
-    </section>
+      {
+        <Box sx={{ color: '#f44336' }}>
+          {formik.touched[name] && formik.errors[name]}
+        </Box>
+      }
+    </FormControl>
   );
 };

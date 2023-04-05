@@ -258,38 +258,13 @@ const ArtistSignup: React.FC<{}> = () => {
                 <Typography color="primary" variant="h5">
                   Artwork Details
                 </Typography>
-                <Tooltip
-                  title="New artists will be post-modern or digital"
-                  placement="top-start"
-                >
-                  <TextField
-                    id="category"
-                    name="category"
-                    label="Category"
-                    variant="outlined"
-                    fullWidth
-                    required
-                    select
-                    value={values.category}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.category && Boolean(errors.category)}
-                    helperText={touched.category && errors.category}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <MonochromePhotosOutlined sx={iconStyle} />
-                        </InputAdornment>
-                      ),
-                    }}
-                  >
-                    {Object.values(ArtistCategory).map((category) => (
-                      <MenuItem key={category} value={category}>
-                        {category}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Tooltip>
+                <FormTextField fieldKey="category" formik={formik} step={1}>
+                  {Object.values(ArtistCategory).map((category) => (
+                    <MenuItem key={category} value={category}>
+                      {category}
+                    </MenuItem>
+                  ))}
+                </FormTextField>
                 <Autocomplete
                   multiple
                   freeSolo
