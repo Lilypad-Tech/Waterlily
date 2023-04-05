@@ -34,8 +34,11 @@ import {
   ArtistType,
   ArtStyleTags,
   defaultWalletState,
+  StatusContext,
   useNavigation,
   WalletContext,
+  ContractContext,
+  ImageContext,
 } from '@/context';
 import { HeaderLayout, TitleLayout } from '@/layouts';
 import {
@@ -69,22 +72,70 @@ import {
   stepButtonContainer,
   stepButtonWrapper,
 } from '@/styles';
-import { truncateSync } from 'fs';
 
 const ArtistSignup: React.FC<{}> = () => {
   const { handleNavigation } = useNavigation();
   const { walletState = defaultWalletState } = useContext(WalletContext);
-  const [activeStep, setActiveStep] = useState(1);
+  const { createArtistId } = useContext(ImageContext);
+  // const {addArtist} = useContext(ContractContext);
+  // const {} = useContext(StatusContext);
+  const [activeStep, setActiveStep] = useState(0);
+
+  const validateFormInput = async (values: FormData) => {
+    const isValid = await formValidationSchema
+      .validate(values)
+      .then((res) => {
+        console.log(res);
+        return true;
+      })
+      .catch((err) => {
+        console.log(err);
+        return false;
+      });
+    return isValid; //boolean or void returned.
+  };
+
+  const formatFormInput = (values: FormData) => {
+    const periodStartYear = values.periodStart.getFullYear().toString();
+    // const currentYear = new Date().getFullYear();
+    const periodEndYear =
+      values.periodEnd.getFullYear() === new Date().getFullYear()
+        ? 'current'
+        : values.periodEnd.getFullYear().toString();
+    const { periodStart, periodEnd, images, ...rest } = values;
+    const formattedValues = {
+      period: `${periodStartYear} - ${periodEndYear}`,
+      ...rest,
+    };
+    // not sure I need to remove anything else?
+    // const { email, walletAddress, ...cidValues } = formattedValues;
+
+    return { formattedVals: formattedValues, cidVals: formattedValues };
+  };
+
+  //this will occur in ArtistContext
+  const postToContract = async () => {};
+
+  const postToAPI = async () => {};
 
   //form functions
   const handleFormSubmit = async (values: FormData) => {
     console.log(values);
-    // Validate inputs
-    // await formValidationSchema
-    //   .validate(values)
-    //   .then((res) => console.log(res))
-    //   .catch((err) => console.log(err));
-    // do something with the form data, e.g. submit it to a backend API
+    try {
+      //1. Validate inputs
+      const isValid = await validateFormInput(values);
+      if (!isValid) throw Error('Invalid Form data');
+      //2. Format the inputs as needed
+      const formattedValues = formatFormInput(values);
+      //3. Create the artistId (also creates a cid of the metadata)
+      const artistId: string = await createArtistId(formattedValues.cidVals);
+      if (!artistId) throw Error('Could not create artist ID');
+      //5. Make a contract call to addArtist with artistId & (opt) ipfs metadata
+      //    show loading component until tx finalised
+      //6. Make a POST call to the api with all the data
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -117,7 +168,17 @@ const ArtistSignup: React.FC<{}> = () => {
         //   console.log(values);
         //   setSubmitting(false);
         // }}
-        onSubmit={(values) => console.log(values)}
+        onSubmit={async (values, { setSubmitting, resetForm }) => {
+          console.log(values);
+          await validateFormInput(values).then(async (isValid) => {
+            console.log('isValid', isValid);
+            const formattedVals = formatFormInput(values);
+            console.log('formatted', formattedVals);
+            await createArtistId(formattedVals.cidVals).then((cid) => {
+              console.log('cid', cid);
+            });
+          });
+        }}
       >
         {(
           formik,
@@ -232,19 +293,7 @@ const ArtistSignup: React.FC<{}> = () => {
                 <Box sx={uploadContainer}>
                   {/* TODO: add error handling & fix this */}
                   <Box sx={{ width: '80%' }}>
-                    <ArtistUpload
-                      files={formik.values.avatar}
-                      setFiles={(files) =>
-                        formik.setFieldValue(
-                          'avatar',
-                          Array.isArray(files) ? files : []
-                        )
-                      }
-                      maxFiles={1}
-                      dropText="Upload an Artist Profile picture"
-                      formik={formik}
-                      name="avatar"
-                    />
+                    <ArtistUpload maxFiles={1} formik={formik} name="avatar" />
                   </Box>
                 </Box>
               </Box>
@@ -392,7 +441,7 @@ const ArtistSignup: React.FC<{}> = () => {
                             }}
                           />
                         </FormControl>
-                        {/*probably better? <FormControlLabel
+                        {/*probably better? OR useField gah. <FormControlLabel
                     id="trainingConsent"
                     name="trainingConsent"
                     value="trainingConsent" */}
@@ -464,42 +513,7 @@ const ArtistSignup: React.FC<{}> = () => {
                 >
                   <Box sx={{ width: '80%' }}>
                     <ArtistUpload
-                      files={formik.values.thumbnails}
-                      setFiles={(files) =>
-                        formik.setFieldValue(
-                          'thumbnails',
-                          Array.isArray(files) ? files : []
-                        )
-                      }
                       maxFiles={5}
-                      dropText={
-                        <Box sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                          <Typography
-                            variant="h5"
-                            sx={{ paddingBottom: '1rem' }}
-                          >
-                            Drag and drop up to 5 examples of your artwork here.
-                          </Typography>
-                          <Typography variant="subtitle2">
-                            Images are displayed on the website as thumbnail
-                            examples of your work.
-                          </Typography>
-                          <Typography
-                            variant="subtitle2"
-                            sx={{ paddingBottom: '1.5rem' }}
-                          >
-                            All uploaded thumbnails are automatically{' '}
-                            <span
-                              style={{
-                                fontWeight: 'bolder',
-                              }}
-                            >
-                              watermarked
-                            </span>{' '}
-                            with your name.
-                          </Typography>
-                        </Box>
-                      }
                       formik={formik}
                       name="thumbnails"
                     />
@@ -525,36 +539,7 @@ const ArtistSignup: React.FC<{}> = () => {
                   >
                     <Box sx={{ width: '80%' }}>
                       <ArtistUpload
-                        files={formik.values.images}
-                        setFiles={(files) =>
-                          formik.setFieldValue(
-                            'images',
-                            Array.isArray(files) ? files : []
-                          )
-                        }
                         maxFiles={200}
-                        dropText={
-                          <Box sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                            <Typography
-                              variant="h5"
-                              sx={{ paddingBottom: '1rem' }}
-                            >
-                              Drag and drop at least 50 pieces of original
-                              artwork here.
-                            </Typography>
-                            <Typography variant="subtitle2">
-                              This art is used ONLY to train the Machine
-                              Learning model to understand your style.
-                            </Typography>
-                            <Typography
-                              variant="subtitle2"
-                              sx={{ paddingBottom: '1.5rem' }}
-                            >
-                              All uploaded images are automaticallydeleted after
-                              model training is complete.
-                            </Typography>
-                          </Box>
-                        }
                         formik={formik}
                         name="images"
                       />

@@ -18,6 +18,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import { ArtistContext } from '@/context';
+import { EnumDeclaration } from 'typescript';
 
 const baseStyle = {
   flex: 1,
@@ -115,10 +116,60 @@ const aStyle: CSSProperties = {
   justifyContent: 'center',
 };
 
+const dropText: {
+  [key in 'avatar' | 'images' | 'thumbnails']: JSX.Element;
+} = {
+  images: (
+    <Box sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+      <Typography variant="h5" sx={{ paddingBottom: '1rem' }}>
+        Drag and drop at least 50 pieces of original artwork here.
+      </Typography>
+      <Typography variant="subtitle2">
+        This art is used ONLY to train the Machine Learning model to understand
+        your style.
+      </Typography>
+      <Typography variant="subtitle2" sx={{ paddingBottom: '1.5rem' }}>
+        All uploaded images are automatically deleted after model training is
+        complete.
+      </Typography>
+    </Box>
+  ),
+  thumbnails: (
+    <Box sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+      <Typography variant="h5" sx={{ paddingBottom: '1rem' }}>
+        Drag and drop up to 5 examples of your artwork here.
+      </Typography>
+      <Typography variant="subtitle2">
+        Images are displayed on the website as thumbnail examples of your work.
+      </Typography>
+      <Typography variant="subtitle2" sx={{ paddingBottom: '1.5rem' }}>
+        All uploaded thumbnails are automatically{' '}
+        <span
+          style={{
+            fontWeight: 'bolder',
+          }}
+        >
+          watermarked
+        </span>{' '}
+        with your name.
+      </Typography>
+    </Box>
+  ),
+  avatar: (
+    <Box sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+      <Typography variant="h5" sx={{ paddingBottom: '1rem' }}>
+        Upload an Artist Profile picture
+      </Typography>
+      <Typography variant="subtitle2" sx={{ paddingBottom: '1.5rem' }}>
+        Optional. This is displayed on the home page artist profile.
+      </Typography>
+    </Box>
+  ),
+};
+
 interface Props {
   files: File[] | undefined;
   maxFiles: number;
-  dropText: string | ReactNode;
   formik: any;
   name: string;
 }
@@ -180,9 +231,7 @@ const ArtistPreview: FC<{
 };
 
 export const ArtistUpload: FC<Props> = ({
-  files,
   maxFiles,
-  dropText,
   formik,
   name,
 }: Props): ReactElement => {
@@ -198,7 +247,7 @@ export const ArtistUpload: FC<Props> = ({
   };
 
   const removeFile = (fileIndex: number) => {
-    const newFiles = [...files];
+    const newFiles = [...formik.values[name]];
     newFiles.splice(fileIndex, 1);
     formik.setFieldValue(name, newFiles);
   };
@@ -272,7 +321,7 @@ export const ArtistUpload: FC<Props> = ({
               <Box {...getRootProps({ style })}>
                 <input {...getInputProps()} />
                 {/* TODO: change to html input */}
-                <Box>{dropText}</Box>
+                <Box>{dropText[name]}</Box>
                 <Button
                   variant="outlined"
                   onClick={openDialog}

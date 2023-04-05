@@ -221,6 +221,7 @@ export const FormTextField = ({
         name={fieldKey}
         label={data?.label}
         variant="outlined"
+        autoComplete="off"
         required={data?.required}
         placeholder={data?.placeholder}
         fullWidth

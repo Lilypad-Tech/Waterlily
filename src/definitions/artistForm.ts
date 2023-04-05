@@ -53,7 +53,7 @@ export const initialFormValues: FormData = {
   legalContent: false,
   images: [], //send elsewhere
   //admin only
-  artistType: '' as ArtistType,
+  artistType: 'Private' as ArtistType,
   artistId: '',
 };
 
@@ -78,6 +78,7 @@ export const formValidationSchema: Yup.ObjectSchema<FormData> =
     nationality: Yup.string().optional(), //opt
     biography: Yup.string()
       .required('Required')
+      .min(120, 'You have more to say, surely!')
       .max(350, 'No more than 350 characters will be displayed'),
     avatar: Yup.array<File>().optional(), //opt
     //ArtWork Data
@@ -88,11 +89,6 @@ export const formValidationSchema: Yup.ObjectSchema<FormData> =
       .min(new Date(1200, 0, 1))
       .max(new Date(), 'Date is in the future')
       .required('Period Start is required'),
-    // periodStart: Yup.object()
-    //   .test('is-not-empty', 'Period start object cannot be empty', (value) => {
-    //     return Object.keys(value).length > 0;
-    //   })
-    //   .required(), //Yup.date ?
     periodEnd: Yup.date()
       .max(new Date(), 'Date is in the future')
       .required('Period End is required'), //default = "2023 date"
@@ -106,7 +102,7 @@ export const formValidationSchema: Yup.ObjectSchema<FormData> =
     legalContent: Yup.boolean().oneOf([true]).required(),
     images: Yup.array<File>()
       .required('Required')
-      .min(50, 'At least 50 unique images required to train'),
+      .min(30, 'At least 50 unique images required to train'),
     //Admin (if walletAddress === Lilypad "0x5617493b265E9d3CC65CE55eAB7798796D9108E4")
     artistType: Yup.string<ArtistType>(),
     artistId: Yup.string(),
