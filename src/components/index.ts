@@ -27,3 +27,5 @@ export * from './GeneratedImages';
 export * from './ArtistCardGrid';
 export * from './ArtistThumbnailUploader';
 export * from './ArtistUpload';
+export * from './LinkComponent';
+export * from './ArtistFormComponents';

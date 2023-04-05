@@ -10,6 +10,7 @@ import bluebird from 'bluebird';
 import { ethers } from 'ethers';
 import FileSaver from 'file-saver';
 import { NFTStorage } from 'nft.storage';
+import { Web3Storage } from 'web3.storage';
 import {
   NetworkContext,
   StatusContext,
@@ -80,6 +81,7 @@ interface ImageContextValue {
   getQuickImageURL: (jobID: number, imageIndex: number) => string;
   nftMetadata: any;
   saveToNFTStorage: (image: { link: string; alt: string }) => Promise<any>;
+  createArtistId: (values: any) => Promise<string>;
 }
 
 export const IMAGE_COUNT = 4;
@@ -116,6 +118,9 @@ export const defaultImageState: ImageContextValue = {
   nftMetadata: null,
   saveToNFTStorage: (image: { link: string; alt: string }) => {
     return {} as Promise<any>;
+  },
+  createArtistId: (values: any) => {
+    return {} as Promise<string>;
   },
 };
 
@@ -261,9 +266,17 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     return r.blob();
   };
 
-  const NFTStorageClient = new NFTStorage({
-    token: process.env.NEXT_PUBLIC_NFT_STORAGE_API_KEY || 'undefined',
-  });
+  const getNFTStorageClient = () => {
+    return new NFTStorage({
+      token: process.env.NEXT_PUBLIC_NFT_STORAGE_API_KEY || 'undefined',
+    });
+  };
+
+  const getWeb3StorageClient = () => {
+    return new Web3Storage({
+      token: process.env.NEXT_PUBLIC_WEB3_STORAGE_API_KEY || 'undefined',
+    });
+  };
 
   //we know the prompt, artist, jobID & image url.
   const createNFTMetadata = async (image: { link: string; alt: string }) => {
@@ -304,6 +317,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
   };
 
   const saveToNFTStorage = async (image: { link: string; alt: string }) => {
+    const NFTStorageClient: NFTStorage = getNFTStorageClient();
     if (!NFTStorageClient) {
       console.log('No nft.storage client');
       return;
@@ -312,7 +326,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
       ...defaultStatusState.statusState,
       isLoading: 'Creating & Storing NFT Metadata to NFT.Storage...',
     });
-    let nftJson: TokenInput = await createNFTMetadata(image);
+    let nftJson: TokenInput | undefined = await createNFTMetadata(image);
     if (!nftJson) {
       setStatusState({
         ...defaultStatusState.statusState,
@@ -355,6 +369,27 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     return metadata;
   };
 
+  const createArtistId = async (values: {
+    [key: string]: any;
+    name: string;
+  }) => {
+    const Web3StorageClient: Web3Storage = getWeb3StorageClient();
+    if (!Web3StorageClient) {
+      console.log('No nft.storage client');
+      return '';
+    }
+    try {
+      const blob = new Blob([JSON.stringify(values)]);
+      const file = [new File([blob], `${values?.name}.json`)];
+      console.log('file', file);
+      const cid = await Web3StorageClient.put(file);
+      return cid;
+    } catch (err) {
+      console.log('web3storage error', err);
+      return '';
+    }
+  };
+
   const imageContextValue: ImageContextValue = {
     imageState,
     setImageState,
@@ -373,6 +408,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     getQuickImageURL,
     nftMetadata,
     saveToNFTStorage,
+    createArtistId,
   };
 
   return (
