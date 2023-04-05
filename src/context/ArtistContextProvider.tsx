@@ -147,13 +147,13 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
   }, []);
 
   const fetchArtistData = async () => {
-    try {
-      const response = await fetch('/api/fetchArtists');
-      const data = await response.json();
-      setArtistState(data);
-    } catch (error) {
-      console.error(error);
-    }
+    // try {
+    //   const response = await fetch('/api/fetchArtists');
+    //   const data = await response.json();
+    //   setArtistState(data);
+    // } catch (error) {
+    //   console.error(error);
+    // }
   };
 
   const findArtistByName = (name: string) => {

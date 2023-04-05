@@ -53,6 +53,7 @@ func (apiServer *WaterlilyAPIServer) ListenAndServe(ctx context.Context, cm *sys
 
 	subrouter := router.PathPrefix("/api/v1").Subrouter()
 	subrouter.HandleFunc("/artists", apiServer.artists).Methods("GET")
+	subrouter.HandleFunc("/register", apiServer.artists).Methods("POST")
 	subrouter.HandleFunc("/files", apiServer.filestoreUpload).Methods("POST")
 	subrouter.PathPrefix("/files").Handler(http.FileServer(http.Dir(apiServer.Options.FilestoreDirectory)))
 

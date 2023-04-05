@@ -6,7 +6,7 @@
     "compile": "hardhat compile",
     "preabigen": "cat ./artifacts/contracts/ArtistAttribution.sol/ArtistAttribution.json | jq -r '.abi' > /tmp/ArtistAttribution.abi",
     "abigen": "abigen --abi /tmp/ArtistAttribution.abi --pkg contract --type ArtistAttribution --out ../api/pkg/contract/ArtistAttribution.go",
-    "abicopy": "cp -r ./artifacts/contracts/* ../src/abi",
+    "abicopy": "mkdir -p ../src/abi && cp -r ./artifacts/contracts/* ../src/abi",
     "postcompile": "npm run abigen && npm run abicopy"
   },
   "devDependencies": {

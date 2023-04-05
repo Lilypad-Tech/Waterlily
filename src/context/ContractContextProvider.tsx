@@ -6,10 +6,11 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import axios from 'axios';
 import bluebird from 'bluebird';
 /* contract tools */
 declare let window: any;
-import { ethers } from 'ethers';
+import { ethers, BigNumber } from 'ethers';
 
 /* Other Contexts */
 import {
@@ -28,11 +29,11 @@ import {
 // } from '@/definitions';
 
 import WaterlilyABI from '../abi/ArtistAttribution.sol/ArtistAttribution.json';
-import LilypadEventsABI from '../abi/LilypadEvents.sol/LilypadEvents.json';
 import WaterlilyNFTABI from '../abi/WaterlilyNFT.sol/WaterlilyNFT.json';
 
-const IMAGE_COST = '0.1';
-const GAS_LIMIT = 9000000;
+import {
+  getAPIServer
+} from '../definitions/network';
 
 /* ContractContext */
 enum AccessType {
@@ -51,7 +52,11 @@ interface ContractContextValue {
   contractState?: ContractState;
   setContractState: Dispatch<SetStateAction<ContractState>>;
   customerImages: any[];
+  artistCost: BigNumber,
+  imageCost: BigNumber,
   runStableDiffusionJob: (prompt: string, artistId: string) => Promise<void>;
+  registerArtistWithContract: (artistId: string) => Promise<void>;
+  submitArtistFormToAPI: (artistid: string, data: any, images: File[], avatar: File[], thumbnails: File[]) => Promise<void>;
   mintNFT: (image: { link: string; alt: string }) => Promise<void>;
 }
 
@@ -64,8 +69,12 @@ export const defaultContractState = {
     connectedWaterlilyContract: null,
   },
   customerImages: [],
+  artistCost: BigNumber.from(0),
+  imageCost: BigNumber.from(0),
   setContractState: () => {},
   runStableDiffusionJob: async () => {},
+  registerArtistWithContract: async () => {},
+  submitArtistFormToAPI: async () => {},
   mintNFT: async () => {},
 };
 
@@ -93,6 +102,8 @@ export const ContractContextProvider = ({
     ),
   });
   const [customerImages, setCustomerImages] = useState<any[]>([]);
+  const [artistCost, setArtistCost] = useState(BigNumber.from(0));
+  const [imageCost, setImageCost] = useState(BigNumber.from(0));
   const {
     statusState = defaultStatusState.statusState,
     setStatusState,
@@ -114,6 +125,9 @@ export const ContractContextProvider = ({
       const imageIDs = await connectedContract?.getCustomerImages(
         walletState.accounts[0]
       );
+
+      const imageCost = await connectedContract?.getImageCost()
+      const artistCost = await connectedContract?.getArtistCost()
       if (!imageIDs) return;
       console.log('Fetched imageIDs', imageIDs);
       const images = await bluebird.map(imageIDs, async (id: any) => {
@@ -122,6 +136,8 @@ export const ContractContextProvider = ({
       });
       console.log('fetched Images');
       setCustomerImages(images);
+      setArtistCost(artistCost);
+      setImageCost(imageCost);
     };
 
     doAsync();
@@ -166,17 +182,6 @@ export const ContractContextProvider = ({
     );
   };
 
-  const getEventsWriteContractConnection = () => {
-    if (!window.ethereum || !walletState?.accounts[0]) return;
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    return new ethers.Contract(
-      network.contracts.LILYPAD_EVENTS_CONTRACT_ADDRESS,
-      LilypadEventsABI.abi,
-      signer
-    );
-  };
-
   const getWaterlilyNFTWriteContractConnection = () => {
     if (!window.ethereum || !walletState?.accounts[0]) return;
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -215,12 +220,10 @@ export const ContractContextProvider = ({
     });
 
     console.log('fetching contract connections...');
-    const eventsContract = getEventsWriteContractConnection();
-    console.log('Connected to event contract', eventsContract);
     const connectedContract = getWaterlilyWriteContractConnection();
     console.log('Connected to waterlily contract');
 
-    if (!connectedContract || !eventsContract) {
+    if (!connectedContract) {
       setStatusState({
         ...defaultStatusState.statusState,
         isError: 'Something went wrong connecting to contract',
@@ -228,13 +231,9 @@ export const ContractContextProvider = ({
       return;
     }
 
-    const imageCost = ethers.utils.parseEther(IMAGE_COST);
+    const imageCost = await connectedContract.getImageCost()
 
     try {
-      console.log('Getting contract details...');
-      const currentJobID = await eventsContract.currentJobID();
-      const nextJobID = currentJobID.add(1);
-      console.log('Fetched contract details:', currentJobID, nextJobID);
       console.log('Calling stable diffusion function...');
       const tx = await connectedContract.StableDiffusion(artistid, prompt, {
         value: imageCost,
@@ -270,6 +269,11 @@ export const ContractContextProvider = ({
       console.log(JSON.stringify(receipt, null, 4));
       console.dir('Receipt:', receipt);
 
+      const [jobEvent] = receipt.logs.map((log: any) => connectedContract.interface.parseLog(log));
+      const [job] = jobEvent.args;
+      const [imageID] = job;
+      console.dir('Image ID:', imageID.toNumber());
+
       //poll for events
 
       setSnackbar({
@@ -295,7 +299,6 @@ export const ContractContextProvider = ({
         },
       }));
 
-      const imageID = nextJobID;
       setImageID(imageID.toNumber()); //(56); // //45;
       console.log(
         'Starting to poll for images with imageID:',
@@ -379,6 +382,224 @@ export const ContractContextProvider = ({
         ...prevState,
         isLoading: '',
         isError: true,
+        message: {
+          title: errorMessage,
+          description: <span>{errorMessage}</span>,
+        },
+      }));
+    }
+  };
+
+  const registerArtistWithContract = async (artistid: string) => {
+    if (!window.ethereum) {
+      setStatusState({
+        ...statusState,
+        isError: 'Web3 not available',
+        isMessage: true,
+        message: {
+          title: 'Web3 not available',
+          description:
+            'Please install and unlock a Web3 provider in your browser to use this application.',
+        },
+      });
+      return;
+    }
+
+    setStatusState({
+      ...defaultStatusState.statusState,
+      isLoading: 'Submitting your Artist Information to the Smart Contract on the FVM network ...',
+      isMessage: true,
+      message: {
+        title: 'Waiting for user to confirm wallet payment',
+        description: 'Please check your wallet activity!',
+      },
+    });
+
+    const connectedContract = getWaterlilyWriteContractConnection();
+    console.log('Connected to waterlily contract');
+
+    if (!connectedContract) {
+      setStatusState({
+        ...defaultStatusState.statusState,
+        isError: 'Something went wrong connecting to contract',
+      });
+      return;
+    }
+
+    const artistCost = await connectedContract.getArtistCost()
+
+    try {
+      const tx = await connectedContract.CreateArtist(artistid, '', {
+        value: artistCost,
+      });
+      console.log('Got the tx hash', tx.hash); // Print the transaction hash
+      setTxHash(tx.hash);
+
+      setStatusState((prevState) => ({
+        ...prevState,
+        isLoading:
+          'Waiting for transaction to be included in a block on the network...',
+        isMessage: true,
+        message: {
+          title: `This could take some time... please be patient while the transaction is included in a block!`,
+          description: (
+            <a
+              href={`${network.blockExplorer}${tx.hash}`}
+              target="_blank"
+              rel="no_referrer"
+            >
+              Check Transaction Status in block explorer here
+            </a>
+          ),
+        },
+      }));
+      setSnackbar({
+        type: 'success',
+        open: true,
+        message: `Transaction submitted to the FVM network: ${tx.hash}...`,
+      });
+      const receipt = await tx.wait();
+      console.log('----------TX INCLUDED IN BLOCK------------');
+      console.log(JSON.stringify(receipt, null, 4));
+      console.dir('Receipt:', receipt);
+
+      //poll for events
+
+      setSnackbar({
+        type: 'success',
+        open: true,
+        message: `Transaction included in block - training model on images...!`,
+      });
+
+      setStatusState((prevState) => ({
+        ...prevState,
+        isLoading: 'Training your AI model on your images on Bacalhau...!',
+        isMessage: true,
+        message: {
+          title: `Training your AI model on your images on Bacalhau...!`,
+          description: (
+            <>
+              <div>
+                Please be patient... This takes a few hours or so depending on demand.
+              </div>
+              <a
+                href={`${network.blockExplorer}${tx.hash}`}
+                target="_blank"
+                rel="no_referrer"
+              >
+                Check Transaction in block explorer
+              </a>
+            </>
+            
+          ), //receipt.transactionHash
+        },
+      }));
+    } catch (error: any) {
+      console.error(error);
+      let errorMessage = error.toString();
+      if (error?.error?.data?.message.includes('revert reason:')) {
+        const match = error.error.data.message.match(
+          /revert reason: Error\((.*?)\)/
+        );
+        errorMessage = match[1];
+      }
+      if (errorMessage.length > 64) {
+        errorMessage = errorMessage.substring(0, 64) + '...';
+      }
+      setSnackbar({
+        type: 'error',
+        open: true,
+        message: errorMessage,
+      });
+      setStatusState((prevState) => ({
+        ...prevState,
+        isLoading: '',
+        isError: true,
+        isMessage: true,
+        message: {
+          title: errorMessage,
+          description: <span>{errorMessage}</span>,
+        },
+      }));
+    }
+  };
+
+  const submitArtistFormToAPI = async (artistid: string, data: any, images: File[], avatar: File[], thumbnails: File[]) => {
+    try {
+
+      const url = getAPIServer('/register')
+
+      const formData = new FormData();
+      Object.keys(data).forEach(key => {
+        formData.append(key, data[key]);
+      })
+      images.forEach(image => {
+        formData.append('images', image);
+      });
+      avatar.forEach(image => {
+        formData.append('avatar', image);
+      });
+      thumbnails.forEach(image => {
+        formData.append('thumbnails', image);
+      });
+
+      await axios.post(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data' // set the content type header
+        }
+      })
+
+      setSnackbar({
+        type: 'success',
+        open: true,
+        message: `Form Submitted...!`,
+      });
+
+      setStatusState((prevState) => ({
+        ...prevState,
+        isLoading: 'Training your AI model on your images on Bacalhau...!',
+        isMessage: true,
+        message: {
+          title: `Training your AI model on your images on Bacalhau...!`,
+          description: (
+            <>
+              <div>
+                Please be patient... This takes a few hours or so depending on demand.
+              </div>
+              <a
+                href={`${network.blockExplorer}${txHash}`}
+                target="_blank"
+                rel="no_referrer"
+              >
+                Check Transaction in block explorer
+              </a>
+            </>
+            
+          ), //receipt.transactionHash
+        },
+      }));
+    } catch (error: any) {
+      console.error(error);
+      let errorMessage = error.toString();
+      if (error?.error?.data?.message.includes('revert reason:')) {
+        const match = error.error.data.message.match(
+          /revert reason: Error\((.*?)\)/
+        );
+        errorMessage = match[1];
+      }
+      if (errorMessage.length > 64) {
+        errorMessage = errorMessage.substring(0, 64) + '...';
+      }
+      setSnackbar({
+        type: 'error',
+        open: true,
+        message: errorMessage,
+      });
+      setStatusState((prevState) => ({
+        ...prevState,
+        isLoading: '',
+        isError: true,
+        isMessage: true,
         message: {
           title: errorMessage,
           description: <span>{errorMessage}</span>,
@@ -580,6 +801,9 @@ export const ContractContextProvider = ({
     }));
   };
 
+  
+
+
   //THESE GO LAST
   const contractContextValue: ContractContextValue = {
     contractState,
@@ -587,6 +811,10 @@ export const ContractContextProvider = ({
     customerImages,
     runStableDiffusionJob,
     mintNFT,
+    registerArtistWithContract,
+    submitArtistFormToAPI,
+    artistCost,
+    imageCost,
   };
 
   return (
