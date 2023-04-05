@@ -246,10 +246,6 @@ export const ArtistUpload: FC<Props> = ({
     formik.setFieldValue(name, [...existingFiles, ...newFilesWithPreviews]);
   };
 
-  useEffect(() => {
-    console.log(formik);
-  }, [formik.touched]);
-
   return (
     <FormControl
       style={{

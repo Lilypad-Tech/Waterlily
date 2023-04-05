@@ -64,10 +64,11 @@ export const activeStepContainer: CSSProperties = {
 
 export const iconStyle: CSSProperties = { color: 'rgba(255, 255, 255, 0.7)' };
 
-export const dateContainer: CSSProperties = {
+export const dateContainer: SxProps = {
   display: 'flex',
   flexDirection: 'row',
-  width: '81.4%',
+  width: '100%',
+  // justifyContent: 'space-between',
 };
 
 export const checkContainer: CSSProperties = {

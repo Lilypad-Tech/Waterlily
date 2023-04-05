@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import {
   Formik,
   Field,
@@ -12,6 +12,7 @@ import {
 import {
   Box,
   TextField,
+  FormControl,
   MenuItem,
   Button,
   Typography,
@@ -25,11 +26,7 @@ import {
   InputAdornment,
   Tooltip,
 } from '@mui/material';
-import {
-  DescriptionOutlined,
-  MonochromePhotosOutlined,
-  WalletOutlined,
-} from '@mui/icons-material';
+import { DescriptionOutlined, WalletOutlined } from '@mui/icons-material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import {
@@ -72,11 +69,12 @@ import {
   stepButtonContainer,
   stepButtonWrapper,
 } from '@/styles';
+import { truncateSync } from 'fs';
 
 const ArtistSignup: React.FC<{}> = () => {
   const { handleNavigation } = useNavigation();
   const { walletState = defaultWalletState } = useContext(WalletContext);
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(1);
 
   //form functions
   const handleFormSubmit = async (values: FormData) => {
@@ -88,8 +86,6 @@ const ArtistSignup: React.FC<{}> = () => {
     //   .catch((err) => console.log(err));
     // do something with the form data, e.g. submit it to a backend API
   };
-
-  const key = 'name';
 
   return (
     <Box sx={container}>
@@ -338,11 +334,27 @@ const ArtistSignup: React.FC<{}> = () => {
                     placement="top-start"
                     // arrow
                   >
-                    <Box sx={dateContainer}>
-                      <Field name="periodStart">
-                        {({ field, form }) => (
+                    <Box
+                      sx={{
+                        width: '80%',
+                        display: 'flex',
+                      }}
+                    >
+                      <Box sx={dateContainer}>
+                        {/* TODO: will need to validate this has been touched */}
+                        <FormControl
+                          error={true}
+                          required
+                          fullWidth
+                          sx={{
+                            '& .MuiFormControl-root': {
+                              width: '98%',
+                              marginLeft: 0,
+                            },
+                            padding: '3px 0',
+                          }}
+                        >
                           <DatePicker
-                            {...field}
                             label="Period Start *"
                             views={['year']}
                             openTo="year"
@@ -350,42 +362,47 @@ const ArtistSignup: React.FC<{}> = () => {
                             disableFuture
                             minDate={new Date(1200, 0, 1)}
                             maxDate={new Date()}
-                            value={field.value || new Date(1880, 0, 1)}
-                            onChange={(newValue, errContext) => {
-                              console.log('on change', newValue, errContext);
-                              console.log(
-                                'on change',
-                                formik.touched,
-                                formik.errors,
-                                formik.values,
-                                formik
-                              );
-                              //not working shrugs
-                              errContext.validationError &&
-                                formik.setFieldError(
-                                  field.name,
-                                  errContext.validationError
-                                );
-                              formik.setFieldValue(field.name, newValue);
-                              formik.setFieldTouched(field.name, true);
+                            value={values.periodStart} // || new Date(1900, 0, 1)}
+                            onError={(err) => {
+                              console.log('error', err);
+                              //should update
+                              formik.validateField('periodStart');
                             }}
-                            slots={{
-                              TextField,
+                            onChange={(newValue, errContext) => {
+                              formik.handleChange({
+                                target: {
+                                  name: 'periodStart',
+                                  value: newValue,
+                                },
+                              });
+                              formik.handleBlur({
+                                target: {
+                                  name: 'periodStart',
+                                },
+                              });
                             }}
                             slotProps={{
                               textField: {
                                 helperText:
                                   formik.touched.periodStart &&
-                                  formik.errors.periodStart, //'Select a Date',
+                                  Boolean(formik.errors.periodStart) &&
+                                  String(formik.errors.periodStart),
+                                // : 'Select a valid Date',
                               },
                             }}
                           />
-                        )}
-                      </Field>
-                      <Field name="periodEnd">
-                        {({ field, form }) => (
+                        </FormControl>
+                        <FormControl
+                          error={true}
+                          fullWidth
+                          required
+                          sx={{
+                            '& .MuiFormControl-root': {
+                              width: '98%',
+                            },
+                          }}
+                        >
                           <DatePicker
-                            {...field}
                             label="Period End"
                             views={['year']}
                             openTo="year"
@@ -393,40 +410,37 @@ const ArtistSignup: React.FC<{}> = () => {
                             disableFuture
                             minDate={new Date(1200, 0, 1)}
                             maxDate={new Date()}
-                            value={field.value || new Date()}
-                            onChange={(newValue, errContext) => {
-                              console.log('on change', newValue, errContext);
-                              console.log(
-                                'on change',
-                                formik.touched,
-                                formik.errors,
-                                formik.values,
-                                form
-                              );
-                              //not working shrugs
-                              form.setFieldError(
-                                field.name,
-                                errContext?.validationError
-                              );
-                              form.setFieldValue(field.name, newValue);
-                              form.setFieldTouched(field.name, true);
+                            value={values.periodEnd} // || new Date(1900, 0, 1)}
+                            onError={(err) => {
+                              console.log('error', err);
+                              formik.validateField('periodStart');
+                              //should update
                             }}
-                            slots={{
-                              TextField,
+                            onChange={(newValue, errContext) => {
+                              formik.handleChange({
+                                target: {
+                                  name: 'periodEnd',
+                                  value: newValue,
+                                },
+                              });
+                              formik.handleBlur({
+                                target: {
+                                  name: 'periodEnd',
+                                },
+                              });
                             }}
                             slotProps={{
                               textField: {
-                                helperText: `${
-                                  form.errors.periodEnd &&
-                                  form.touched.periodEnd
-                                    ? 'Help me'
-                                    : ''
-                                }`,
+                                helperText:
+                                  formik.touched.periodEnd &&
+                                  Boolean(formik.errors.periodEnd) &&
+                                  String(formik.errors.periodEnd),
+                                // : 'Select a valid Date',
                               },
                             }}
                           />
-                        )}
-                      </Field>
+                        </FormControl>
+                      </Box>
                     </Box>
                   </Tooltip>
                 </LocalizationProvider>

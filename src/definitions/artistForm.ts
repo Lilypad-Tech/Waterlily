@@ -8,8 +8,8 @@ export interface FormData {
   email: string;
   walletAddress: string;
   nationality?: string;
-  periodStart: string;
-  periodEnd?: string;
+  periodStart: any;
+  periodEnd?: any;
   biography: string; //char limited
   //ArtWork Data
   category: ArtistCategory;
@@ -43,8 +43,8 @@ export const initialFormValues: FormData = {
   category: '' as ArtistCategory, //empty really
   style: '',
   tags: [],
-  periodStart: '',
-  periodEnd: '', //new Date().getFullYear().toString(),
+  periodStart: new Date(2000, 0, 1),
+  periodEnd: new Date(), //new Date().getFullYear().toString(),
   portfolio: '', //link to portfolio
   thumbnails: [], //up to 5 images, best 668x504 =
   //verification data
@@ -84,8 +84,18 @@ export const formValidationSchema: Yup.ObjectSchema<FormData> =
     category: Yup.string<ArtistCategory>().required('Required'),
     tags: Yup.array().optional(), //opt
     style: Yup.string().required('Required'),
-    periodStart: Yup.string().required(), //Yup.date ?
-    periodEnd: Yup.string().required(), //default = "2023 date"
+    periodStart: Yup.date()
+      .min(new Date(1200, 0, 1))
+      .max(new Date(), 'Date is in the future')
+      .required('Period Start is required'),
+    // periodStart: Yup.object()
+    //   .test('is-not-empty', 'Period start object cannot be empty', (value) => {
+    //     return Object.keys(value).length > 0;
+    //   })
+    //   .required(), //Yup.date ?
+    periodEnd: Yup.date()
+      .max(new Date(), 'Date is in the future')
+      .required('Period End is required'), //default = "2023 date"
     portfolio: Yup.string().url().required('Required'),
     thumbnails: Yup.array<File>()
       .required('Required')
