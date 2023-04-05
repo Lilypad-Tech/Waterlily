@@ -392,6 +392,10 @@ const ArtistSignup: React.FC<{}> = () => {
                             }}
                           />
                         </FormControl>
+                        {/*probably better? <FormControlLabel
+                    id="trainingConsent"
+                    name="trainingConsent"
+                    value="trainingConsent" */}
                         <FormControl
                           error={true}
                           fullWidth
@@ -399,7 +403,9 @@ const ArtistSignup: React.FC<{}> = () => {
                           sx={{
                             '& .MuiFormControl-root': {
                               width: '98%',
+                              marginRight: 0,
                             },
+                            padding: '3px 0',
                           }}
                         >
                           <DatePicker
@@ -596,12 +602,11 @@ const ArtistSignup: React.FC<{}> = () => {
                   }}
                   //only disable if partial errors on this part of the form
                   disabled={
-                    activeStep === formStepSections.length - 1
-                    // || // Disable on last step
-                    // !Object.keys(touched).length ||
-                    // formStepSectionValues[`values${activeStep}`].some((fieldName) =>
-                    //   Boolean(errors[fieldName])
-                    // )
+                    activeStep === formStepSections.length - 1 || // Disable on last step
+                    !Object.keys(touched).length ||
+                    formStepSectionValues[`values${activeStep}`].some(
+                      (fieldName) => Boolean(errors[fieldName])
+                    )
                   }
                 >
                   Next
