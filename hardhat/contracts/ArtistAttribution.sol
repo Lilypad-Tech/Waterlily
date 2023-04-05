@@ -5,15 +5,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-// this is the default cost of an image
-// it's about $5 cents
-uint256 constant DEFAULT_ARTIST_COST = 650000000000000 * 2500;
-// this is the default cost of an image
-// it's about 50 cents
-uint256 constant DEFAULT_IMAGE_COST = 650000000000000 * 250;
-// this is 100% of the image cost – compute providers get nothing
-uint256 constant DEFAULT_ARTIST_COMMISSION = 650000000000000 * 250;
-
 /**
     @notice An experimental contract for POC work to call Bacalhau jobs from FVM smart contracts
 */
@@ -95,6 +86,10 @@ contract ArtistAttribution is Ownable {
         return artists[id];
     }
 
+    function getArtistCost() public view returns (uint256) {
+        return artistCost;
+    }
+
     function getImageCost() public view returns (uint256) {
         return imageCost;
     }
@@ -121,24 +116,6 @@ contract ArtistAttribution is Ownable {
 
     function _updateCost(uint256 _artistCost, uint256 _imageCost, uint256 _artistCommission) private {
         require(_artistCommission <= _imageCost, "artist commission must be less than or equal to image cost");
-        if(_artistCost == 0) {
-          // how much gwei does it cost to register as an artist?
-          _artistCost = DEFAULT_ARTIST_COST;
-        }
-
-        if(_imageCost == 0) {
-          // how much gwei does it cost to run a job?
-          // this is 0.00065 ETH then converted to Filecoin
-          // it represents around $0.50
-          _imageCost = DEFAULT_IMAGE_COST;
-        }
-
-        if(_artistCommission == 0) {
-          // how much gewi does the artist get?
-          // this is expressed as gwei but is basically a percentage of 20%
-          _artistCommission = DEFAULT_ARTIST_COMMISSION;
-        }
-
         artistCost = _artistCost;
         imageCost = _imageCost;
         artistCommission = _artistCommission;
