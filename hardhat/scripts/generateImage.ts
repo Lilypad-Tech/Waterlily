@@ -4,13 +4,14 @@ import { getContract } from './utils';
 
 const args = minimist(process.argv, {
   default: {
-    contract: process.env.CONTRACT,
+    contract: process.env.CONTRACT_ADDRESS,
     artist: process.env.ARTIST,
     prompt: process.env.PROMPT,
   },
 });
 
 async function main() {
+  if(!args.contract) throw new Error('no CONTRACT_ADDRESS env provided')
   if (args.artist == '') throw new Error('no artist id provided');
   if (args.prompt == '') throw new Error('no prompt provided');
 
@@ -19,7 +20,7 @@ async function main() {
   const imageCost = await contract.getImageCost();
   const trx = await contract
     .connect(owner)
-    .StableDiffusion(args.artist, args.prompt, {
+    .CreateImage(args.artist, args.prompt, {
       value: imageCost,
     });
   await trx.wait();

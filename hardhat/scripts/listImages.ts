@@ -4,11 +4,12 @@ import { getContract } from './utils'
 
 const args = minimist(process.argv, {
   default:{
-    contract: process.env.CONTRACT,
+    contract: process.env.CONTRACT_ADDRESS,
   },
 })
 
 async function main() {
+  if(!args.contract) throw new Error('no CONTRACT_ADDRESS env provided')
   const {
     contract,
   } = await getContract(args.contract)

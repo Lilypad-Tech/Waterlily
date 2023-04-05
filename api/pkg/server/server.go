@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/bacalhau-project/bacalhau/pkg/system"
@@ -13,9 +14,10 @@ import (
 )
 
 type ServerOptions struct {
-	Host           string
-	Port           int
-	FilestoreToken string
+	Host               string
+	Port               int
+	FilestoreToken     string
+	FilestoreDirectory string
 }
 
 type WaterlilyAPIServer struct {
@@ -34,6 +36,13 @@ func NewServer(
 	if options.FilestoreToken == "" {
 		return nil, fmt.Errorf("filestore token is required")
 	}
+	if options.FilestoreDirectory == "" {
+		return nil, fmt.Errorf("filestore directory is required")
+	}
+	if _, err := os.Stat(options.FilestoreDirectory); os.IsNotExist(err) {
+		return nil, fmt.Errorf("filestore directory does not exist: %s", options.FilestoreDirectory)
+	}
+
 	return &WaterlilyAPIServer{
 		Options: options,
 	}, nil
@@ -41,8 +50,11 @@ func NewServer(
 
 func (apiServer *WaterlilyAPIServer) ListenAndServe(ctx context.Context, cm *system.CleanupManager) error {
 	router := mux.NewRouter()
+
 	subrouter := router.PathPrefix("/api/v1").Subrouter()
 	subrouter.HandleFunc("/artists", apiServer.artists).Methods("GET")
+	subrouter.HandleFunc("/files", apiServer.filestoreUpload).Methods("POST")
+	subrouter.PathPrefix("/files").Handler(http.FileServer(http.Dir(apiServer.Options.FilestoreDirectory)))
 
 	srv := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", apiServer.Options.Host, apiServer.Options.Port),

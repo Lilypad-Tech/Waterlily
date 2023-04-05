@@ -131,7 +131,7 @@ cd hardhat
 source .env
 npx hardhat compile
 npx hardhat --network filecoinHyperspace run scripts/deploy.ts
-IMAGE_COST=100 ARTIST_COMMISSION=20 \
+ARTIST_COST=100 IMAGE_COST=100 ARTIST_COMMISSION=20 \
   npx hardhat --network filecoinHyperspace run scripts/changePrice.ts
 ARTIST=mckhallstyle ADDRESS=0x230115404c551Fcd0B6d447DE1DaD3afca230E07 npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
 ARTIST=SARAH_RICHTER ADDRESS=0x230115404c551Fcd0B6d447DE1DaD3afca230E07 npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
@@ -245,3 +245,15 @@ cd hardhat
 npm run compile
 ```
 
+
+
+## deployment v2
+
+```bash
+cd hardhat
+source .env
+npx hardhat compile
+npx hardhat --network filecoinHyperspace run scripts/deploy.ts
+ARTIST_COST=100 IMAGE_COST=100 ARTIST_COMMISSION=20 \
+  npx hardhat --network filecoinHyperspace run scripts/changePrice.ts
+```
