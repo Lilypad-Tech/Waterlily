@@ -222,6 +222,7 @@ export const FormTextField = ({
         label={data?.label}
         variant="outlined"
         required={data?.required}
+        placeholder={data?.placeholder}
         fullWidth
         select={data?.select}
         multiline={data?.multiline}

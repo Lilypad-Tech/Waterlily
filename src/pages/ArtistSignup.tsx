@@ -472,7 +472,34 @@ const ArtistSignup: React.FC<{}> = () => {
                         )
                       }
                       maxFiles={5}
-                      dropText="Drag and drop up to 5 examples of your artwork here, or"
+                      dropText={
+                        <Box sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                          <Typography
+                            variant="h5"
+                            sx={{ paddingBottom: '1rem' }}
+                          >
+                            Drag and drop up to 5 examples of your artwork here.
+                          </Typography>
+                          <Typography variant="subtitle2">
+                            Images are displayed on the website as thumbnail
+                            examples of your work.
+                          </Typography>
+                          <Typography
+                            variant="subtitle2"
+                            sx={{ paddingBottom: '1.5rem' }}
+                          >
+                            All uploaded thumbnails are automatically{' '}
+                            <span
+                              style={{
+                                fontWeight: 'bolder',
+                              }}
+                            >
+                              watermarked
+                            </span>{' '}
+                            with your name.
+                          </Typography>
+                        </Box>
+                      }
                       formik={formik}
                       name="thumbnails"
                     />
@@ -506,7 +533,28 @@ const ArtistSignup: React.FC<{}> = () => {
                           )
                         }
                         maxFiles={200}
-                        dropText="Drag and drop at least 50 original artworks, or"
+                        dropText={
+                          <Box sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                            <Typography
+                              variant="h5"
+                              sx={{ paddingBottom: '1rem' }}
+                            >
+                              Drag and drop at least 50 pieces of original
+                              artwork here.
+                            </Typography>
+                            <Typography variant="subtitle2">
+                              This art is used ONLY to train the Machine
+                              Learning model to understand your style.
+                            </Typography>
+                            <Typography
+                              variant="subtitle2"
+                              sx={{ paddingBottom: '1.5rem' }}
+                            >
+                              All uploaded images are automaticallydeleted after
+                              model training is complete.
+                            </Typography>
+                          </Box>
+                        }
                         formik={formik}
                         name="images"
                       />

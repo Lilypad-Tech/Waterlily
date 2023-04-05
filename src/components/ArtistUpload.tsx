@@ -118,7 +118,7 @@ const aStyle: CSSProperties = {
 interface Props {
   files: File[] | undefined;
   maxFiles: number;
-  dropText: string;
+  dropText: string | ReactNode;
   formik: any;
   name: string;
 }
@@ -192,7 +192,6 @@ export const ArtistUpload: FC<Props> = ({
   const openDialog = () => {
     // Note that the ref is set async,
     // so it might be null at some point
-    formik.setTouched({ [name]: true });
     if (dropzoneRef.current) {
       dropzoneRef.current.open();
     }
@@ -273,7 +272,7 @@ export const ArtistUpload: FC<Props> = ({
               <Box {...getRootProps({ style })}>
                 <input {...getInputProps()} />
                 {/* TODO: change to html input */}
-                <p>{dropText}</p>
+                <Box>{dropText}</Box>
                 <Button
                   variant="outlined"
                   onClick={openDialog}
