@@ -28,6 +28,7 @@
     "@models": ["src/models/*"],
     "@definitions/*": ["src/definitions/*"],
     "@api/*": ["src/api/*"],
-    "@context": ["src/context"]
+    "@context": ["src/context"],
+    "@styles": ["src/styles"]
   }
 }

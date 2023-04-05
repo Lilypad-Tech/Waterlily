@@ -9,7 +9,6 @@ import {
   // FieldProps,
   // ErrorMessage,
 } from 'formik';
-import * as Yup from 'yup';
 import {
   Box,
   TextField,
@@ -25,17 +24,10 @@ import {
   StepLabel,
   InputAdornment,
   Tooltip,
-  Link,
 } from '@mui/material';
 import {
-  ArrowRightAltOutlined,
   DescriptionOutlined,
-  EmailOutlined,
-  LanguageOutlined,
   MonochromePhotosOutlined,
-  PaletteOutlined,
-  PermIdentityOutlined,
-  PublicOutlined,
   WalletOutlined,
 } from '@mui/icons-material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -49,149 +41,37 @@ import {
   WalletContext,
 } from '@/context';
 import { HeaderLayout, TitleLayout } from '@/layouts';
-import { Subtitle, Title, WalletButton, ArtistUpload } from '@/components';
-
-interface FormData {
-  //Personal Data
-  name: string;
-  email: string;
-  walletAddress: string;
-  nationality?: string;
-  periodStart: string;
-  periodEnd?: string;
-  biography: string; //char limited
-  //ArtWork Data
-  category: ArtistCategory;
-  style: string;
-  tags?: string[]; //chips
-  portfolio: string;
-  //verification data
-  originalArt: Boolean;
-  trainingConsent: Boolean;
-  legalContent: Boolean;
-  //Images
-  avatar?: File[];
-  thumbnails: File[]; //up to 3 images, cropped // change this type
-  images: File[];
-  //Admin
-  artistType?: ArtistType;
-  artistId?: string; // artistId: string; //need to generate this - should be be passing from FE or just generate in DB?
-}
-
-const initialValues: FormData = {
-  // artistId: '', //gets created on form input and validation
-  //Personal Data
-  // artistType: ArtistType.Private, //need to toggle this for admin uploads
-  name: '',
-  email: '',
-  walletAddress: '',
-  nationality: '',
-  biography: '',
-  avatar: [],
-  //ArtWork Data
-  category: ArtistCategory.PostModern, //empty really
-  style: '',
-  tags: [],
-  periodStart: '',
-  periodEnd: '', //new Date().getFullYear().toString(),
-  portfolio: '', //link to portfolio
-  thumbnails: [], //up to 5 images, best 668x504 =
-  //verification data
-  originalArt: false,
-  trainingConsent: false,
-  legalContent: false,
-  images: [], //send elsewhere
-  //admin only
-  artistType: ArtistType.Private,
-  artistId: '',
-};
-
-const validationSchema: Yup.ObjectSchema<FormData> = Yup.object().shape({
-  //Personal Data
-  name: Yup.string()
-    .required('Required')
-    .min(3, 'Name must be at least 3 charachters long'),
-  email: Yup.string().email('Must be a valid email').required('Required'),
-  walletAddress: Yup.string().required('Required'),
-  nationality: Yup.string().optional(), //opt
-  biography: Yup.string()
-    .required('Required')
-    .max(350, 'No more than 350 characters will be displayed'),
-  avatar: Yup.array<File>().optional(), //opt
-  //ArtWork Data
-  category: Yup.string<ArtistCategory>().required('Required'),
-  tags: Yup.array().optional(), //opt
-  style: Yup.string().required('Required'),
-  periodStart: Yup.string().required('Required'), //Yup.date ?
-  periodEnd: Yup.string().required('Required'), //default = "2023 date"
-  portfolio: Yup.string().url().required('Required'),
-  thumbnails: Yup.array<File>()
-    .required('Required')
-    .min(1, 'At least one thumbnail image required'),
-  //Verification data
-  originalArt: Yup.boolean().oneOf([true]).required(),
-  trainingConsent: Yup.boolean().oneOf([true]).required(),
-  legalContent: Yup.boolean().oneOf([true]).required(),
-  images: Yup.array<File>()
-    .required('Required')
-    .min(50, 'At least 50 unique images required to train'),
-  //Admin (if walletAddress === Lilypad "0x5617493b265E9d3CC65CE55eAB7798796D9108E4")
-  artistType: Yup.string<ArtistType>(),
-  artistId: Yup.string(),
-});
-
-const steps = ['Personal Information', 'Art Information', 'Upload & Verify'];
-const stepValues: { [key: string]: string[] } = {
-  values0: [
-    'name',
-    'email',
-    'walletAddress',
-    'nationality',
-    'biography',
-    'avatar',
-  ],
-  values1: [
-    'category',
-    'tags',
-    'style',
-    'periodStart',
-    'periodEnd',
-    'portfolio',
-    'thumbnails',
-  ],
-  values2: ['images', 'originalArt', 'trainingConsent', ' legalContent'],
-};
-
-const LinkTo: React.FC<{
-  text: string;
-  href?: string;
-  arrow?: boolean;
-}> = ({ text, href, arrow = true }) => {
-  return (
-    <Link
-      href={
-        href
-          ? href
-          : 'https://luck-muscle-f89.notion.site/Waterlily-ai-FAQs-e920ff00040d411eab93538525abaa3c'
-      }
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          paddingTop: '0.5rem',
-        }}
-      >
-        <Typography>{text}</Typography>
-        {arrow && <ArrowRightAltOutlined />}
-      </Box>
-    </Link>
-  );
-};
+import {
+  Subtitle,
+  Title,
+  WalletButton,
+  ArtistUpload,
+  LinkTo,
+  FormTextField,
+} from '@/components';
+import {
+  FormData,
+  initialFormValues,
+  formValidationSchema,
+  formStepSections,
+  formStepSectionValues,
+} from '@/definitions';
+import {
+  container,
+  description,
+  formikContainer,
+  stepperContainer,
+  iconStyle,
+  biographyEndAdornment,
+  biographyStartAdornment,
+  biographyIcon,
+  uploadContainer,
+  activeStepContainer,
+  dateContainer,
+  checkContainer,
+  stepButtonContainer,
+  stepButtonWrapper,
+} from '@/styles';
 
 const ArtistSignup: React.FC<{}> = () => {
   const { handleNavigation } = useNavigation();
@@ -202,15 +82,17 @@ const ArtistSignup: React.FC<{}> = () => {
   const handleFormSubmit = async (values: FormData) => {
     console.log(values);
     // Validate inputs
-    // await validationSchema
+    // await formValidationSchema
     //   .validate(values)
     //   .then((res) => console.log(res))
     //   .catch((err) => console.log(err));
     // do something with the form data, e.g. submit it to a backend API
   };
 
+  const key = 'name';
+
   return (
-    <Box flex="column" sx={{ paddingBottom: '2rem' }}>
+    <Box sx={container}>
       <HeaderLayout>
         <div onClick={() => handleNavigation('/')}>Home</div>
         {/* <Logo height={40} /> */}
@@ -219,15 +101,7 @@ const ArtistSignup: React.FC<{}> = () => {
       <TitleLayout>
         <Title />
         <Subtitle text="Artist Onboarding" />
-        <Box
-          sx={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            padding: '1rem',
-          }}
-        >
+        <Box sx={description}>
           <Typography>
             Thankyou for your interest in joining Waterlily.ai!
           </Typography>
@@ -236,8 +110,8 @@ const ArtistSignup: React.FC<{}> = () => {
         </Box>
       </TitleLayout>
       <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
+        initialValues={initialFormValues}
+        validationSchema={formValidationSchema}
         // validateOnChange
         validateOnBlur
         // onSubmit={async (values, { setSubmitting, resetForm }) => {
@@ -269,88 +143,27 @@ const ArtistSignup: React.FC<{}> = () => {
               event.preventDefault();
               handleSubmit();
             }}
-            sx={{
-              '& .MuiTextField-root': { m: 1, width: '80%' },
-              padding: '2rem',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-            }}
+            sx={formikContainer}
           >
             <Stepper
               alternativeLabel
               activeStep={activeStep}
-              sx={{
-                padding: '2rem 1rem 4rem 1rem',
-                width: '80%',
-                alignSelf: 'center',
-              }}
+              sx={stepperContainer}
             >
-              {steps.map((label, idx) => (
+              {formStepSections.map((label, idx) => (
                 <Step key={label} onClick={() => setActiveStep(idx)}>
                   <StepLabel>{label}</StepLabel>
                 </Step>
               ))}
             </Stepper>
             {activeStep === 0 && (
-              <Box key={steps[0]}>
+              <Box key={formStepSections[0]}>
                 {/* most of these fields the same. Just map it */}
                 <Typography color="primary" variant="h5">
                   Personal Details
                 </Typography>
-                <Tooltip
-                  title="Name will be displayed on the website"
-                  placement="top-start"
-                >
-                  <TextField
-                    id="name"
-                    name="name"
-                    label="Name"
-                    variant="outlined"
-                    required
-                    fullWidth
-                    value={values.name}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.name && Boolean(errors.name)}
-                    helperText={touched.name && errors.name}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <PermIdentityOutlined
-                            sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
-                          />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Tooltip>
-                <Tooltip
-                  title="For Waterlily admin to contact you"
-                  placement="top-start"
-                >
-                  <TextField
-                    id="email"
-                    name="email"
-                    label="Email"
-                    variant="outlined"
-                    required
-                    fullWidth
-                    value={values.email}
-                    onChange={handleChange}
-                    error={touched.email && Boolean(errors.email)}
-                    helperText={touched.email && errors.email}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <EmailOutlined
-                            sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
-                          />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Tooltip>
+                <FormTextField fieldKey="name" formik={formik} step={0} />
+                <FormTextField fieldKey="email" formik={formik} step={0} />
                 {/* TODO: turn into dependent - can choose charity instead + better validation */}
                 <Tooltip
                   title="The address payments will be sent to. Must be an f4 ethereum address"
@@ -373,41 +186,17 @@ const ArtistSignup: React.FC<{}> = () => {
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <WalletOutlined
-                            sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
-                          />
+                          <WalletOutlined sx={iconStyle} />
                         </InputAdornment>
                       ),
                     }}
                   />
                 </Tooltip>
-                <Tooltip
-                  title="Optional. Will be displayed on website"
-                  placement="top-start"
-                >
-                  <TextField
-                    id="nationality"
-                    name="nationality"
-                    label="Nationality"
-                    placeholder="Your Nationality"
-                    variant="outlined"
-                    fullWidth
-                    value={values.nationality}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.nationality && Boolean(errors.nationality)}
-                    helperText={touched.nationality && errors.nationality}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <PublicOutlined
-                            sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
-                          />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Tooltip>
+                <FormTextField
+                  fieldKey="nationality"
+                  formik={formik}
+                  step={0}
+                />
                 <Tooltip
                   title="Tell us about yourself and your art!"
                   placement="top-start"
@@ -429,33 +218,14 @@ const ArtistSignup: React.FC<{}> = () => {
                     helperText={touched.biography && errors.biography}
                     InputProps={{
                       startAdornment: (
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            marginRight: '2rem',
-                          }}
-                        >
-                          <DescriptionOutlined
-                            sx={{
-                              position: 'absolute',
-                              top: '1rem',
-                              color: 'rgba(255, 255, 255, 0.7)',
-                            }}
-                          />
+                        <Box sx={biographyStartAdornment}>
+                          <DescriptionOutlined sx={biographyIcon} />
                         </Box>
                       ),
                       endAdornment: (
-                        <p
-                          style={{
-                            fontSize: '12px',
-                            position: 'absolute',
-                            bottom: '-0.5rem',
-                            right: '0.8rem',
-                          }}
-                        >
+                        <Box sx={biographyEndAdornment}>
                           {formik.values.biography.length}/350
-                        </p>
+                        </Box>
                       ),
                     }}
                     inputProps={{
@@ -463,13 +233,7 @@ const ArtistSignup: React.FC<{}> = () => {
                     }}
                   />
                 </Tooltip>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                  }}
-                >
+                <Box sx={uploadContainer}>
                   {/* TODO: add error handling & fix this */}
                   <Box sx={{ width: '80%' }}>
                     <ArtistUpload
@@ -490,16 +254,7 @@ const ArtistSignup: React.FC<{}> = () => {
               </Box>
             )}
             {activeStep === 1 && (
-              <Box
-                key={steps[1]}
-                sx={{
-                  width: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
+              <Box key={formStepSections[1]} sx={activeStepContainer}>
                 <Typography color="primary" variant="h5">
                   Artwork Details
                 </Typography>
@@ -523,9 +278,7 @@ const ArtistSignup: React.FC<{}> = () => {
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <MonochromePhotosOutlined
-                            sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
-                          />
+                          <MonochromePhotosOutlined sx={iconStyle} />
                         </InputAdornment>
                       ),
                     }}
@@ -602,34 +355,7 @@ const ArtistSignup: React.FC<{}> = () => {
                     </Tooltip>
                   )}
                 />
-                <Tooltip
-                  title="What is the predominate style of artwork you usually create? 1-2 words"
-                  placement="top-start"
-                  // arrow
-                >
-                  <TextField
-                    id="style"
-                    name="style"
-                    label="Style"
-                    variant="outlined"
-                    required
-                    fullWidth
-                    value={values.style}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.style && Boolean(errors.style)}
-                    helperText={touched.style && errors.style}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <PaletteOutlined
-                            sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
-                          />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Tooltip>
+                <FormTextField fieldKey="style" formik={formik} step={1} />
 
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <Tooltip
@@ -637,13 +363,7 @@ const ArtistSignup: React.FC<{}> = () => {
                     placement="top-start"
                     // arrow
                   >
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        width: '81.4%',
-                      }}
-                    >
+                    <Box sx={dateContainer}>
                       <Field name="periodStart">
                         {({ field, form }) => (
                           <DatePicker
@@ -735,34 +455,7 @@ const ArtistSignup: React.FC<{}> = () => {
                     </Box>
                   </Tooltip>
                 </LocalizationProvider>
-                <Tooltip
-                  title="Portfolio or Art Sales link"
-                  placement="top-start"
-                  // arrow
-                >
-                  <TextField
-                    id="portfolio"
-                    name="portfolio"
-                    label="Portfolio"
-                    placeholder="https://www.waterlily.ai"
-                    variant="outlined"
-                    fullWidth
-                    value={values.portfolio}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.portfolio && Boolean(errors.portfolio)}
-                    helperText={touched.portfolio && errors.portfolio}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <LanguageOutlined
-                            sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
-                          />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Tooltip>
+                <FormTextField fieldKey="portfolio" formik={formik} step={1} />
                 <Typography
                   color="primary"
                   variant="h5"
@@ -793,19 +486,15 @@ const ArtistSignup: React.FC<{}> = () => {
               </Box>
             )}
             {activeStep === 2 && (
-              <Box key={steps[2]}>
+              <Box key={formStepSections[2]}>
                 <Typography color="primary" variant="h5">
                   Upload Art & Verify
                 </Typography>
                 {/* TODO: refactor to a component */}
                 <Box
                   sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    ...activeStepContainer,
                     paddingTop: '1rem',
-                    width: '100%',
                   }}
                 >
                   <Tooltip
@@ -844,11 +533,7 @@ const ArtistSignup: React.FC<{}> = () => {
                     }
                     label="Is your art your own original work?"
                     labelPlacement="start"
-                    sx={{
-                      width: '80%',
-                      justifyContent: 'space-between',
-                      paddingTop: '1rem',
-                    }}
+                    sx={{ ...checkContainer, paddingTop: '1rem' }}
                   />
                   <FormControlLabel
                     id="trainingConsent"
@@ -867,7 +552,7 @@ const ArtistSignup: React.FC<{}> = () => {
                     }
                     label="Do you consent to having an ML Model trained on your artworks?"
                     labelPlacement="start"
-                    sx={{ width: '80%', justifyContent: 'space-between' }}
+                    sx={checkContainer}
                   />
                   <FormControlLabel
                     id="legalContent"
@@ -885,12 +570,12 @@ const ArtistSignup: React.FC<{}> = () => {
                     }
                     label="Is this art legal content?"
                     labelPlacement="start"
-                    sx={{ width: '80%', justifyContent: 'space-between' }}
+                    sx={checkContainer}
                   />
                 </Box>
               </Box>
             )}
-            {activeStep === steps.length - 1 && (
+            {activeStep === formStepSections.length - 1 && (
               <Box sx={{ width: '100%', padding: '1rem' }}>
                 <Button
                   variant="contained"
@@ -903,23 +588,8 @@ const ArtistSignup: React.FC<{}> = () => {
                 </Button>
               </Box>
             )}
-            <Box
-              sx={{
-                width: '100%',
-                padding: '1rem',
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            >
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  pt: 2,
-                  width: '80%',
-                  justifyContent: 'space-between',
-                }}
-              >
+            <Box sx={stepButtonWrapper}>
+              <Box sx={stepButtonContainer}>
                 <Button
                   color="inherit"
                   disabled={activeStep === 0}
@@ -937,10 +607,10 @@ const ArtistSignup: React.FC<{}> = () => {
                   }}
                   //only disable if partial errors on this part of the form
                   disabled={
-                    activeStep === steps.length - 1
+                    activeStep === formStepSections.length - 1
                     // || // Disable on last step
                     // !Object.keys(touched).length ||
-                    // stepValues[`values${activeStep}`].some((fieldName) =>
+                    // formStepSectionValues[`values${activeStep}`].some((fieldName) =>
                     //   Boolean(errors[fieldName])
                     // )
                   }
