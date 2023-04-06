@@ -28,6 +28,14 @@ func (c *Controller) DownloadURL(path string) string {
 	return c.AppURL + fmt.Sprintf("/api/v1/files/%s", path)
 }
 
+func (c *Controller) DownloadURLs(paths []string) []string {
+	ret := []string{}
+	for _, path := range paths {
+		ret = append(ret, c.DownloadURL(path))
+	}
+	return ret
+}
+
 func (c *Controller) PrependURL(path string) string {
 	return c.AppURL + "/api/v1/" + path
 }

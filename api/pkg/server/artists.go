@@ -15,8 +15,8 @@ func (apiServer *WaterlilyAPIServer) artists(res http.ResponseWriter, req *http.
 		return
 	}
 	for _, artist := range data {
-		artist.Data.Thumbnails = apiServer.Controller.PrependURLs(artist.Data.Thumbnails)
-		artist.Data.Avatar = apiServer.Controller.PrependURL(artist.Data.Avatar)
+		artist.Data.Thumbnails = apiServer.Controller.DownloadURLs(artist.Data.Thumbnails)
+		artist.Data.Avatar = apiServer.Controller.DownloadURL(artist.Data.Avatar)
 	}
 	err = json.NewEncoder(res).Encode(data)
 	if err != nil {
