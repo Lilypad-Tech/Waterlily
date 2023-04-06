@@ -75,6 +75,7 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
           />
         </Card>
       </Box>
+<<<<<<< Updated upstream
       {/* pass in image link to the nftfunction - it has the rest 
       - probs should be it's own component*/}
       <Button
@@ -86,6 +87,9 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
           Boolean(statusState.isLoading)
         }
       >
+=======
+      <Button variant="outlined" onClick={() => alert('Feature coming soon!')}>
+>>>>>>> Stashed changes
         Mint as NFT
       </Button>
     </Box>
