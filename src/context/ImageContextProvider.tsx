@@ -19,6 +19,9 @@ import {
   defaultWalletState,
   ArtistContext,
 } from '.';
+import {
+  getAPIServer,
+} from '../definitions/network'
 import { TokenInput } from 'nft.storage/dist/src/token';
 
 export interface StableDiffusionImage {
@@ -247,8 +250,9 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
   };
 
   const getQuickImageURL = (jobID: number, imageIndex: number) => {
-    if (imageIndex < 0) return `${network.imageUrlRoot}${jobID}/combined.jpg`;
-    return `${network.imageUrlRoot}${jobID}/image_${imageIndex}.png`;
+    const base = getAPIServer(`files/generated_images/${jobID}`)
+    if (imageIndex < 0) return `${base}/combined.jpg`;
+    return `${base}/image_${imageIndex}.png`;
   };
 
   const getImageBlob = async (

@@ -439,7 +439,7 @@ func (c *Controller) trainArtist(ctx context.Context, artist *types.Artist) (str
 
 func (c *Controller) runInference(ctx context.Context, image *types.Image) (string, error) {
 	weightsURL := c.getArtistWeightsDownloadURL(image.Artist)
-	imagesURL := c.getImageUploadURL(image.Artist)
+	imagesURL := c.getImageUploadURL(image.ID)
 	spec := bacalhau.GetInferenceSpec(bacalhau.InferenceSpecOptions{
 		ArtistID:           image.Artist,
 		Prompt:             image.Prompt,

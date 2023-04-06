@@ -60,12 +60,16 @@ func (c *Controller) getArtistWeightUploadURL(artistid string) string {
 	return c.UploadURL(getArtistFolderPath(artistid))
 }
 
-func (c *Controller) getImageUploadURL(artistid string) string {
-	return c.UploadURL(getArtistFolderPath(artistid)) + "/generated_images"
+func (c *Controller) getImageUploadURL(imageID int) string {
+	return c.UploadURL(getImageFolderPath(imageID))
 }
 
 func getArtistFolderPath(artistid string) string {
 	return fmt.Sprintf("artists/%s", artistid)
+}
+
+func getImageFolderPath(imageID int) string {
+	return fmt.Sprintf("generated_images/%d", imageID)
 }
 
 func getArtistTrainingImagesPath(artistid string) string {
