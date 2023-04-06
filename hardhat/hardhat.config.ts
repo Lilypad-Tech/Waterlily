@@ -15,7 +15,7 @@ if (!walletPrivateKey) {
 
 const config: HardhatUserConfig = {
   solidity: '0.8.17',
-  defaultNetwork: 'filecoinHyperspace',
+  defaultNetwork: 'hardhat',
   namedAccounts: {
     admin: 0,
   },
@@ -23,7 +23,7 @@ const config: HardhatUserConfig = {
     hardhat: {},
     localhost: {},
     filecoinHyperspace: {
-      url: 'https://api.hyperspace.node.glif.io/rpc/v1', //'https://rpc.ankr.com/filecoin_testnet', //https://filecoin-hyperspace.chainstacklabs.com/rpc/v1, "https://hyperspace.filfox.info/rpc/v1"
+      url: 'https://api.hyperspace.node.glif.io/rpc/v1', //'https://rpc.ankr.com/filecoin_testnet', //https://filecoin-hyperspace.chainstacklabs.com/rpc/v1, "https://hyperspace.filfox.info/rpc/v1", wss://wss.hyperspace.node.glif.io/apigw/lotus/rpc/v1
       chainId: 3141,
       accounts: [walletPrivateKey],
     },

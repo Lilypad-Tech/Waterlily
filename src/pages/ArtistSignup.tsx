@@ -15,8 +15,15 @@ import {
   Stepper,
   Step,
   StepLabel,
+  InputAdornment,
+  Tooltip,
+  Snackbar,
+  Alert,
 } from '@mui/material';
-
+import {md5} from 'pure-md5';
+import { DescriptionOutlined, WalletOutlined } from '@mui/icons-material';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import {
   useNavigation,
   defaultWalletState,
@@ -26,12 +33,14 @@ import {
   ContractContext,
   defaultStatusState,
 } from '@/context';
-import { HeaderLayout, TitleLayout } from '@/layouts';
+import { SectionLayout, HeaderLayout, TitleLayout } from '@/layouts';
 import {
   Subtitle,
   Title,
   WalletButton,
   LinkTo,
+  FormTextField,
+  ErrorMessage,
   PersonalFormDetails,
   ArtFormDetails,
   ImagesFormDetails,
@@ -55,16 +64,20 @@ import {
   stepButtonWrapper,
 } from '@/styles';
 
+const TEST_ARTIST_ID = 'd2afcf0fa6416970c84c7ea9bde90d16'
 const adminAddress = process.env.NEXT_PUBLIC_ADMIN_WALLET;
 
 const ArtistSignup: React.FC<{}> = () => {
   const { handleNavigation } = useNavigation();
-  const { createArtistId } = useContext(ImageContext);
   const { walletState = defaultWalletState.walletState } =
     useContext(WalletContext);
-  // const {addArtist} = useContext(ContractContext);
-  const { statusState = defaultStatusState.statusState } =
-    useContext(StatusContext);
+  const { registerArtistWithContract, submitArtistFormToAPI } = useContext(ContractContext);
+  const {
+    snackbar,
+    closeSnackbar,
+    statusState = defaultStatusState.statusState,
+  } = useContext(StatusContext);
+  
   const [activeStep, setActiveStep] = useState(0);
 
   const validateFormInput = async (values: FormData) => {
@@ -88,21 +101,17 @@ const ArtistSignup: React.FC<{}> = () => {
       values.periodEnd.getFullYear() === new Date().getFullYear()
         ? 'current'
         : values.periodEnd.getFullYear().toString();
-    const { periodStart, periodEnd, images, ...rest } = values;
-    const formattedValues = {
-      period: `${periodStartYear} - ${periodEndYear}`,
-      ...rest,
-    };
-    // not sure I need to remove anything else?
-    // const { email, walletAddress, ...cidValues } = formattedValues;
-
-    return { formattedVals: formattedValues, cidVals: formattedValues };
+    const { periodStart, periodEnd, images, avatar, thumbnails, ...rest } = values;
+    return {
+      data: {
+        period: `${periodStartYear} - ${periodEndYear}`,
+        ...rest,
+      },
+      images,
+      avatar,
+      thumbnails,
+    }
   };
-
-  //this will occur in ArtistContext
-  const postToContract = async () => {};
-
-  const postToAPI = async () => {};
 
   //form functions
   const handleFormSubmit = async (values: FormData) => {
@@ -114,12 +123,13 @@ const ArtistSignup: React.FC<{}> = () => {
       //2. Format the inputs as needed
       const formattedValues = formatFormInput(values);
       //3. Create the artistId (also creates a cid of the metadata)
-      const artistId: string = await createArtistId(formattedValues.cidVals);
+      const artistId: string = md5(formattedValues.data.name + formattedValues.data.email + new Date().getTime());
       if (!artistId) throw Error('Could not create artist ID');
-      //5. Make a contract call to addArtist with artistId & (opt) ipfs metadata
-      //    show loading component until tx finalised
-      //6. Make a POST call to the api with all the data
+      //await registerArtistWithContract(artistId)
+      //await submitArtistFormToAPI(artistId, formattedValues.data, formattedValues.images, (formattedValues.avatar || []) as File[], formattedValues.thumbnails)
+      await submitArtistFormToAPI(TEST_ARTIST_ID, formattedValues.data, formattedValues.images, (formattedValues.avatar || []) as File[], formattedValues.thumbnails)
     } catch (err) {
+      // TODO: handle error and show in UI
       console.log(err);
     }
   };
@@ -163,20 +173,7 @@ const ArtistSignup: React.FC<{}> = () => {
           validationSchema={formValidationSchema}
           // validateOnChange
           validateOnBlur
-          onSubmit={async (values, { setSubmitting, resetForm }) => {
-            console.log(values);
-            setSubmitting(true);
-            await validateFormInput(values).then(async (isValid) => {
-              console.log('isValid', isValid);
-              const formattedVals = formatFormInput(values);
-              console.log('formatted', formattedVals);
-              await createArtistId(formattedVals.cidVals).then((cid) => {
-                console.log('cid', cid);
-              });
-              setSubmitting(false);
-              // --> if wanted to reset on submit: resetForm();
-            });
-          }}
+          onSubmit={handleFormSubmit}
         >
           {(formik, { errors, touched, handleSubmit, isValid } = formik) => (
             <Box
@@ -261,6 +258,27 @@ const ArtistSignup: React.FC<{}> = () => {
         <div>error</div>
       )}
       <LinkTo text="Got Questions? Check out the FAQ" />
+      {snackbar.open && (
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={10000}
+          onClose={closeSnackbar}
+        >
+          <Alert
+            onClose={closeSnackbar}
+            severity={snackbar.type as any}
+            sx={{ width: '100%' }}
+          >
+            <Box
+              sx={{
+                color: '#fff',
+              }}
+            >
+              {snackbar.message}
+            </Box>
+          </Alert>
+        </Snackbar>
+      )}
     </Box>
   );
 };

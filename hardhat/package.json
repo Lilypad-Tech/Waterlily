@@ -4,7 +4,10 @@
   "scripts": {
     "node": "hardhat node --network hardhat",
     "compile": "hardhat compile",
-    "postcompile": "cp -r ./artifacts/contracts/* ../src/abi"
+    "preabigen": "cat ./artifacts/contracts/ArtistAttribution.sol/ArtistAttribution.json | jq -r '.abi' > /tmp/ArtistAttribution.abi",
+    "abigen": "abigen --abi /tmp/ArtistAttribution.abi --pkg contract --type ArtistAttribution --out ../api/pkg/contract/ArtistAttribution.go",
+    "abicopy": "mkdir -p ../src/abi && cp -r ./artifacts/contracts/* ../src/abi",
+    "postcompile": "npm run abigen && npm run abicopy"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.1",

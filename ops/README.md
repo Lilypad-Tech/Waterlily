@@ -131,7 +131,7 @@ cd hardhat
 source .env
 npx hardhat compile
 npx hardhat --network filecoinHyperspace run scripts/deploy.ts
-IMAGE_COST=100 ARTIST_COMMISSION=20 \
+ARTIST_COST=100 IMAGE_COST=100 ARTIST_COMMISSION=20 \
   npx hardhat --network filecoinHyperspace run scripts/changePrice.ts
 ARTIST=mckhallstyle ADDRESS=0x230115404c551Fcd0B6d447DE1DaD3afca230E07 npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
 ARTIST=SARAH_RICHTER ADDRESS=0x230115404c551Fcd0B6d447DE1DaD3afca230E07 npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
@@ -226,4 +226,61 @@ If you need to upload anything to the filestore:
 
 ```
 curl -F "uploads=@cecnstyle.png" -F "path=artist_thumbnails" https://ai-art-files.cluster.world/upload?access_token=XXX
+```
+
+## compiling smart contracts
+
+First we need to make sure we have abigen in our path:
+
+```bash
+go install github.com/ethereum/go-ethereum/cmd/abigen@v1.10.26
+```
+
+You will also need jq installed.
+
+Then we can compile the contracts:
+
+```bash
+cd hardhat
+npm run compile
+```
+
+## deployment v2
+
+```bash
+cd hardhat
+source .env
+npx hardhat compile
+npx hardhat --network filecoinHyperspace run scripts/deploy.ts
+ARTIST_COST=100 IMAGE_COST=100 ARTIST_COMMISSION=20 \
+  npx hardhat --network filecoinHyperspace run scripts/changePrice.ts
+```
+
+Set the address that is printed to the `CONTRACT_ADDRESS` env var inside `.env` or `.env.testnet`.
+
+## dev v2
+
+Export vars:
+
+```bash
+export BACALHAU_API_HOST=ai-art-requester.cluster.world
+export CONTRACT_ADDRESS=...
+export WALLET_PRIVATE_KEY=...
+export FILESTORE_TOKEN=wGARXp2KbjPrf9wYdLjU
+export FILESTORE_DIRECTORY=/tmp/waterlily-files
+export RPC_ENDPOINT=https://api.hyperspace.node.glif.io/rpc/v1
+export CHAIN_ID=3141
+export BIND_PORT=3500
+```
+
+Create filestore dir:
+
+```bash
+mkdir -p $FILESTORE_DIRECTORY
+```
+
+Start server:
+
+```bash
+go run . serve
 ```
