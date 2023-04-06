@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bacalhau-project/waterlily/api/pkg/types"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -91,6 +90,30 @@ func NewContract(options ContractOptions) (Contract, error) {
 	}, nil
 }
 
+func (r *realContract) GetImageIDs(
+	ctx context.Context,
+) ([]int, error) {
+	ids, err := r.contract.ArtistAttributionCaller.GetImageIDs(&bind.CallOpts{
+		Context: ctx,
+	})
+	if err != nil {
+		return nil, err
+	}
+	ret := []int{}
+	for _, num := range ids {
+		ret = append(ret, int(num.Int64()))
+	}
+	return ret, nil
+}
+
+func (r *realContract) GetArtistIDs(
+	ctx context.Context,
+) ([]string, error) {
+	return r.contract.ArtistAttributionCaller.GetArtistIDs(&bind.CallOpts{
+		Context: ctx,
+	})
+}
+
 // Complete implements SmartContract
 func (r *realContract) Complete(ctx context.Context, id int, result string) error {
 	opts, err := r.prepareTransaction(ctx)
@@ -131,109 +154,109 @@ func (r *realContract) Cancel(ctx context.Context, id int, errorString string) e
 	return nil
 }
 
-func (r *realContract) Listen(
-	ctx context.Context,
-	imageChan chan<- *types.ImageCreatedEvent,
-	artistChan chan<- *types.ArtistCreatedEvent,
-) error {
+// func (r *realContract) Listen(
+// 	ctx context.Context,
+// 	imageChan chan<- *types.ImageCreatedEvent,
+// 	artistChan chan<- *types.ArtistCreatedEvent,
+// ) error {
 
-	t := time.NewTicker(r.tickerTime)
-	defer t.Stop()
+// 	t := time.NewTicker(r.tickerTime)
+// 	defer t.Stop()
 
-	for {
-		select {
-		case <-ctx.Done():
-			return nil
-		case <-t.C:
-			err := r.ReadEvents(ctx, imageChan, artistChan)
-			if err != nil {
-				return err
-			}
-		}
-	}
-}
+// 	for {
+// 		select {
+// 		case <-ctx.Done():
+// 			return nil
+// 		case <-t.C:
+// 			err := r.ReadEvents(ctx, imageChan, artistChan)
+// 			if err != nil {
+// 				return err
+// 			}
+// 		}
+// 	}
+// }
 
-func (r *realContract) ReadEvents(
-	ctx context.Context,
-	imageChan chan<- *types.ImageCreatedEvent,
-	artistChan chan<- *types.ArtistCreatedEvent,
-) error {
-	log.Ctx(ctx).Debug().Uint64("fromBlock", r.maxSeenBlock+1).Msg("Polling for smart contract image and artist events")
+// func (r *realContract) ReadEvents(
+// 	ctx context.Context,
+// 	imageChan chan<- *types.ImageCreatedEvent,
+// 	artistChan chan<- *types.ArtistCreatedEvent,
+// ) error {
+// 	log.Ctx(ctx).Debug().Uint64("fromBlock", r.maxSeenBlock+1).Msg("Polling for smart contract image and artist events")
 
-	// We deliberately ask for the current block *before* we make the events
-	// call. It's possible that a block will be written between the two calls:
-	//
-	//    FilterNewJobs(block: #1) -> seen block #1
-	//    block #2 gets written
-	//    BlockNumber() -> block #3
-	//    ...
-	//    FilterNewJobs(block: #3)
-	//
-	// In this case we would never see any events in block #2. So we instead
-	// remember the block number before the events call, and if a block is
-	// written between them, we will get it again next time we ask for events.
-	currentBlock, err := r.client.BlockNumber(ctx)
-	if err != nil {
-		log.Ctx(ctx).Error().Err(err).Send()
-		return err
-	}
+// 	// We deliberately ask for the current block *before* we make the events
+// 	// call. It's possible that a block will be written between the two calls:
+// 	//
+// 	//    FilterNewJobs(block: #1) -> seen block #1
+// 	//    block #2 gets written
+// 	//    BlockNumber() -> block #3
+// 	//    ...
+// 	//    FilterNewJobs(block: #3)
+// 	//
+// 	// In this case we would never see any events in block #2. So we instead
+// 	// remember the block number before the events call, and if a block is
+// 	// written between them, we will get it again next time we ask for events.
+// 	currentBlock, err := r.client.BlockNumber(ctx)
+// 	if err != nil {
+// 		log.Ctx(ctx).Error().Err(err).Send()
+// 		return err
+// 	}
 
-	opts := bind.FilterOpts{Start: uint64(r.maxSeenBlock + 1), Context: ctx}
+// 	opts := bind.FilterOpts{Start: uint64(r.maxSeenBlock + 1), Context: ctx}
 
-	imageLogs, err := r.contract.ArtistAttributionFilterer.FilterEventImageCreated(&opts)
-	if err != nil {
-		log.Ctx(ctx).Error().Err(err).Send()
-		return err
-	}
-	defer imageLogs.Close()
+// 	imageLogs, err := r.contract.ArtistAttributionFilterer.FilterEventImageCreated(&opts)
+// 	if err != nil {
+// 		log.Ctx(ctx).Error().Err(err).Send()
+// 		return err
+// 	}
+// 	defer imageLogs.Close()
 
-	artistLogs, err := r.contract.ArtistAttributionFilterer.FilterEventArtistCreated(&opts)
-	if err != nil {
-		log.Ctx(ctx).Error().Err(err).Send()
-		return err
-	}
-	defer artistLogs.Close()
+// 	artistLogs, err := r.contract.ArtistAttributionFilterer.FilterEventArtistCreated(&opts)
+// 	if err != nil {
+// 		log.Ctx(ctx).Error().Err(err).Send()
+// 		return err
+// 	}
+// 	defer artistLogs.Close()
 
-	r.maxSeenBlock = currentBlock
+// 	r.maxSeenBlock = currentBlock
 
-	for imageLogs.Next() {
-		recvEvent := imageLogs.Event
-		// IMPORTANT: this means the log was reverted, so we should ignore it
-		if recvEvent.Raw.Removed {
-			continue
-		}
-		log.Ctx(ctx).Info().
-			Stringer("txn", recvEvent.Raw.TxHash).
-			Uint64("block#", recvEvent.Raw.BlockNumber).
-			Uint64("id", recvEvent.Raw.BlockNumber).
-			Str("artist", recvEvent.Image.Artist).
-			Str("prompt", recvEvent.Image.Prompt).
-			Msg("Image")
-		imageChan <- &types.ImageCreatedEvent{
-			ContractID: int(recvEvent.Image.Id.Int64()),
-			ArtistCode: recvEvent.Image.Artist,
-			Prompt:     recvEvent.Image.Prompt,
-		}
-	}
+// 	for imageLogs.Next() {
+// 		recvEvent := imageLogs.Event
+// 		// IMPORTANT: this means the log was reverted, so we should ignore it
+// 		if recvEvent.Raw.Removed {
+// 			continue
+// 		}
+// 		log.Ctx(ctx).Info().
+// 			Stringer("txn", recvEvent.Raw.TxHash).
+// 			Uint64("block#", recvEvent.Raw.BlockNumber).
+// 			Uint64("id", recvEvent.Raw.BlockNumber).
+// 			Str("artist", recvEvent.Image.Artist).
+// 			Str("prompt", recvEvent.Image.Prompt).
+// 			Msg("Image")
+// 		imageChan <- &types.ImageCreatedEvent{
+// 			ContractID: int(recvEvent.Image.Id.Int64()),
+// 			ArtistCode: recvEvent.Image.Artist,
+// 			Prompt:     recvEvent.Image.Prompt,
+// 		}
+// 	}
 
-	for artistLogs.Next() {
-		recvEvent := artistLogs.Event
-		// IMPORTANT: this means the log was reverted, so we should ignore it
-		if recvEvent.Raw.Removed {
-			continue
-		}
-		log.Ctx(ctx).Info().
-			Stringer("txn", recvEvent.Raw.TxHash).
-			Uint64("block#", recvEvent.Raw.BlockNumber).
-			Str("artist", recvEvent.Artist.Id).
-			Msg("Artist")
-		artistChan <- &types.ArtistCreatedEvent{
-			ArtistCode: recvEvent.Artist.Id,
-		}
-	}
+// 	for artistLogs.Next() {
+// 		recvEvent := artistLogs.Event
+// 		// IMPORTANT: this means the log was reverted, so we should ignore it
+// 		if recvEvent.Raw.Removed {
+// 			continue
+// 		}
+// 		log.Ctx(ctx).Info().
+// 			Stringer("txn", recvEvent.Raw.TxHash).
+// 			Uint64("block#", recvEvent.Raw.BlockNumber).
+// 			Str("artist", recvEvent.Artist.Id).
+// 			Msg("Artist")
+// 		artistChan <- &types.ArtistCreatedEvent{
+// 			ArtistCode: recvEvent.Artist.Id,
+// 		}
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
 func (r *realContract) publicKey() *ecdsa.PublicKey {
 	return r.privateKey.Public().(*ecdsa.PublicKey)

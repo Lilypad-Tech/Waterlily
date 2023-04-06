@@ -323,3 +323,14 @@ gcloud compute ssh artist-vm-0 --zone us-central1-a
 sudo apt install sqlite3
 sqlite3 /data/waterlily/staging/data.db
 ```
+
+## todo
+
+ * write the 6 control loops to trigger "actions"
+ * get the artist training job spec working
+   * hijack the entrypoint to a script that first downloads the training data from the filestore
+   * the env needs to point back at the API filestore
+   * check this works with a "sleep 10 && ls -la /inputs" job
+   * post back the weights file to the filestore when done
+ * once job is complete - write the state
+ * trigger the contract

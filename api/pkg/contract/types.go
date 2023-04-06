@@ -2,8 +2,6 @@ package contract
 
 import (
 	"context"
-
-	"github.com/bacalhau-project/waterlily/api/pkg/types"
 )
 
 type Contract interface {
@@ -19,9 +17,11 @@ type Contract interface {
 		errorString string,
 	) error
 
-	Listen(
+	GetImageIDs(
 		ctx context.Context,
-		imageChan chan<- *types.ImageCreatedEvent,
-		artistChan chan<- *types.ArtistCreatedEvent,
-	) error
+	) ([]int, error)
+
+	GetArtistIDs(
+		ctx context.Context,
+	) ([]string, error)
 }

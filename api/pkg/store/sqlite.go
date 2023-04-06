@@ -116,14 +116,23 @@ func scanImage(scanner SQLScanner) (*types.Image, error) {
 func (d *SQLiteStore) ListArtists(ctx context.Context, query ListArtistsQuery) ([]*types.Artist, error) {
 	d.mtx.RLock()
 	defer d.mtx.RUnlock()
-	sqlStatement := `
+	where := ""
+	if query.OnlyNew {
+		where = "where bacalhau_state = 'created'"
+	} else if query.OnlyRunning {
+		where = "where bacalhau_state = 'running'"
+	} else if query.OnlyFinished {
+		where = "where (bacalhau_state = 'error' or bacalhau_state = 'complete') and contract_state = 'none'"
+	}
+	sqlStatement := fmt.Sprintf(`
 select
 	id, created, bacalhau_training_id, bacalhau_state, contract_state, data
 from
 	artist
+%s
 order by
 	created desc
-`
+`, where)
 
 	rows, err := d.db.Query(sqlStatement)
 	if err != nil {
@@ -188,17 +197,41 @@ VALUES ($1, $2)`
 	return nil
 }
 
+func (d *SQLiteStore) DeleteArtist(ctx context.Context, id string) error {
+	d.mtx.Lock()
+	defer d.mtx.Unlock()
+	sqlStatement := `
+DELETE FROM artist where id = $1`
+	_, err := d.db.Exec(
+		sqlStatement,
+		id,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (d *SQLiteStore) ListImages(ctx context.Context, query ListImagesQuery) ([]*types.Image, error) {
 	d.mtx.RLock()
 	defer d.mtx.RUnlock()
-	sqlStatement := `
+	where := ""
+	if query.OnlyNew {
+		where = "where bacalhau_state = 'created'"
+	} else if query.OnlyRunning {
+		where = "where bacalhau_state = 'running'"
+	} else if query.OnlyFinished {
+		where = "where (bacalhau_state = 'error' or bacalhau_state = 'complete') and contract_state = 'none'"
+	}
+	sqlStatement := fmt.Sprintf(`
 select
 	id, created, bacalhau_inference_id, bacalhau_state, contract_state, artist_id, prompt
 from
 	image
+%s
 order by
 	created desc
-`
+`, where)
 
 	rows, err := d.db.Query(sqlStatement)
 	if err != nil {

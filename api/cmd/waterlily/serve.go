@@ -146,7 +146,7 @@ func serve(cmd *cobra.Command, options *AllOptions) error {
 		Store:    store,
 	})
 
-	err = controller.Start()
+	err = controller.Start(ctx)
 	if err != nil {
 		return err
 	}
