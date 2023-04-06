@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"runtime/debug"
 	"sync"
 	"time"
 
@@ -63,6 +64,7 @@ func (c *Controller) Start(ctx context.Context) error {
 				err := c.loop(ctx)
 				if err != nil {
 					log.Error().Msgf("Waterlily error in controller loop: %s", err.Error())
+					debug.PrintStack()
 				}
 			}
 		}

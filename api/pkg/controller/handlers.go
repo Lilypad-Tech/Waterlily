@@ -198,6 +198,7 @@ func (c *Controller) checkForNewImages(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
+		log.Info().Msgf("Bacalhau Job created: %s", jobID)
 		c.imageBacalhauRunning(ctx, image.ID, jobID)
 	}
 

@@ -304,7 +304,7 @@ func (d *SQLiteStore) AddImage(ctx context.Context, data types.Image) error {
 	defer d.mtx.Unlock()
 	sqlStatement := `
 insert into image (id, artist_id, prompt)
-values ($1)`
+values ($1, $2, $3)`
 	_, err := d.db.Exec(
 		sqlStatement,
 		data.ID,
@@ -321,7 +321,7 @@ func (d *SQLiteStore) UpdateImage(ctx context.Context, data types.Image) error {
 	d.mtx.Lock()
 	defer d.mtx.Unlock()
 	sqlStatement := `
-update artist set
+update image set
 	bacalhau_inference_id = $2,
 	bacalhau_state = $3,
 	contract_state = $4,
