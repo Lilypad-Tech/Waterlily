@@ -2,10 +2,10 @@
 
 /** General Header Components */
 export * from './WebHeader';
-export * from './Logo';
-export * from './Title';
-export * from './Subtitle';
-export * from './Description';
+export * from './UXComponents/Logo';
+export * from './UXComponents/Title';
+export * from './UXComponents/Subtitle';
+export * from './UXComponents/Description';
 
 /** Stable Diffusion Inputs & Display */
 export * from './UserInput';
@@ -14,16 +14,17 @@ export * from './ImageCard';
 export * from './ImageQuickCard';
 export * from './ImageHeader';
 
-/** Feedback Components */
+/** Feedback/Status Components */
 export * from './TwitterLink';
-export * from './StatusMessage';
+export * from './FeedbackAndStatus/StatusMessage';
+export * from './FeedbackAndStatus/MessageStatus';
 
 /** Wallet Components */
 export * from './MyButton';
 export * from './WalletButton';
 
 /** Helper Components */
-export * from './CalloutMessage';
+export * from './FeedbackAndStatus/CalloutMessage';
 export * from './LinkComponent';
 
 /** Homepage Art Display */
@@ -37,3 +38,4 @@ export * from './ArtistOnboarding/PersonalFormDetails';
 export * from './ArtistOnboarding/ArtFormDetails';
 export * from './ArtistOnboarding/ImagesFormDetails';
 export * from './ArtistOnboarding/AdminFormDetails';
+export * from './ArtistOnboarding/WalletFormDetails';
