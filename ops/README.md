@@ -286,3 +286,32 @@ Start server:
 ```bash
 go run . serve
 ```
+
+## deploy new binaries
+
+```bash
+bash ops/deploy.sh upload
+bash ops/deploy.sh deploystaging
+```
+
+## TLS
+
+Get TLS cert:
+
+```bash
+sudo apt install certbot python3-certbot-nginx
+```
+
+
+copy the `certbot/nginx.{staging,production}.conf` files to `/etc/nginx/sites-available` and delete the default file
+
+don't forgoet to edit the linkgs in `sites-enabled` also
+
+
+```bash
+sudo systemctl stop nginx
+sudo systemctl start nginx
+sudo systemctl status nginx
+sudo certbot --nginx -d staging.api.waterlily.cluster.world
+sudo certbot --nginx -d api.waterlily.cluster.world
+```
