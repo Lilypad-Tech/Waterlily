@@ -36,3 +36,4 @@ export * from './ArtistOnboarding/ArtistFormComponents';
 export * from './ArtistOnboarding/PersonalFormDetails';
 export * from './ArtistOnboarding/ArtFormDetails';
 export * from './ArtistOnboarding/ImagesFormDetails';
+export * from './ArtistOnboarding/AdminFormDetails';

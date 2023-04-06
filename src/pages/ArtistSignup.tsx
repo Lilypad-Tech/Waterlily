@@ -18,12 +18,12 @@ import {
 } from '@mui/material';
 
 import {
-  defaultWalletState,
-  StatusContext,
   useNavigation,
+  defaultWalletState,
   WalletContext,
-  ContractContext,
   ImageContext,
+  StatusContext,
+  ContractContext,
 } from '@/context';
 import { HeaderLayout, TitleLayout } from '@/layouts';
 import {
@@ -34,6 +34,7 @@ import {
   PersonalFormDetails,
   ArtFormDetails,
   ImagesFormDetails,
+  AdminFormDetails,
 } from '@/components';
 import {
   FormData,
@@ -54,9 +55,11 @@ import {
 const ArtistSignup: React.FC<{}> = () => {
   const { handleNavigation } = useNavigation();
   const { createArtistId } = useContext(ImageContext);
+  const { walletState = defaultWalletState.walletState } =
+    useContext(WalletContext);
   // const {addArtist} = useContext(ContractContext);
   // const {} = useContext(StatusContext);
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(2);
 
   const validateFormInput = async (values: FormData) => {
     const isValid = await formValidationSchema
@@ -176,7 +179,15 @@ const ArtistSignup: React.FC<{}> = () => {
             </Stepper>
             {activeStep === 0 && <PersonalFormDetails formik={formik} />}
             {activeStep === 1 && <ArtFormDetails formik={formik} />}
-            {activeStep === 2 && <ImagesFormDetails formik={formik} />}
+            {activeStep === 2 && (
+              <>
+                <ImagesFormDetails formik={formik} />
+                {walletState.accounts[0] ===
+                  '0x5617493b265e9d3cc65ce55eab7798796d9108e4' && (
+                  <AdminFormDetails formik={formik} />
+                )}
+              </>
+            )}
             {activeStep === formStepSections.length - 1 && (
               <Box sx={{ width: '100%', padding: '1rem' }}>
                 <Button
