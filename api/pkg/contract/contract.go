@@ -114,8 +114,54 @@ func (r *realContract) GetArtistIDs(
 	})
 }
 
+func (r *realContract) GetImage(
+	ctx context.Context,
+	id int,
+) (ArtistAttributionImage, error) {
+	return r.contract.ArtistAttributionCaller.GetImage(&bind.CallOpts{
+		Context: ctx,
+	}, big.NewInt(int64(id)))
+}
+
 // Complete implements SmartContract
-func (r *realContract) Complete(ctx context.Context, id int, result string) error {
+func (r *realContract) ArtistComplete(ctx context.Context, id string) error {
+	opts, err := r.prepareTransaction(ctx)
+	if err != nil {
+		return err
+	}
+
+	txn, err := r.contract.ArtistAttributionTransactor.ArtistComplete(
+		opts,
+		id,
+	)
+	if err != nil {
+		return err
+	}
+
+	log.Ctx(ctx).Info().Stringer("txn", txn.Hash()).Msgf("ArtistComplete: %d", id)
+	return nil
+}
+
+// Refund implements SmartContract
+func (r *realContract) ArtistCancelled(ctx context.Context, id string) error {
+	opts, err := r.prepareTransaction(ctx)
+	if err != nil {
+		return err
+	}
+
+	txn, err := r.contract.ArtistAttributionTransactor.ArtistCancelled(
+		opts,
+		id,
+	)
+	if err != nil {
+		return err
+	}
+
+	log.Ctx(ctx).Info().Stringer("txn", txn.Hash()).Msgf("ArtistCancelled: %s", id)
+	return nil
+}
+
+func (r *realContract) ImageComplete(ctx context.Context, id int, result string) error {
 	opts, err := r.prepareTransaction(ctx)
 	if err != nil {
 		return err
@@ -130,12 +176,12 @@ func (r *realContract) Complete(ctx context.Context, id int, result string) erro
 		return err
 	}
 
-	log.Ctx(ctx).Info().Stringer("txn", txn.Hash()).Msgf("Results returned: %d", id)
+	log.Ctx(ctx).Info().Stringer("txn", txn.Hash()).Msgf("ImageComplete: %d", id)
 	return nil
 }
 
 // Refund implements SmartContract
-func (r *realContract) Cancel(ctx context.Context, id int, errorString string) error {
+func (r *realContract) ImageCancelled(ctx context.Context, id int, errorString string) error {
 	opts, err := r.prepareTransaction(ctx)
 	if err != nil {
 		return err
@@ -150,7 +196,7 @@ func (r *realContract) Cancel(ctx context.Context, id int, errorString string) e
 		return err
 	}
 
-	log.Ctx(ctx).Info().Stringer("txn", txn.Hash()).Msgf("Error returned: %d %s", id, errorString)
+	log.Ctx(ctx).Info().Stringer("txn", txn.Hash()).Msgf("ImageCancelled: %d %s", id, errorString)
 	return nil
 }
 

@@ -61,13 +61,13 @@ func (r *BacalhauClient) CreateJob(
 func (r *BacalhauClient) GetJobStatus(
 	ctx context.Context,
 	jobID string,
-) (types.BacalhauState, error) {
+) (types.BacalhauState, error, error) {
 	job, found, err := r.Client.Get(ctx, jobID)
 	if err != nil {
-		return types.BacalhauStateError, err
+		return types.BacalhauStateError, nil, err
 	}
 	if !found {
-		return types.BacalhauStateError, errors.New("job not found")
+		return types.BacalhauStateError, nil, errors.New("job not found")
 	}
 	if job.State.State.IsTerminal() {
 		if job.State.State == model.JobStateCompleted {
@@ -84,12 +84,12 @@ func (r *BacalhauClient) GetJobStatus(
 				}
 			}
 			if errorMessage != "" {
-				return types.BacalhauStateError, fmt.Errorf(errorMessage)
+				return types.BacalhauStateError, fmt.Errorf(errorMessage), nil
 			}
-			return types.BacalhauStateComplete, nil
+			return types.BacalhauStateComplete, nil, nil
 		} else {
-			return types.BacalhauStateError, fmt.Errorf("terminal state: %s", job.State.State.String())
+			return types.BacalhauStateError, fmt.Errorf("terminal state: %s", job.State.State.String()), nil
 		}
 	}
-	return types.BacalhauStateRunning, nil
+	return types.BacalhauStateRunning, nil, nil
 }

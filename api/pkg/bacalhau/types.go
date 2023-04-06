@@ -17,7 +17,7 @@ type Bacalhau interface {
 	GetJobStatus(
 		ctx context.Context,
 		jobID string,
-	) (types.BacalhauState, error)
+	) (types.BacalhauState, error, error)
 }
 
 type TrainingSpecOptions struct {

@@ -27,6 +27,7 @@ type Store interface {
 	ListImages(ctx context.Context, query ListImagesQuery) ([]*types.Image, error)
 	GetImage(ctx context.Context, id int) (*types.Image, error)
 	AddImage(ctx context.Context, data types.Image) error
+	UpdateImage(ctx context.Context, data types.Image) error
 }
 
 type StoreOptions struct {
