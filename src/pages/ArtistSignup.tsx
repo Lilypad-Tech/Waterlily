@@ -29,9 +29,9 @@ import {
   defaultWalletState,
   WalletContext,
   ImageContext,
-  defaultStatusState,
   StatusContext,
   ContractContext,
+  defaultStatusState,
 } from '@/context';
 import { SectionLayout, HeaderLayout, TitleLayout } from '@/layouts';
 import {
@@ -45,6 +45,8 @@ import {
   ArtFormDetails,
   ImagesFormDetails,
   AdminFormDetails,
+  WalletFormDetails,
+  StatusMessage,
 } from '@/components';
 import {
   FormData,
@@ -63,6 +65,7 @@ import {
 } from '@/styles';
 
 const TEST_ARTIST_ID = 'd2afcf0fa6416970c84c7ea9bde90d16'
+const adminAddress = process.env.NEXT_PUBLIC_ADMIN_WALLET;
 
 const ArtistSignup: React.FC<{}> = () => {
   const { handleNavigation } = useNavigation();
@@ -75,9 +78,7 @@ const ArtistSignup: React.FC<{}> = () => {
     statusState = defaultStatusState.statusState,
   } = useContext(StatusContext);
   
-  // const {addArtist} = useContext(ContractContext);
-  // const {} = useContext(StatusContext);
-  const [activeStep, setActiveStep] = useState(2);
+  const [activeStep, setActiveStep] = useState(0);
 
   const validateFormInput = async (values: FormData) => {
     const isValid = await formValidationSchema
@@ -132,6 +133,8 @@ const ArtistSignup: React.FC<{}> = () => {
     }
   };
 
+  console.log('walletState', walletState);
+
   return (
     <Box sx={container}>
       <HeaderLayout>
@@ -149,133 +152,123 @@ const ArtistSignup: React.FC<{}> = () => {
           <LinkTo text="FAQ Link" arrow={false} />
         </Box>
       </TitleLayout>
-      <Formik
-        initialValues={initialFormValues}
-        validationSchema={formValidationSchema}
-        // validateOnChange
-        validateOnBlur
-        // onSubmit={async (values, { setSubmitting, resetForm }) => {
-        //   setSubmitting(true);
-        //   // async request
-        //   // --> if wanted to reset on submit: resetForm();
-        //   console.log(values);
-        //   setSubmitting(false);
-        // }}
-        onSubmit={handleFormSubmit}
-      >
-        {(formik, { errors, touched, handleSubmit, isValid } = formik) => (
-          <Box
-            component="form"
-            autoComplete="off"
-            noValidate
-            onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
-              event.preventDefault();
-              handleSubmit();
-            }}
-            sx={formikContainer}
-          >
-            <Stepper
-              alternativeLabel
-              activeStep={activeStep}
-              sx={stepperContainer}
+      {statusState.isLoading && (
+        <Box sx={{ paddingTop: '2rem' }}>
+          <StatusMessage />
+        </Box>
+      )}
+      {/* Check:
+      1. that window.ethereum exists
+      2. there's a web3 injected object
+      3. There's an account[0]
+      4. We are on the correct chain
+      3. There is more than 0.1 FIL in the user's fil account
+       */}
+      {!walletState.isConnected || !walletState.accounts[0] ? (
+        <WalletFormDetails />
+      ) : walletState.accounts[0] ? (
+        <Formik
+          initialValues={initialFormValues}
+          validationSchema={formValidationSchema}
+          // validateOnChange
+          validateOnBlur
+          onSubmit={async (values, { setSubmitting, resetForm }) => {
+            console.log(values);
+            setSubmitting(true);
+            await validateFormInput(values).then(async (isValid) => {
+              console.log('isValid', isValid);
+              const formattedVals = formatFormInput(values);
+              console.log('formatted', formattedVals);
+              await createArtistId(formattedVals.cidVals).then((cid) => {
+                console.log('cid', cid);
+              });
+              setSubmitting(false);
+              // --> if wanted to reset on submit: resetForm();
+            });
+          }}
+        >
+          {(formik, { errors, touched, handleSubmit, isValid } = formik) => (
+            <Box
+              component="form"
+              autoComplete="off"
+              noValidate
+              onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
+                event.preventDefault();
+                handleSubmit();
+              }}
+              sx={formikContainer}
             >
-              {formStepSections.map((label, idx) => (
-                <Step key={label} onClick={() => setActiveStep(idx)}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-            {statusState.isError && (
-              <SectionLayout>
-                <ErrorMessage />
-              </SectionLayout>
-            )}
-            {
-              statusState.message?.title ? (
-                <Box
-                  sx={{
-                    padding: '0 1rem',
-                    display: 'flex',
-                    width: '100%',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Box
-                    sx={{
-                      border: '1px solid #b583ff',
-                      borderRadius: '10px',
-                      padding: '1rem',
-                      width: '70%',
-                    }}
-                  >
-                    <div>{statusState.message?.title}</div>
-                    <div>{statusState.message?.description}</div>
-                  </Box>
-                </Box>
-              ) : (
+              <Stepper
+                alternativeLabel
+                activeStep={activeStep}
+                sx={stepperContainer}
+              >
+                {formStepSections.map((label, idx) => (
+                  <Step key={label} onClick={() => setActiveStep(idx)}>
+                    <StepLabel>{label}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+              {activeStep === 0 && <PersonalFormDetails formik={formik} />}
+              {activeStep === 1 && <ArtFormDetails formik={formik} />}
+              {activeStep === 2 && (
                 <>
-                  {activeStep === 0 && <PersonalFormDetails formik={formik} />}
-                  {activeStep === 1 && <ArtFormDetails formik={formik} />}
-                  {activeStep === 2 && (
-                    <>
-                      <ImagesFormDetails formik={formik} />
-                      {walletState.accounts[0] ===
-                        '0x5617493b265e9d3cc65ce55eab7798796d9108e4' && (
-                        <AdminFormDetails formik={formik} />
-                      )}
-                    </>
+                  <ImagesFormDetails formik={formik} />
+                  {walletState.accounts[0].toUpperCase() ===
+                    adminAddress?.toUpperCase() && (
+                    <AdminFormDetails formik={formik} />
                   )}
-                  {activeStep === formStepSections.length - 1 && (
-                    <Box sx={{ width: '100%', padding: '1rem' }}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        type="submit"
-                        // disabled={formik.actions.isSubmitting}
-                        disabled={Boolean(!isValid)}
-                      >
-                        Submit
-                      </Button>
-                    </Box>
-                  )}
-                  <Box sx={stepButtonWrapper}>
-                    <Box sx={stepButtonContainer}>
-                      <Button
-                        color="inherit"
-                        disabled={activeStep === 0}
-                        onClick={() =>
-                          setActiveStep((prevActiveStep) => prevActiveStep - 1)
-                        }
-                        sx={{ mr: 1 }}
-                      >
-                        Back
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          console.log(formik);
-                          setActiveStep((prevActiveStep) => prevActiveStep + 1);
-                        }}
-                        //only disable if partial errors on this part of the form
-                        disabled={
-                          activeStep === formStepSections.length - 1 || // Disable on last step
-                          !Object.keys(touched).length ||
-                          formStepSectionValues[`values${activeStep}`].some(
-                            (fieldName) => Boolean(errors[fieldName])
-                          )
-                        }
-                      >
-                        Next
-                      </Button>
-                    </Box>
-                  </Box>
                 </>
-              )
-            }
-          </Box>
-        )}
-      </Formik>
+              )}
+              {activeStep === formStepSections.length - 1 && (
+                <Box sx={{ width: '100%', padding: '1rem' }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    // disabled={formik.actions.isSubmitting}
+                    disabled={Boolean(!isValid)}
+                  >
+                    Submit
+                  </Button>
+                </Box>
+              )}
+              <Box sx={stepButtonWrapper}>
+                <Box sx={stepButtonContainer}>
+                  <Button
+                    color="inherit"
+                    disabled={activeStep === 0}
+                    onClick={() =>
+                      setActiveStep((prevActiveStep) => prevActiveStep - 1)
+                    }
+                    sx={{ mr: 1 }}
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      console.log(formik);
+                      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                    }}
+                    //only disable if partial errors on this part of the form
+                    disabled={
+                      activeStep === formStepSections.length - 1 || // Disable on last step
+                      !Object.keys(touched).length ||
+                      formStepSectionValues[`values${activeStep}`].some(
+                        (fieldName) => Boolean(errors[fieldName])
+                      )
+                    }
+                  >
+                    Next
+                  </Button>
+                </Box>
+              </Box>
+            </Box>
+          )}
+        </Formik>
+      ) : (
+        <div>error</div>
+      )}
       <LinkTo text="Got Questions? Check out the FAQ" />
       {snackbar.open && (
         <Snackbar

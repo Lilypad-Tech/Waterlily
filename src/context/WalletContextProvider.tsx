@@ -17,6 +17,7 @@ interface WalletState {
   chainId: string; //chainId type?
   isConnected: boolean; // have accounts
   web3: boolean; //check for window.ethereum object
+  balance: number;
   // message: string;
 }
 
@@ -33,7 +34,7 @@ interface WalletContextValue {
   changeWalletChain: (reqChainId: string) => Promise<void>;
   addNetwork: (networkData: NetworkDataType) => Promise<void>;
   disconnectWallet: () => void;
-  checkBalance: () => Promise<number | null> | null;
+  fetchWalletBalance: () => Promise<number> | number;
 }
 
 export const defaultWalletState = {
@@ -42,6 +43,7 @@ export const defaultWalletState = {
     chainId: '',
     isConnected: false,
     web3: false,
+    balance: 0,
   },
   setWalletState: () => {},
   fetchWalletAccounts: async (): Promise<string[]> => {
@@ -61,8 +63,8 @@ export const defaultWalletState = {
   changeWalletChain: async (reqChainId: string) => {},
   addNetwork: async () => {},
   disconnectWallet: () => {},
-  checkBalance: () => {
-    return null;
+  fetchWalletBalance: () => {
+    return 0;
   },
 };
 
@@ -137,11 +139,13 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
       console.log('Connecting to wallet...');
       const accounts: string[] = await fetchWalletAccounts();
       const chainId = await fetchChainId();
+      const balance = await fetchWalletBalance();
       setWalletState({
-        isConnected: true,
-        accounts: accounts,
-        chainId: chainId,
         web3: true,
+        isConnected: true,
+        accounts,
+        chainId,
+        balance,
       });
       if (!verifyChainId(network.chainId)) {
         await changeWalletChain(network.chainId);
@@ -172,12 +176,14 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
         .then(async (accounts: string[]) => {
           console.log('Connected to wallet...');
           const chainId = await fetchChainId();
+          const balance = await fetchWalletBalance();
           const connected = accounts.length > 0;
           setWalletState({
             web3: true,
             accounts: accounts,
             chainId: chainId,
             isConnected: connected,
+            balance,
           });
         })
         .catch((err: Error) => {
@@ -225,24 +231,37 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
           }));
         }
       });
+      window.ethereum.on(
+        'balanceChanged',
+        (address: string, balance: ethers.BigNumber) => {
+          console.log('Balance Changed', address, balance);
+          setWalletState({ ...walletState, balance });
+        }
+      );
+      window.ethereum.on('transactionHash', (hash: string) => {
+        console.log('Transaction on the user wallet:', hash);
+      });
     } else {
       setWalletState(defaultWalletState.walletState);
     }
   };
 
-  const checkBalance = async () => {
+  const fetchWalletBalance = async () => {
     if (!window.ethereum || !walletState.accounts[0]) {
-      return null;
+      return 0;
     }
     const provider = new ethers.providers.JsonRpcProvider(network.rpc[0]);
     try {
       const balance = await provider.getBalance(walletState.accounts[0]);
       const formattedBalance = ethers.utils.formatEther(balance);
+      console.log('format balance', formattedBalance);
       const balanceNumber = parseFloat(formattedBalance);
+      console.log('balance', balanceNumber);
+      setWalletState({ ...walletState, balance: balanceNumber });
       return balanceNumber;
     } catch (error) {
       console.log('error getting balance', error);
-      return null;
+      return 0;
     }
   };
 
@@ -323,7 +342,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
 
   const checkForNetwork = async () => {
     if (!window.ethereum) return;
-    const network = getNetwork()
+    const network = getNetwork();
     const networkId = network.chainId;
     try {
       const currentNetworkId = await window.ethereum.request({
@@ -331,8 +350,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
       });
       if (
         currentNetworkId === network.chainId ||
-        parseInt(currentNetworkId, 10) ===
-          parseInt(network.chainId, 16)
+        parseInt(currentNetworkId, 10) === parseInt(network.chainId, 16)
       ) {
         console.log(`The Filecoin Mainnet network is currently selected.`);
         return true;
@@ -358,7 +376,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
     changeWalletChain,
     addNetwork,
     disconnectWallet,
-    checkBalance,
+    fetchWalletBalance,
   };
 
   return (
