@@ -2,8 +2,6 @@ package controller
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 
 	"github.com/bacalhau-project/waterlily/api/pkg/bacalhau"
 	"github.com/bacalhau-project/waterlily/api/pkg/store"
@@ -41,10 +39,16 @@ func (c *Controller) checkForNewArtists(ctx context.Context) error {
 		if containsString(contractIDs, artist.ID) {
 			// trigger the artist training
 			log.Info().Msgf("Found new artist in contract: %s - triggering training", artist.ID)
-			err = c.trainArtist(ctx, artist)
+			jobID, err := c.trainArtist(ctx, artist)
+			// if we got an error trying to train then let's flag the artist as errored
+			// which will end up with their fee being refunded in the smart contract
 			if err != nil {
+				log.Info().Msgf("Error in training artist: %s %s", artist.ID, err.Error())
+				c.artistBacalhauError(ctx, artist.ID, err)
 				return err
 			}
+			log.Info().Msgf("Bacalhau Job created: %s", jobID)
+			c.artistBacalhauComplete(ctx, artist.ID, jobID)
 		} else {
 			// check if the creation time is > 24 hours
 			// and delete the artist if it is
@@ -116,18 +120,61 @@ func (c *Controller) checkForFinishedImages(ctx context.Context) error {
 	return nil
 }
 
-func (c *Controller) trainArtist(ctx context.Context, artist *types.Artist) error {
+func (c *Controller) updateArtist(
+	ctx context.Context,
+	id string,
+	handler func(*types.Artist),
+) {
+	artist, err := c.Store.GetArtist(ctx, id)
+	if err != nil {
+		log.Error().Msgf("Error getting artist from database: %s %s", id, err.Error())
+		return
+	}
+	handler(artist)
+
+	err = c.Store.UpdateArtist(ctx, *artist)
+	if err != nil {
+		log.Error().Msgf("Error getting artist from database: %s %s", id, err.Error())
+		return
+	}
+}
+
+func (c *Controller) artistBacalhauError(
+	ctx context.Context,
+	id string,
+	err error,
+) {
+	c.updateArtist(ctx, id, func(artist *types.Artist) {
+		artist.BacalhauState = types.BacalhauStateError
+		artist.Error = err.Error()
+	})
+}
+
+func (c *Controller) artistBacalhauComplete(
+	ctx context.Context,
+	id string,
+	jobID string,
+) {
+	c.updateArtist(ctx, id, func(artist *types.Artist) {
+		artist.BacalhauState = types.BacalhauStateRunning
+		artist.BacalhauTrainingID = jobID
+	})
+}
+
+func (c *Controller) trainArtist(ctx context.Context, artist *types.Artist) (string, error) {
 	// this is the ImagesDownloadURL for the training job
 	imagesURL := c.getArtistTrainingImagesDownloadURL(artist.ID)
 	weightsUploadUrl := c.getArtistWeightUploadURL(artist.ID)
-	fmt.Printf("imagesURL: %s", imagesURL)
-	fmt.Printf("weightsUploadUrl: %s", weightsUploadUrl)
 	spec := bacalhau.GetTrainingSpec(bacalhau.TrainingSpecOptions{
 		ArtistID:          artist.ID,
 		ImagesDownloadURL: imagesURL,
 		WeightsUploadURL:  weightsUploadUrl,
 	})
-	data, _ := json.MarshalIndent(spec, "", "    ")
-	fmt.Printf("spec: %s", string(data))
-	return nil
+	log.Info().Msgf("Generated bacalhau job spec for artist training: %s", artist.ID)
+	dumpObject(spec)
+	job, err := c.Bacalhau.CreateJob(ctx, spec, []string{})
+	if err != nil {
+		return "", err
+	}
+	return job.ID(), nil
 }

@@ -10,6 +10,7 @@ type Image struct {
 	ContractState       ContractState `json:"contract_state"`
 	Artist              string        `json:"artist"`
 	Prompt              string        `json:"prompt"`
+	Error               string        `json:"error"`
 }
 
 type ArtistData struct {
@@ -38,6 +39,7 @@ type Artist struct {
 	BacalhauState      BacalhauState `json:"bacalhau_state"`
 	ContractState      ContractState `json:"contract_state"`
 	Data               ArtistData    `json:"data"`
+	Error              string        `json:"error"`
 }
 
 type ImageCreatedEvent struct {

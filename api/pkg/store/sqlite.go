@@ -63,7 +63,7 @@ func scanArtist(scanner SQLScanner) (*types.Artist, error) {
 	var contractStateString string
 	var artistDataString string
 	artist := types.Artist{}
-	err := scanner.Scan(&artist.ID, &artist.Created, &artist.BacalhauTrainingID, &bacalhauStateString, &contractStateString, &artistDataString)
+	err := scanner.Scan(&artist.ID, &artist.Created, &artist.BacalhauTrainingID, &bacalhauStateString, &contractStateString, &artistDataString, &artist.Error)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func scanImage(scanner SQLScanner) (*types.Image, error) {
 	var bacalhauStateString string
 	var contractStateString string
 	image := types.Image{}
-	err := scanner.Scan(&image.ID, &image.Created, &image.BacalhauInferenceID, &bacalhauStateString, &contractStateString, &image.Artist, &image.Prompt)
+	err := scanner.Scan(&image.ID, &image.Created, &image.BacalhauInferenceID, &bacalhauStateString, &contractStateString, &image.Artist, &image.Prompt, &image.Error)
 	if err != nil {
 		return nil, err
 	}
@@ -118,15 +118,15 @@ func (d *SQLiteStore) ListArtists(ctx context.Context, query ListArtistsQuery) (
 	defer d.mtx.RUnlock()
 	where := ""
 	if query.OnlyNew {
-		where = "where bacalhau_state = 'created'"
+		where = "where bacalhau_state = 'Created'"
 	} else if query.OnlyRunning {
-		where = "where bacalhau_state = 'running'"
+		where = "where bacalhau_state = 'Running'"
 	} else if query.OnlyFinished {
-		where = "where (bacalhau_state = 'error' or bacalhau_state = 'complete') and contract_state = 'none'"
+		where = "where (bacalhau_state = 'Error' or bacalhau_state = 'Complete') and contract_state = 'None'"
 	}
 	sqlStatement := fmt.Sprintf(`
 select
-	id, created, bacalhau_training_id, bacalhau_state, contract_state, data
+	id, created, bacalhau_training_id, bacalhau_state, contract_state, data, error
 from
 	artist
 %s
@@ -159,7 +159,7 @@ func (d *SQLiteStore) GetArtist(ctx context.Context, id string) (*types.Artist, 
 	defer d.mtx.RUnlock()
 	row := d.db.QueryRow(`
 select
-	id, created, bacalhau_training_id, bacalhau_state, contract_state, data
+	id, created, bacalhau_training_id, bacalhau_state, contract_state, data, error
 from
 	artist
 where
@@ -184,8 +184,8 @@ func (d *SQLiteStore) AddArtist(ctx context.Context, data types.Artist) error {
 		return err
 	}
 	sqlStatement := `
-INSERT INTO artist (id, data)
-VALUES ($1, $2)`
+insert into artist (id, data)
+values ($1, $2)`
 	_, err = d.db.Exec(
 		sqlStatement,
 		data.ID,
@@ -197,11 +197,35 @@ VALUES ($1, $2)`
 	return nil
 }
 
+func (d *SQLiteStore) UpdateArtist(ctx context.Context, data types.Artist) error {
+	d.mtx.Lock()
+	defer d.mtx.Unlock()
+	sqlStatement := `
+update artist set
+	bacalhau_training_id = $2,
+	bacalhau_state = $3,
+	contract_state = $4,
+	error = $5
+ where id = $1`
+	_, err := d.db.Exec(
+		sqlStatement,
+		data.ID,
+		data.BacalhauTrainingID,
+		data.BacalhauState.String(),
+		data.ContractState.String(),
+		data.Error,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (d *SQLiteStore) DeleteArtist(ctx context.Context, id string) error {
 	d.mtx.Lock()
 	defer d.mtx.Unlock()
 	sqlStatement := `
-DELETE FROM artist where id = $1`
+delete from artist where id = $1`
 	_, err := d.db.Exec(
 		sqlStatement,
 		id,
@@ -217,15 +241,15 @@ func (d *SQLiteStore) ListImages(ctx context.Context, query ListImagesQuery) ([]
 	defer d.mtx.RUnlock()
 	where := ""
 	if query.OnlyNew {
-		where = "where bacalhau_state = 'created'"
+		where = "where bacalhau_state = 'Created'"
 	} else if query.OnlyRunning {
-		where = "where bacalhau_state = 'running'"
+		where = "where bacalhau_state = 'Running'"
 	} else if query.OnlyFinished {
-		where = "where (bacalhau_state = 'error' or bacalhau_state = 'complete') and contract_state = 'none'"
+		where = "where (bacalhau_state = 'Error' or bacalhau_state = 'Complete') and contract_state = 'None'"
 	}
 	sqlStatement := fmt.Sprintf(`
 select
-	id, created, bacalhau_inference_id, bacalhau_state, contract_state, artist_id, prompt
+	id, created, bacalhau_inference_id, bacalhau_state, contract_state, artist_id, prompt, error
 from
 	image
 %s
@@ -258,7 +282,7 @@ func (d *SQLiteStore) GetImage(ctx context.Context, id int) (*types.Image, error
 	defer d.mtx.RUnlock()
 	row := d.db.QueryRow(`
 select
-	id, created, bacalhau_inference_id, bacalhau_state, contract_state, artist_id, prompt
+	id, created, bacalhau_inference_id, bacalhau_state, contract_state, artist_id, prompt, error
 from
 	image
 where
@@ -279,13 +303,37 @@ func (d *SQLiteStore) AddImage(ctx context.Context, data types.Image) error {
 	d.mtx.Lock()
 	defer d.mtx.Unlock()
 	sqlStatement := `
-INSERT INTO image (id, artist_id, prompt)
-VALUES ($1)`
+insert into image (id, artist_id, prompt)
+values ($1)`
 	_, err := d.db.Exec(
 		sqlStatement,
 		data.ID,
 		data.Artist,
 		data.Prompt,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (d *SQLiteStore) UpdateImage(ctx context.Context, data types.Image) error {
+	d.mtx.Lock()
+	defer d.mtx.Unlock()
+	sqlStatement := `
+update artist set
+	bacalhau_inference_id = $2,
+	bacalhau_state = $3,
+	contract_state = $4,
+	error = $5
+ where id = $1`
+	_, err := d.db.Exec(
+		sqlStatement,
+		data.ID,
+		data.BacalhauInferenceID,
+		data.BacalhauState.String(),
+		data.ContractState.String(),
+		data.Error,
 	)
 	if err != nil {
 		return err

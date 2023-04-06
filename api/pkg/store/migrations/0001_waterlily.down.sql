@@ -1,3 +1,2 @@
-drop table cid_moderation;
-drop table job_moderation;
-drop table useraccount;
+drop table image;
+drop table artist;

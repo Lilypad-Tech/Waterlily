@@ -100,10 +100,7 @@ func (c *Controller) loop(ctx context.Context) error {
 	}()
 
 	if err := <-errChan; err != nil {
-		fmt.Printf("An error occurred: %v\n", err)
-	} else {
-		fmt.Println("All functions completed successfully")
+		return err
 	}
-
 	return nil
 }

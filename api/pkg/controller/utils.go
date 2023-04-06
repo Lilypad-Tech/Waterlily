@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 )
@@ -39,6 +40,18 @@ func (c *Controller) PrependURLs(paths []string) []string {
 	return ret
 }
 
+func (c *Controller) getArtistTrainingImagesDownloadURL(artistid string) string {
+	return c.DownloadURL(getArtistTrainingImagesPath(artistid))
+}
+
+func (c *Controller) getArtistWeightsDownloadURL(artistid string) string {
+	return c.DownloadURL(getArtistWeightsPath(artistid))
+}
+
+func (c *Controller) getArtistWeightUploadURL(artistid string) string {
+	return c.UploadURL(getArtistFolderPath(artistid))
+}
+
 func getArtistFolderPath(artistid string) string {
 	return fmt.Sprintf("artists/%s", artistid)
 }
@@ -51,14 +64,7 @@ func getArtistWeightsPath(artistid string) string {
 	return fmt.Sprintf("%s/weights.tar.gz", getArtistFolderPath(artistid))
 }
 
-func (c *Controller) getArtistTrainingImagesDownloadURL(artistid string) string {
-	return c.DownloadURL(getArtistTrainingImagesPath(artistid))
-}
-
-func (c *Controller) getArtistWeightsDownloadURL(artistid string) string {
-	return c.DownloadURL(getArtistWeightsPath(artistid))
-}
-
-func (c *Controller) getArtistWeightUploadURL(artistid string) string {
-	return c.UploadURL(getArtistWeightsPath(artistid))
+func dumpObject(data interface{}) {
+	bytes, _ := json.MarshalIndent(data, "", "    ")
+	fmt.Printf("%s\n", string(bytes))
 }
