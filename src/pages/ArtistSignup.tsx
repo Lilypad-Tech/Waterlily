@@ -129,6 +129,7 @@ const ArtistSignup: React.FC<{}> = () => {
       //await submitArtistFormToAPI(artistId, formattedValues.data, formattedValues.images, (formattedValues.avatar || []) as File[], formattedValues.thumbnails)
       await submitArtistFormToAPI(TEST_ARTIST_ID, formattedValues.data, formattedValues.images, (formattedValues.avatar || []) as File[], formattedValues.thumbnails)
     } catch (err) {
+      // TODO: handle error and show in UI
       console.log(err);
     }
   };
@@ -172,20 +173,7 @@ const ArtistSignup: React.FC<{}> = () => {
           validationSchema={formValidationSchema}
           // validateOnChange
           validateOnBlur
-          onSubmit={async (values, { setSubmitting, resetForm }) => {
-            console.log(values);
-            setSubmitting(true);
-            await validateFormInput(values).then(async (isValid) => {
-              console.log('isValid', isValid);
-              const formattedVals = formatFormInput(values);
-              console.log('formatted', formattedVals);
-              await createArtistId(formattedVals.cidVals).then((cid) => {
-                console.log('cid', cid);
-              });
-              setSubmitting(false);
-              // --> if wanted to reset on submit: resetForm();
-            });
-          }}
+          onSubmit={handleFormSubmit}
         >
           {(formik, { errors, touched, handleSubmit, isValid } = formik) => (
             <Box
