@@ -24,9 +24,8 @@ import {
   TwitterLink,
   StatusMessage,
   GeneratedImages,
-  ErrorMessage,
   ArtistCardGrid,
-  // ParrotLoader,
+  StatusDisplay,
 } from '@/components';
 
 import {
@@ -110,35 +109,7 @@ const HomePage = () => {
           </ImageListLayout>
         </SectionLayout>
       )}
-      {statusState.isError && (
-        <SectionLayout>
-          <ErrorMessage />
-        </SectionLayout>
-      )}
-      {statusState.isMessage && !Boolean(statusState.isLoading) && (
-        <Box
-          sx={{
-            padding: '0 1rem',
-            display: 'flex',
-            width: '100%',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Box
-            sx={{
-              border: '1px solid #b583ff',
-              borderRadius: '10px',
-              padding: '1rem',
-              width: '70%',
-            }}
-          >
-            <div>{statusState.message?.title}</div>
-            <div>{statusState.message?.description}</div>
-          </Box>
-        </Box>
-      )}
+      <StatusDisplay />
       <div id="justAboveTextField"></div>
       <SectionLayout>
         {!walletState?.isConnected ? (

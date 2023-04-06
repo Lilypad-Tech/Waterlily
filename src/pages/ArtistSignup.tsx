@@ -15,15 +15,10 @@ import {
   Stepper,
   Step,
   StepLabel,
-  InputAdornment,
-  Tooltip,
   Snackbar,
   Alert,
 } from '@mui/material';
-import {md5} from 'pure-md5';
-import { DescriptionOutlined, WalletOutlined } from '@mui/icons-material';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { md5 } from 'pure-md5';
 import {
   useNavigation,
   defaultWalletState,
@@ -33,20 +28,18 @@ import {
   ContractContext,
   defaultStatusState,
 } from '@/context';
-import { SectionLayout, HeaderLayout, TitleLayout } from '@/layouts';
+import { HeaderLayout, TitleLayout } from '@/layouts';
 import {
   Subtitle,
   Title,
   WalletButton,
   LinkTo,
-  FormTextField,
-  ErrorMessage,
   PersonalFormDetails,
   ArtFormDetails,
   ImagesFormDetails,
   AdminFormDetails,
   WalletFormDetails,
-  StatusMessage,
+  StatusDisplay,
 } from '@/components';
 import {
   FormData,
@@ -64,20 +57,23 @@ import {
   stepButtonWrapper,
 } from '@/styles';
 
-const TEST_ARTIST_ID = 'd2afcf0fa6416970c84c7ea9bde90d16'
+const TEST_ARTIST_ID = 'd2afcf0fa6416970c84c7ea9bde90d16';
 const adminAddress = process.env.NEXT_PUBLIC_ADMIN_WALLET;
 
 const ArtistSignup: React.FC<{}> = () => {
   const { handleNavigation } = useNavigation();
   const { walletState = defaultWalletState.walletState } =
     useContext(WalletContext);
-  const { registerArtistWithContract, submitArtistFormToAPI } = useContext(ContractContext);
+  const { registerArtistWithContract, submitArtistFormToAPI } =
+    useContext(ContractContext);
   const {
     snackbar,
     closeSnackbar,
     statusState = defaultStatusState.statusState,
+    setStatusState,
   } = useContext(StatusContext);
-  
+  const { createArtistId } = useContext(ImageContext);
+
   const [activeStep, setActiveStep] = useState(0);
 
   const validateFormInput = async (values: FormData) => {
@@ -96,12 +92,12 @@ const ArtistSignup: React.FC<{}> = () => {
 
   const formatFormInput = (values: FormData) => {
     const periodStartYear = values.periodStart.getFullYear().toString();
-    // const currentYear = new Date().getFullYear();
     const periodEndYear =
       values.periodEnd.getFullYear() === new Date().getFullYear()
         ? 'current'
         : values.periodEnd.getFullYear().toString();
-    const { periodStart, periodEnd, images, avatar, thumbnails, ...rest } = values;
+    const { periodStart, periodEnd, images, avatar, thumbnails, ...rest } =
+      values;
     return {
       data: {
         period: `${periodStartYear} - ${periodEndYear}`,
@@ -110,12 +106,17 @@ const ArtistSignup: React.FC<{}> = () => {
       images,
       avatar,
       thumbnails,
-    }
+    };
   };
 
   //form functions
   const handleFormSubmit = async (values: FormData) => {
+    event?.preventDefault();
     console.log(values);
+    setStatusState({
+      ...defaultStatusState.statusState,
+      isLoading: `Thankyou! Validating your form ${values.name}!`,
+    });
     try {
       //1. Validate inputs
       const isValid = await validateFormInput(values);
@@ -123,14 +124,39 @@ const ArtistSignup: React.FC<{}> = () => {
       //2. Format the inputs as needed
       const formattedValues = formatFormInput(values);
       //3. Create the artistId (also creates a cid of the metadata)
-      const artistId: string = md5(formattedValues.data.name + formattedValues.data.email + new Date().getTime());
+      //TODO - change back to web3storage
+      const { images, ...cidData } = formattedValues;
+      const artistId = await createArtistId(cidData);
+      console.log('formattedValues', formattedValues);
+      // const artistId: string = md5(
+      //   formattedValues.data.name +
+      //     formattedValues.data.email +
+      //     new Date().getTime()
+      // );
       if (!artistId) throw Error('Could not create artist ID');
       //await registerArtistWithContract(artistId)
       //await submitArtistFormToAPI(artistId, formattedValues.data, formattedValues.images, (formattedValues.avatar || []) as File[], formattedValues.thumbnails)
-      await submitArtistFormToAPI(TEST_ARTIST_ID, formattedValues.data, formattedValues.images, (formattedValues.avatar || []) as File[], formattedValues.thumbnails)
-    } catch (err) {
+      await submitArtistFormToAPI(
+        TEST_ARTIST_ID,
+        formattedValues.data,
+        formattedValues.images,
+        (formattedValues.avatar || []) as File[],
+        formattedValues.thumbnails
+      ); // ??
+    } catch (err: any) {
       // TODO: handle error and show in UI
       console.log(err);
+      setStatusState({
+        ...defaultStatusState.statusState,
+        isError: true,
+        isMessage: true,
+        message: {
+          title: 'Something went wrong',
+          description: (
+            <Box>{err.message || 'Error Submitting Artist Details'}</Box>
+          ),
+        },
+      });
     }
   };
 
@@ -153,11 +179,7 @@ const ArtistSignup: React.FC<{}> = () => {
           <LinkTo text="FAQ Link" arrow={false} />
         </Box>
       </TitleLayout>
-      {statusState.isLoading && (
-        <Box sx={{ paddingTop: '2rem' }}>
-          <StatusMessage />
-        </Box>
-      )}
+      <StatusDisplay />
       {/* Check:
       1. that window.ethereum exists
       2. there's a web3 injected object
@@ -173,7 +195,7 @@ const ArtistSignup: React.FC<{}> = () => {
           validationSchema={formValidationSchema}
           // validateOnChange
           validateOnBlur
-          onSubmit={handleFormSubmit}
+          onSubmit={handleFormSubmit} //FIX THIS so it doesn't auto reset. (for failures)
         >
           {(formik, { errors, touched, handleSubmit, isValid } = formik) => (
             <Box
@@ -215,7 +237,7 @@ const ArtistSignup: React.FC<{}> = () => {
                     color="primary"
                     type="submit"
                     // disabled={formik.actions.isSubmitting}
-                    disabled={Boolean(!isValid)}
+                    disabled={Boolean(!isValid) || statusState.isLoading}
                   >
                     Submit
                   </Button>

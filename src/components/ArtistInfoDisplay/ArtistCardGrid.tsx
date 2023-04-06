@@ -17,7 +17,7 @@ import {
   StatusContext,
   defaultStatusState,
 } from '@/context';
-import { ArtistCard } from '.';
+import { ArtistCard } from '@/components';
 
 type ArtistCardGridProps = {
   navigate: () => void;

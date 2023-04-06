@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { Box, Typography } from '@mui/material';
 import { ImageContext } from '@/context';
-import { Subtitle } from '.';
+import { Subtitle } from '@/components';
 
 export const ImageHeader = () => {
   const { imagePrompt, imageArtist } = useContext(ImageContext);
