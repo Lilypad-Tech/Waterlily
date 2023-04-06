@@ -268,6 +268,7 @@ export CONTRACT_ADDRESS=...
 export WALLET_PRIVATE_KEY=...
 export FILESTORE_TOKEN=wGARXp2KbjPrf9wYdLjU
 export FILESTORE_DIRECTORY=/tmp/waterlily-files
+export SQLITE_DATA_FILE=/tmp/waterlily.db
 export RPC_ENDPOINT=https://api.hyperspace.node.glif.io/rpc/v1
 export CHAIN_ID=3141
 export BIND_PORT=3500

@@ -7,13 +7,16 @@ import (
 	"github.com/bacalhau-project/bacalhau/pkg/system"
 	"github.com/bacalhau-project/waterlily/api/pkg/bacalhau"
 	"github.com/bacalhau-project/waterlily/api/pkg/contract"
+	"github.com/bacalhau-project/waterlily/api/pkg/controller"
 	"github.com/bacalhau-project/waterlily/api/pkg/server"
+	"github.com/bacalhau-project/waterlily/api/pkg/store"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
 type AllOptions struct {
+	StoreOptions    store.StoreOptions
 	ServerOptions   server.ServerOptions
 	BacalhauOptions bacalhau.BacalhauOptions
 	ContractOptions contract.ContractOptions
@@ -21,6 +24,9 @@ type AllOptions struct {
 
 func NewAllOptions() *AllOptions {
 	return &AllOptions{
+		StoreOptions: store.StoreOptions{
+			DataFile: getDefaultServeOptionString("SQLITE_DATA_FILE", ""),
+		},
 		ServerOptions: server.ServerOptions{
 			Host:               getDefaultServeOptionString("BIND_HOST", "0.0.0.0"),
 			Port:               getDefaultServeOptionInt("BIND_PORT", 80), //nolint:gomnd
@@ -114,9 +120,33 @@ func serve(cmd *cobra.Command, options *AllOptions) error {
 	ctx, rootSpan := system.NewRootSpan(ctx, system.GetTracer(), "waterlily/api/cmd/serve")
 	defer rootSpan.End()
 
-	server, err := server.NewServer(
-		options.ServerOptions,
-	)
+	bacalhau, err := bacalhau.NewBacalhauClient(options.BacalhauOptions)
+	if err != nil {
+		return err
+	}
+
+	contract, err := contract.NewContract(options.ContractOptions)
+	if err != nil {
+		return err
+	}
+
+	store, err := store.NewSQLiteStore(options.StoreOptions, true)
+	if err != nil {
+		return err
+	}
+
+	controller, err := controller.NewController(controller.ControllerOptions{
+		Bacalhau: bacalhau,
+		Contract: contract,
+		Store:    store,
+	})
+
+	err = controller.Start()
+	if err != nil {
+		return err
+	}
+
+	server, err := server.NewServer(options.ServerOptions, controller)
 	if err != nil {
 		return err
 	}

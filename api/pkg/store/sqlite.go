@@ -16,9 +16,9 @@ import (
 )
 
 type SQLiteStore struct {
-	mtx      sync.RWMutex
-	filepath string
-	db       *sql.DB
+	mtx     sync.RWMutex
+	options StoreOptions
+	db      *sql.DB
 }
 
 type SQLScanner interface {
@@ -26,16 +26,19 @@ type SQLScanner interface {
 }
 
 func NewSQLiteStore(
-	filepath string,
+	options StoreOptions,
 	autoMigrate bool,
 ) (*SQLiteStore, error) {
-	db, err := sql.Open("sqlite", filepath)
+	if options.DataFile == "" {
+		return nil, fmt.Errorf("sqlite filepath cannot be empty")
+	}
+	db, err := sql.Open("sqlite", options.DataFile)
 	if err != nil {
 		return nil, err
 	}
 	store := &SQLiteStore{
-		filepath: filepath,
-		db:       db,
+		options: options,
+		db:      db,
 	}
 	if autoMigrate {
 		err = store.MigrateUp()
@@ -265,7 +268,7 @@ func (d *SQLiteStore) GetMigrations() (*migrate.Migrate, error) {
 	migrations, err := migrate.NewWithSourceInstance(
 		"iofs",
 		files,
-		fmt.Sprintf("sqlite://%s", d.filepath),
+		fmt.Sprintf("sqlite://%s", d.options.DataFile),
 	)
 	if err != nil {
 		return nil, err

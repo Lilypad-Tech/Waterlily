@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/bacalhau-project/bacalhau/pkg/system"
+	"github.com/bacalhau-project/waterlily/api/pkg/controller"
 	"github.com/gorilla/mux"
 )
 
@@ -20,11 +21,13 @@ type ServerOptions struct {
 }
 
 type WaterlilyAPIServer struct {
-	Options ServerOptions
+	Options    ServerOptions
+	Controller *controller.Controller
 }
 
 func NewServer(
 	options ServerOptions,
+	controller *controller.Controller,
 ) (*WaterlilyAPIServer, error) {
 	if options.Host == "" {
 		return nil, fmt.Errorf("host is required")
@@ -43,7 +46,8 @@ func NewServer(
 	}
 
 	return &WaterlilyAPIServer{
-		Options: options,
+		Options:    options,
+		Controller: controller,
 	}, nil
 }
 

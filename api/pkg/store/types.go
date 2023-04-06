@@ -16,10 +16,14 @@ type ListArtistImagesQuery struct {
 }
 
 type Store interface {
-	ListArtists(ctx context.Context, query ListArtistsQuery) ([]types.Artist, error)
-	GetArtist(ctx context.Context, id int) (types.Artist, error)
+	ListArtists(ctx context.Context, query ListArtistsQuery) ([]*types.Artist, error)
+	GetArtist(ctx context.Context, id string) (*types.Artist, error)
 	AddArtist(ctx context.Context, data types.Artist) error
-	ListImages(ctx context.Context, query ListImagesQuery) ([]types.Image, error)
-	GetImage(ctx context.Context, id int) (types.Image, error)
+	ListImages(ctx context.Context, query ListImagesQuery) ([]*types.Image, error)
+	GetImage(ctx context.Context, id int) (*types.Image, error)
 	AddImage(ctx context.Context, data types.Image) error
+}
+
+type StoreOptions struct {
+	DataFile string
 }
