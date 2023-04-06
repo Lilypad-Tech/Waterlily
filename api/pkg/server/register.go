@@ -119,13 +119,14 @@ func (apiServer *WaterlilyAPIServer) register(res http.ResponseWriter, req *http
 			Avatar:          avatar,
 		}
 
-		// _ := types.Artist{
-		// 	UniqueCode:    artistid,
-		// 	BacalhauState: types.BacalhauStateCreated,
-		// 	ContractState: types.ContractStateNone,
-		// }
+		artist := types.Artist{
+			ID:            artistid,
+			BacalhauState: types.BacalhauStateCreated,
+			ContractState: types.ContractStateNone,
+			Data:          artistData,
+		}
 
-		err = json.NewEncoder(res).Encode(artistData)
+		err = json.NewEncoder(res).Encode(artist)
 		if err != nil {
 			return err
 		}
