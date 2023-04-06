@@ -15,15 +15,10 @@ import {
   Stepper,
   Step,
   StepLabel,
-  InputAdornment,
-  Tooltip,
   Snackbar,
   Alert,
 } from '@mui/material';
-import {md5} from 'pure-md5';
-import { DescriptionOutlined, WalletOutlined } from '@mui/icons-material';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { md5 } from 'pure-md5';
 import {
   useNavigation,
   defaultWalletState,
@@ -64,20 +59,21 @@ import {
   stepButtonWrapper,
 } from '@/styles';
 
-const TEST_ARTIST_ID = 'd2afcf0fa6416970c84c7ea9bde90d16'
+const TEST_ARTIST_ID = 'd2afcf0fa6416970c84c7ea9bde90d16';
 const adminAddress = process.env.NEXT_PUBLIC_ADMIN_WALLET;
 
 const ArtistSignup: React.FC<{}> = () => {
   const { handleNavigation } = useNavigation();
   const { walletState = defaultWalletState.walletState } =
     useContext(WalletContext);
-  const { registerArtistWithContract, submitArtistFormToAPI } = useContext(ContractContext);
+  const { registerArtistWithContract, submitArtistFormToAPI } =
+    useContext(ContractContext);
   const {
     snackbar,
     closeSnackbar,
     statusState = defaultStatusState.statusState,
   } = useContext(StatusContext);
-  
+
   const [activeStep, setActiveStep] = useState(0);
 
   const validateFormInput = async (values: FormData) => {
@@ -101,7 +97,8 @@ const ArtistSignup: React.FC<{}> = () => {
       values.periodEnd.getFullYear() === new Date().getFullYear()
         ? 'current'
         : values.periodEnd.getFullYear().toString();
-    const { periodStart, periodEnd, images, avatar, thumbnails, ...rest } = values;
+    const { periodStart, periodEnd, images, avatar, thumbnails, ...rest } =
+      values;
     return {
       data: {
         period: `${periodStartYear} - ${periodEndYear}`,
@@ -110,7 +107,7 @@ const ArtistSignup: React.FC<{}> = () => {
       images,
       avatar,
       thumbnails,
-    }
+    };
   };
 
   //form functions
@@ -123,11 +120,22 @@ const ArtistSignup: React.FC<{}> = () => {
       //2. Format the inputs as needed
       const formattedValues = formatFormInput(values);
       //3. Create the artistId (also creates a cid of the metadata)
-      const artistId: string = md5(formattedValues.data.name + formattedValues.data.email + new Date().getTime());
+      //TODO - change back to web3storage
+      const artistId: string = md5(
+        formattedValues.data.name +
+          formattedValues.data.email +
+          new Date().getTime()
+      );
       if (!artistId) throw Error('Could not create artist ID');
       //await registerArtistWithContract(artistId)
       //await submitArtistFormToAPI(artistId, formattedValues.data, formattedValues.images, (formattedValues.avatar || []) as File[], formattedValues.thumbnails)
-      await submitArtistFormToAPI(TEST_ARTIST_ID, formattedValues.data, formattedValues.images, (formattedValues.avatar || []) as File[], formattedValues.thumbnails)
+      await submitArtistFormToAPI(
+        TEST_ARTIST_ID,
+        formattedValues.data,
+        formattedValues.images,
+        (formattedValues.avatar || []) as File[],
+        formattedValues.thumbnails
+      );
     } catch (err) {
       // TODO: handle error and show in UI
       console.log(err);
