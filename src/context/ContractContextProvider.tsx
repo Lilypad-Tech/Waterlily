@@ -31,9 +31,7 @@ import {
 import WaterlilyABI from '../abi/ArtistAttribution.sol/ArtistAttribution.json';
 import WaterlilyNFTABI from '../abi/WaterlilyNFT.sol/WaterlilyNFT.json';
 
-import {
-  getAPIServer
-} from '../definitions/network';
+import { getAPIServer } from '../definitions/network';
 
 /* ContractContext */
 enum AccessType {
@@ -52,11 +50,17 @@ interface ContractContextValue {
   contractState?: ContractState;
   setContractState: Dispatch<SetStateAction<ContractState>>;
   customerImages: any[];
-  artistCost: BigNumber,
-  imageCost: BigNumber,
+  artistCost: BigNumber;
+  imageCost: BigNumber;
   runStableDiffusionJob: (prompt: string, artistId: string) => Promise<void>;
   registerArtistWithContract: (artistId: string) => Promise<void>;
-  submitArtistFormToAPI: (artistid: string, data: any, images: File[], avatar: File[], thumbnails: File[]) => Promise<void>;
+  submitArtistFormToAPI: (
+    artistid: string,
+    data: any,
+    images: File[],
+    avatar: File[],
+    thumbnails: File[]
+  ) => Promise<void>;
   mintNFT: (image: { link: string; alt: string }) => Promise<void>;
 }
 
@@ -126,8 +130,8 @@ export const ContractContextProvider = ({
         walletState.accounts[0]
       );
 
-      const imageCost = await connectedContract?.getImageCost()
-      const artistCost = await connectedContract?.getArtistCost()
+      const imageCost = await connectedContract?.getImageCost();
+      const artistCost = await connectedContract?.getArtistCost();
       if (!imageIDs) return;
       console.log('Fetched imageIDs', imageIDs);
       const images = await bluebird.map(imageIDs, async (id: any) => {
@@ -231,7 +235,7 @@ export const ContractContextProvider = ({
       return;
     }
 
-    const imageCost = await connectedContract.getImageCost()
+    const imageCost = await connectedContract.getImageCost();
 
     try {
       console.log('Calling stable diffusion function...');
@@ -269,7 +273,9 @@ export const ContractContextProvider = ({
       console.log(JSON.stringify(receipt, null, 4));
       console.dir('Receipt:', receipt);
 
-      const [jobEvent] = receipt.logs.map((log: any) => connectedContract.interface.parseLog(log));
+      const [jobEvent] = receipt.logs.map((log: any) =>
+        connectedContract.interface.parseLog(log)
+      );
       const [job] = jobEvent.args;
       const [imageID] = job;
       console.dir('Image ID:', imageID.toNumber());
@@ -407,7 +413,8 @@ export const ContractContextProvider = ({
 
     setStatusState({
       ...defaultStatusState.statusState,
-      isLoading: 'Submitting your Artist Information to the Smart Contract on the FVM network ...',
+      isLoading:
+        'Submitting your Artist Information to the Smart Contract on the FVM network ...',
       isMessage: true,
       message: {
         title: 'Waiting for user to confirm wallet payment',
@@ -426,7 +433,7 @@ export const ContractContextProvider = ({
       return;
     }
 
-    const artistCost = await connectedContract.getArtistCost()
+    const artistCost = await connectedContract.getArtistCost();
 
     try {
       const tx = await connectedContract.CreateArtist(artistid, '', {
@@ -480,7 +487,8 @@ export const ContractContextProvider = ({
           description: (
             <>
               <div>
-                Please be patient... This takes a few hours or so depending on demand.
+                Please be patient... This takes a few hours or so depending on
+                demand.
               </div>
               <a
                 href={`${network.blockExplorer}${tx.hash}`}
@@ -490,7 +498,6 @@ export const ContractContextProvider = ({
                 Check Transaction in block explorer
               </a>
             </>
-            
           ), //receipt.transactionHash
         },
       }));
@@ -524,32 +531,37 @@ export const ContractContextProvider = ({
     }
   };
 
-  const submitArtistFormToAPI = async (artistid: string, data: any, images: File[], avatar: File[], thumbnails: File[]) => {
+  const submitArtistFormToAPI = async (
+    artistid: string,
+    data: any,
+    images: File[],
+    avatar: File[],
+    thumbnails: File[]
+  ) => {
     try {
-
-      const url = getAPIServer('/register')
+      const url = getAPIServer('/register');
 
       data.artistid = artistid;
 
       const formData = new FormData();
-      Object.keys(data).forEach(key => {
+      Object.keys(data).forEach((key) => {
         formData.append(key, data[key]);
-      })
-      images.forEach(image => {
+      });
+      images.forEach((image) => {
         formData.append('images', image);
       });
-      avatar.forEach(image => {
+      avatar.forEach((image) => {
         formData.append('avatar', image);
       });
-      thumbnails.forEach(image => {
+      thumbnails.forEach((image) => {
         formData.append('thumbnails', image);
       });
 
       await axios.post(url, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data' // set the content type header
-        }
-      })
+          'Content-Type': 'multipart/form-data', // set the content type header
+        },
+      });
 
       setSnackbar({
         type: 'success',
@@ -559,14 +571,16 @@ export const ContractContextProvider = ({
 
       setStatusState((prevState) => ({
         ...prevState,
-        isLoading: 'Form submitted - now training your AI model on your images on Bacalhau...!',
+        isLoading:
+          'Form submitted - now training your AI model on your images on Bacalhau...!',
         isMessage: true,
         message: {
           title: `Form submitted - now training your AI model on your images on Bacalhau...!`,
           description: (
             <>
               <div>
-                Please be patient... This takes a few hours or so depending on demand.
+                Please be patient... This takes a few hours or so depending on
+                demand.
               </div>
               <a
                 href={`${network.blockExplorer}${txHash}`}
@@ -576,7 +590,6 @@ export const ContractContextProvider = ({
                 Check Transaction in block explorer
               </a>
             </>
-            
           ), //receipt.transactionHash
         },
       }));
@@ -603,7 +616,7 @@ export const ContractContextProvider = ({
         isError: true,
         isMessage: true,
         message: {
-          title: errorMessage,
+          title: 'Error uploading to server',
           description: <span>{errorMessage}</span>,
         },
       }));
@@ -802,9 +815,6 @@ export const ContractContextProvider = ({
       },
     }));
   };
-
-  
-
 
   //THESE GO LAST
   const contractContextValue: ContractContextValue = {

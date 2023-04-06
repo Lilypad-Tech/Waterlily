@@ -134,7 +134,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
   const { network } = useContext(NetworkContext);
   const { walletState = defaultWalletState.walletState } =
     useContext(WalletContext);
-  const { setStatusState } = useContext(StatusContext);
+  const { setStatusState, setSnackbar } = useContext(StatusContext);
   const { findArtistById } = useContext(ArtistContext);
 
   const [imageState, setImageState] = useState<ImageState>(
@@ -375,17 +375,50 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
   }) => {
     const Web3StorageClient: Web3Storage = getWeb3StorageClient();
     if (!Web3StorageClient) {
-      console.log('No nft.storage client');
+      console.log('No web3.storage client');
+      setStatusState({
+        ...defaultStatusState.statusState,
+        isError: 'No storage client found',
+      });
+      setSnackbar({
+        type: 'error',
+        open: true,
+        message: 'No web3.storage client found',
+      });
       return '';
     }
     try {
+      setStatusState({
+        ...defaultStatusState.statusState,
+        isLoading: `Creating ${values.name} artist identifier on IPFS`,
+      });
       const blob = new Blob([JSON.stringify(values)]);
+      if (!blob) throw new Error('Error creating blob for artistId');
       const file = [new File([blob], `${values?.name}.json`)];
+      if (!file) throw new Error('Error creating file for artistId');
       console.log('file', file);
       const cid = await Web3StorageClient.put(file);
+      if (!cid) throw new Error('Error creating artistId');
+      setStatusState({
+        ...defaultStatusState.statusState,
+      });
+      setSnackbar({
+        type: 'success',
+        open: true,
+        message: 'Created Artist id successfully',
+      });
       return cid;
-    } catch (err) {
+    } catch (err: any) {
       console.log('web3storage error', err);
+      setStatusState({
+        ...defaultStatusState.statusState,
+        isError: err?.message || 'No storage client found',
+      });
+      setSnackbar({
+        type: 'error',
+        open: true,
+        message: err.message || 'No storage client found',
+      });
       return '';
     }
   };

@@ -70,7 +70,9 @@ const ArtistSignup: React.FC<{}> = () => {
     snackbar,
     closeSnackbar,
     statusState = defaultStatusState.statusState,
+    setStatusState,
   } = useContext(StatusContext);
+  const { createArtistId } = useContext(ImageContext);
 
   const [activeStep, setActiveStep] = useState(0);
 
@@ -90,7 +92,6 @@ const ArtistSignup: React.FC<{}> = () => {
 
   const formatFormInput = (values: FormData) => {
     const periodStartYear = values.periodStart.getFullYear().toString();
-    // const currentYear = new Date().getFullYear();
     const periodEndYear =
       values.periodEnd.getFullYear() === new Date().getFullYear()
         ? 'current'
@@ -110,7 +111,12 @@ const ArtistSignup: React.FC<{}> = () => {
 
   //form functions
   const handleFormSubmit = async (values: FormData) => {
+    event?.preventDefault();
     console.log(values);
+    setStatusState({
+      ...defaultStatusState.statusState,
+      isLoading: `Thankyou! Validating your form ${values.name}!`,
+    });
     try {
       //1. Validate inputs
       const isValid = await validateFormInput(values);
@@ -119,11 +125,14 @@ const ArtistSignup: React.FC<{}> = () => {
       const formattedValues = formatFormInput(values);
       //3. Create the artistId (also creates a cid of the metadata)
       //TODO - change back to web3storage
-      const artistId: string = md5(
-        formattedValues.data.name +
-          formattedValues.data.email +
-          new Date().getTime()
-      );
+      const { images, ...cidData } = formattedValues;
+      const artistId = await createArtistId(cidData);
+      console.log('formattedValues', formattedValues);
+      // const artistId: string = md5(
+      //   formattedValues.data.name +
+      //     formattedValues.data.email +
+      //     new Date().getTime()
+      // );
       if (!artistId) throw Error('Could not create artist ID');
       //await registerArtistWithContract(artistId)
       //await submitArtistFormToAPI(artistId, formattedValues.data, formattedValues.images, (formattedValues.avatar || []) as File[], formattedValues.thumbnails)
@@ -133,10 +142,21 @@ const ArtistSignup: React.FC<{}> = () => {
         formattedValues.images,
         (formattedValues.avatar || []) as File[],
         formattedValues.thumbnails
-      );
-    } catch (err) {
+      ); // ??
+    } catch (err: any) {
       // TODO: handle error and show in UI
       console.log(err);
+      setStatusState({
+        ...defaultStatusState.statusState,
+        isError: true,
+        isMessage: true,
+        message: {
+          title: 'Something went wrong',
+          description: (
+            <Box>{err.message || 'Error Submitting Artist Details'}</Box>
+          ),
+        },
+      });
     }
   };
 
@@ -175,7 +195,7 @@ const ArtistSignup: React.FC<{}> = () => {
           validationSchema={formValidationSchema}
           // validateOnChange
           validateOnBlur
-          onSubmit={handleFormSubmit}
+          onSubmit={handleFormSubmit} //FIX THIS so it doesn't auto reset. (for failures)
         >
           {(formik, { errors, touched, handleSubmit, isValid } = formik) => (
             <Box
@@ -217,7 +237,7 @@ const ArtistSignup: React.FC<{}> = () => {
                     color="primary"
                     type="submit"
                     // disabled={formik.actions.isSubmitting}
-                    disabled={Boolean(!isValid)}
+                    disabled={Boolean(!isValid) || statusState.isLoading}
                   >
                     Submit
                   </Button>
