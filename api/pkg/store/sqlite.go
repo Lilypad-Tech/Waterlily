@@ -62,8 +62,8 @@ func scanArtist(scanner SQLScanner) (*types.Artist, error) {
 	var bacalhauStateString string
 	var contractStateString string
 	var artistDataString string
-	artist := &types.Artist{}
-	err := scanner.Scan(artist.ID, artist.Created, artist.BacalhauTrainingID, &bacalhauStateString, &contractStateString, &artistDataString)
+	artist := types.Artist{}
+	err := scanner.Scan(&artist.ID, &artist.Created, &artist.BacalhauTrainingID, &bacalhauStateString, &contractStateString, &artistDataString)
 	if err != nil {
 		return nil, err
 	}
@@ -87,14 +87,14 @@ func scanArtist(scanner SQLScanner) (*types.Artist, error) {
 
 	artist.Data = artistData
 
-	return artist, nil
+	return &artist, nil
 }
 
 func scanImage(scanner SQLScanner) (*types.Image, error) {
 	var bacalhauStateString string
 	var contractStateString string
-	image := &types.Image{}
-	err := scanner.Scan(image.ID, image.Created, image.BacalhauInferenceID, &bacalhauStateString, &contractStateString, &image.Artist, &image.Prompt)
+	image := types.Image{}
+	err := scanner.Scan(&image.ID, &image.Created, &image.BacalhauInferenceID, &bacalhauStateString, &contractStateString, &image.Artist, &image.Prompt)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +110,7 @@ func scanImage(scanner SQLScanner) (*types.Image, error) {
 	image.BacalhauState = bacalhauState
 	image.ContractState = contractState
 
-	return image, nil
+	return &image, nil
 }
 
 func (d *SQLiteStore) ListArtists(ctx context.Context, query ListArtistsQuery) ([]*types.Artist, error) {
@@ -152,7 +152,7 @@ func (d *SQLiteStore) GetArtist(ctx context.Context, id string) (*types.Artist, 
 select
 	id, created, bacalhau_training_id, bacalhau_state, contract_state, data
 from
-	useraccount
+	artist
 where
 	unique_code = $1
 `, id)

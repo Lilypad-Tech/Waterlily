@@ -30,6 +30,7 @@ func NewAllOptions() *AllOptions {
 		ServerOptions: server.ServerOptions{
 			Host:               getDefaultServeOptionString("BIND_HOST", "0.0.0.0"),
 			Port:               getDefaultServeOptionInt("BIND_PORT", 80), //nolint:gomnd
+			AppURL:             getDefaultServeOptionString("APP_URL", ""),
 			FilestoreToken:     getDefaultServeOptionString("FILESTORE_TOKEN", ""),
 			FilestoreDirectory: getDefaultServeOptionString("FILESTORE_DIRECTORY", ""),
 		},
@@ -66,6 +67,10 @@ func newServeCmd() *cobra.Command {
 	serveCmd.PersistentFlags().IntVar(
 		&allOptions.ServerOptions.Port, "port", allOptions.ServerOptions.Port,
 		`The port to bind the api server to.`,
+	)
+	serveCmd.PersistentFlags().StringVar(
+		&allOptions.ServerOptions.AppURL, "app-url", allOptions.ServerOptions.AppURL,
+		`The URL the api server is listening on (used for image URLs).`,
 	)
 	serveCmd.PersistentFlags().StringVar(
 		&allOptions.ServerOptions.FilestoreToken, "filestore-token", allOptions.ServerOptions.FilestoreToken,

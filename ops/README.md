@@ -272,6 +272,7 @@ export SQLITE_DATA_FILE=/tmp/waterlily.db
 export RPC_ENDPOINT=https://api.hyperspace.node.glif.io/rpc/v1
 export CHAIN_ID=3141
 export BIND_PORT=3500
+export APP_URL=http://localhost:3500
 ```
 
 Create filestore dir:

@@ -18,6 +18,7 @@ type ServerOptions struct {
 	Port               int
 	FilestoreToken     string
 	FilestoreDirectory string
+	AppURL             string
 }
 
 type WaterlilyAPIServer struct {
@@ -40,6 +41,9 @@ func NewServer(
 	}
 	if options.FilestoreDirectory == "" {
 		return nil, fmt.Errorf("filestore directory is required")
+	}
+	if options.AppURL == "" {
+		return nil, fmt.Errorf("app url is required")
 	}
 	if _, err := os.Stat(options.FilestoreDirectory); os.IsNotExist(err) {
 		return nil, fmt.Errorf("filestore directory does not exist: %s", options.FilestoreDirectory)
