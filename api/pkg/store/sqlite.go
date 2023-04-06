@@ -154,7 +154,7 @@ select
 from
 	artist
 where
-	unique_code = $1
+	id = $1
 `, id)
 	artist, err := scanArtist(row)
 	if err != nil {

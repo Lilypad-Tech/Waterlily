@@ -57,7 +57,7 @@ import {
   stepButtonWrapper,
 } from '@/styles';
 
-const TEST_ARTIST_ID = 'd2afcf0fa6416970c84c7ea9bde90d16';
+const TEST_ARTIST_ID = 'bafybeigzcrdmnjb2rtnradex62vkfenm764iud64lzpzjqhbzfg7gho6za';
 const adminAddress = process.env.NEXT_PUBLIC_ADMIN_WALLET;
 
 const ArtistSignup: React.FC<{}> = () => {
@@ -134,15 +134,14 @@ const ArtistSignup: React.FC<{}> = () => {
       //     new Date().getTime()
       // );
       if (!artistId) throw Error('Could not create artist ID');
-      //await registerArtistWithContract(artistId)
-      //await submitArtistFormToAPI(artistId, formattedValues.data, formattedValues.images, (formattedValues.avatar || []) as File[], formattedValues.thumbnails)
+      await registerArtistWithContract(artistId)
       await submitArtistFormToAPI(
-        TEST_ARTIST_ID,
+        artistId,
         formattedValues.data,
         formattedValues.images,
         (formattedValues.avatar || []) as File[],
         formattedValues.thumbnails
-      ); // ??
+      );
     } catch (err: any) {
       // TODO: handle error and show in UI
       console.log(err);

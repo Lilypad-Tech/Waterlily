@@ -315,3 +315,11 @@ sudo systemctl status nginx
 sudo certbot --nginx -d staging.api.waterlily.cluster.world
 sudo certbot --nginx -d api.waterlily.cluster.world
 ```
+
+## manage the database
+
+```bash
+gcloud compute ssh artist-vm-0 --zone us-central1-a
+sudo apt install sqlite3
+sqlite3 /data/waterlily/staging/data.db
+```
