@@ -119,7 +119,7 @@ func (apiServer *WaterlilyAPIServer) register(res http.ResponseWriter, req *http
 			Avatar:          avatar,
 		}
 
-		artist := types.Artist{
+		_ := types.Artist{
 			UniqueCode:    artistid,
 			BacalhauState: types.BacalhauStateCreated,
 			ContractState: types.ContractStateNone,
