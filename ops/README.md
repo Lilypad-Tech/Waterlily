@@ -322,6 +322,8 @@ sudo certbot --nginx -d api.waterlily.cluster.world
 gcloud compute ssh artist-vm-0 --zone us-central1-a
 sudo apt install sqlite3
 sqlite3 /data/waterlily/staging/data.db
+.tables
+select * from artist;
 ```
 
 ## todo

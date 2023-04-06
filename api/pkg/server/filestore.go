@@ -35,8 +35,13 @@ func (apiServer *WaterlilyAPIServer) filestoreUpload(w http.ResponseWriter, r *h
 		return
 	}
 
+	path := r.URL.Query().Get("path")
+	if path == "" {
+		http.Error(w, "you must provide a path", http.StatusUnauthorized)
+		return
+	}
 	// the folder we should put this image into
-	uploadDir, err := apiServer.ensureFilestorePath(r.FormValue("path"))
+	uploadDir, err := apiServer.ensureFilestorePath(path)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

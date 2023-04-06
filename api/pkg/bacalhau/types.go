@@ -19,3 +19,17 @@ type Bacalhau interface {
 		jobID string,
 	) (types.BacalhauState, error)
 }
+
+type TrainingSpecOptions struct {
+	ArtistID          string
+	ImagesDownloadURL string
+	WeightsUploadURL  string
+}
+
+type InferenceSpecOptions struct {
+	ArtistID           string
+	Prompt             string
+	ImageID            int
+	WeightsDownloadURL string
+	ImagesUploadURL    string
+}

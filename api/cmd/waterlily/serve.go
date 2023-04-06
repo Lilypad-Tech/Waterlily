@@ -16,21 +16,24 @@ import (
 )
 
 type AllOptions struct {
-	StoreOptions    store.StoreOptions
-	ServerOptions   server.ServerOptions
-	BacalhauOptions bacalhau.BacalhauOptions
-	ContractOptions contract.ContractOptions
+	ControllerOptions controller.ControllerOptions
+	StoreOptions      store.StoreOptions
+	ServerOptions     server.ServerOptions
+	BacalhauOptions   bacalhau.BacalhauOptions
+	ContractOptions   contract.ContractOptions
 }
 
 func NewAllOptions() *AllOptions {
 	return &AllOptions{
+		ControllerOptions: controller.ControllerOptions{
+			AppURL: getDefaultServeOptionString("APP_URL", ""),
+		},
 		StoreOptions: store.StoreOptions{
 			DataFile: getDefaultServeOptionString("SQLITE_DATA_FILE", ""),
 		},
 		ServerOptions: server.ServerOptions{
 			Host:               getDefaultServeOptionString("BIND_HOST", "0.0.0.0"),
 			Port:               getDefaultServeOptionInt("BIND_PORT", 80), //nolint:gomnd
-			AppURL:             getDefaultServeOptionString("APP_URL", ""),
 			FilestoreToken:     getDefaultServeOptionString("FILESTORE_TOKEN", ""),
 			FilestoreDirectory: getDefaultServeOptionString("FILESTORE_DIRECTORY", ""),
 		},
@@ -61,16 +64,16 @@ func newServeCmd() *cobra.Command {
 	}
 
 	serveCmd.PersistentFlags().StringVar(
+		&allOptions.ControllerOptions.AppURL, "app-url", allOptions.ControllerOptions.AppURL,
+		`The URL the api server is listening on (used for image URLs).`,
+	)
+	serveCmd.PersistentFlags().StringVar(
 		&allOptions.ServerOptions.Host, "host", allOptions.ServerOptions.Host,
 		`The host to bind the api server to.`,
 	)
 	serveCmd.PersistentFlags().IntVar(
 		&allOptions.ServerOptions.Port, "port", allOptions.ServerOptions.Port,
 		`The port to bind the api server to.`,
-	)
-	serveCmd.PersistentFlags().StringVar(
-		&allOptions.ServerOptions.AppURL, "app-url", allOptions.ServerOptions.AppURL,
-		`The URL the api server is listening on (used for image URLs).`,
 	)
 	serveCmd.PersistentFlags().StringVar(
 		&allOptions.ServerOptions.FilestoreToken, "filestore-token", allOptions.ServerOptions.FilestoreToken,
@@ -141,9 +144,11 @@ func serve(cmd *cobra.Command, options *AllOptions) error {
 	}
 
 	controller, err := controller.NewController(controller.ControllerOptions{
-		Bacalhau: bacalhau,
-		Contract: contract,
-		Store:    store,
+		AppURL:         options.ControllerOptions.AppURL,
+		FilestoreToken: options.ServerOptions.FilestoreToken,
+		Bacalhau:       bacalhau,
+		Contract:       contract,
+		Store:          store,
 	})
 
 	err = controller.Start(ctx)
