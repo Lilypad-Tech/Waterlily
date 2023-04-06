@@ -12,7 +12,10 @@ import (
 	sync "github.com/bacalhau-project/golang-mutex-tracer"
 	"github.com/bacalhau-project/waterlily/api/pkg/types"
 	"github.com/golang-migrate/migrate/v4"
+
+	_ "github.com/golang-migrate/migrate/v4/database/sqlite"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
+	_ "modernc.org/sqlite"
 )
 
 type SQLiteStore struct {

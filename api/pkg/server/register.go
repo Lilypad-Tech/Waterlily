@@ -100,30 +100,36 @@ func (apiServer *WaterlilyAPIServer) register(res http.ResponseWriter, req *http
 			avatar = avatars[0]
 		}
 
-		artistData := types.ArtistData{
-			Period:          req.FormValue("period"),
-			Name:            req.FormValue("name"),
-			Email:           req.FormValue("email"),
-			WalletAddress:   req.FormValue("walletAddress"),
-			Nationality:     req.FormValue("nationality"),
-			Biography:       req.FormValue("biography"),
-			Category:        req.FormValue("category"),
-			Style:           req.FormValue("style"),
-			Tags:            req.FormValue("tags"),
-			Portfolio:       req.FormValue("portfolio"),
-			OriginalArt:     originalArt,
-			TrainingConsent: trainingConsent,
-			LegalContent:    legalContent,
-			ArtistType:      req.FormValue("artistType"),
-			Thumbnails:      thumbnails,
-			Avatar:          avatar,
-		}
-
-		artist := types.Artist{
+		err = apiServer.Controller.Store.AddArtist(req.Context(), types.Artist{
 			ID:            artistid,
 			BacalhauState: types.BacalhauStateCreated,
 			ContractState: types.ContractStateNone,
-			Data:          artistData,
+			Data: types.ArtistData{
+				Period:          req.FormValue("period"),
+				Name:            req.FormValue("name"),
+				Email:           req.FormValue("email"),
+				WalletAddress:   req.FormValue("walletAddress"),
+				Nationality:     req.FormValue("nationality"),
+				Biography:       req.FormValue("biography"),
+				Category:        req.FormValue("category"),
+				Style:           req.FormValue("style"),
+				Tags:            req.FormValue("tags"),
+				Portfolio:       req.FormValue("portfolio"),
+				OriginalArt:     originalArt,
+				TrainingConsent: trainingConsent,
+				LegalContent:    legalContent,
+				ArtistType:      req.FormValue("artistType"),
+				Thumbnails:      thumbnails,
+				Avatar:          avatar,
+			},
+		})
+		if err != nil {
+			return err
+		}
+
+		artist, err := apiServer.Controller.Store.GetArtist(req.Context(), artistid)
+		if err != nil {
+			return err
 		}
 
 		err = json.NewEncoder(res).Encode(artist)

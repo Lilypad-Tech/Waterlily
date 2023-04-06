@@ -16,14 +16,14 @@ create table artist (
   -- running - we've got a bacalhau job id and the job is running
   -- complete - we've completed the job with no error
   -- error - the job has errored
-  bacalhau_state text check(state in ('created', 'running', 'complete', 'error')) not null default 'created',
+  bacalhau_state text check(bacalhau_state in ('created', 'running', 'complete', 'error')) not null default 'created',
   -- the state of us writing the result back to the contract
   -- none - we are waiting for the bacalhau job to complete
   -- complete - we have written the result back to the contract
   -- error - we have errored writing the result back to the contract
-  contract_state text check(state in ('none', 'complete', 'error')) not null default 'none',
+  contract_state text check(contract_state in ('none', 'complete', 'error')) not null default 'none',
   -- this is the JSON representation of the artists data
-  data text not null,
+  data text not null
 );
 
 
@@ -39,12 +39,12 @@ create table image (
   -- running - we've got a bacalhau job id and the job is running
   -- complete - we've completed the job with no error
   -- error - the job has errored
-  bacalhau_state text check(state in ('created', 'running', 'complete', 'error')) not null default 'created',
+  bacalhau_state text check(bacalhau_state in ('created', 'running', 'complete', 'error')) not null default 'created',
   -- the state of us writing the result back to the contract
   -- none - we are waiting for the bacalhau job to complete
   -- complete - we have written the result back to the contract
   -- error - we have errored writing the result back to the contract
-  contract_state text check(state in ('none', 'complete', 'error')) not null default 'none',
+  contract_state text check(contract_state in ('none', 'complete', 'error')) not null default 'none',
   -- details of what artist it is and the prompt
   artist_id varchar(255) not null,
   prompt text not null,

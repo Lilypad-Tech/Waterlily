@@ -34,12 +34,12 @@ func NewAllOptions() *AllOptions {
 			FilestoreDirectory: getDefaultServeOptionString("FILESTORE_DIRECTORY", ""),
 		},
 		BacalhauOptions: bacalhau.BacalhauOptions{
-			Host: getDefaultServeOptionString("BACALHAU_HOST", "ai-art-requester.cluster.world"),
-			Port: getDefaultServeOptionInt("BACALHAU_PORT", 1234),
+			Host: getDefaultServeOptionString("BACALHAU_API_HOST", "ai-art-requester.cluster.world"),
+			Port: getDefaultServeOptionInt("BACALHAU_API_PORT", 1234),
 		},
 		ContractOptions: contract.ContractOptions{
 			Address:     getDefaultServeOptionString("CONTRACT_ADDRESS", ""),
-			PrivateKey:  getDefaultServeOptionString("PRIVATE_KEY", ""),
+			PrivateKey:  getDefaultServeOptionString("WALLET_PRIVATE_KEY", ""),
 			RPCEndpoint: getDefaultServeOptionString("RPC_ENDPOINT", ""),
 			ChainID:     getDefaultServeOptionString("CHAIN_ID", ""),
 		},

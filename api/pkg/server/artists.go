@@ -4,16 +4,18 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/rs/zerolog/log"
+	"github.com/bacalhau-project/waterlily/api/pkg/store"
 )
 
 func (apiServer *WaterlilyAPIServer) artists(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Access-Control-Allow-Origin", "*")
-	var err error
-	data := []interface{}{}
+	data, err := apiServer.Controller.Store.ListArtists(req.Context(), store.ListArtistsQuery{})
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	err = json.NewEncoder(res).Encode(data)
 	if err != nil {
-		log.Ctx(req.Context()).Error().Msgf("error for job totals route: %s", err.Error())
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}
