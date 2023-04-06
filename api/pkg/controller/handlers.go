@@ -90,10 +90,10 @@ func (c *Controller) checkForRunningArtists(ctx context.Context) error {
 		}
 		// the job has errored
 		if jobStatus == types.BacalhauStateError {
-			log.Error().Msgf("Training Job has error - artist: %s, job: %s, error: %s", artist.ID, artist.BacalhauTrainingID, err.Error())
+			log.Error().Msgf("Training Job has error - artist: %s, job: %s, error: %s", artist.ID, artist.BacalhauTrainingID, artist.Error)
 			c.artistBacalhauError(ctx, artist.ID, jobError)
 		} else if jobStatus == types.BacalhauStateComplete {
-			log.Error().Msgf("Training Job is complete: %s, job: %s, error: %s", artist.ID, artist.BacalhauTrainingID, err.Error())
+			log.Error().Msgf("Training Job is complete: %s, job: %s", artist.ID, artist.BacalhauTrainingID)
 			c.artistBacalhauComplete(ctx, artist.ID)
 		}
 	}
