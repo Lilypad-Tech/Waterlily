@@ -5,11 +5,10 @@ enum currentNetworkType {
 
 export const currentNetwork: currentNetworkType = currentNetworkType.Mainnet; //or 'mainnet'
 
-export const DEFAULT_API_SERVER = 'https://api.waterlily.cluster.world'
-
 export const networks = {
   filecoinHyperspace: {
     name: 'Filecoin Hyperspace Testnet',
+    apiServer: 'https://staging.api.waterlily.cluster.world',
     chainId: '0xc45',
     rpc: [
       'https://api.hyperspace.node.glif.io/rpc/v1',
@@ -34,6 +33,7 @@ export const networks = {
   },
   filecoinMainnet: {
     name: 'Filecoin Mainnet',
+    apiServer: 'https://api.waterlily.cluster.world',
     chainId: '0x13a',
     rpc: ['https://api.node.glif.io'],
     // wss: ['wss://wss.node.glif.io/apigw/lotus/rpc/v1'],
@@ -54,6 +54,12 @@ export const networks = {
   },
 };
 
+export const getParam = (field: string = '') => {
+  const urlSearchParams = new URLSearchParams((window as any).location.search);
+  const params = Object.fromEntries(urlSearchParams.entries());
+  return params[field] || ''
+}
+
 export const getNetwork = () => {
   if (typeof window === 'undefined') {
     return networks.filecoinHyperspace;
@@ -61,20 +67,14 @@ export const getNetwork = () => {
   if(window.location && window.location.hostname == 'localhost') {
     return networks.filecoinHyperspace;
   }
-  const urlSearchParams = new URLSearchParams((window as any).location.search);
-  const params = Object.fromEntries(urlSearchParams.entries());
-  let currentNetworkName: string = params.waterlilyNetwork || '';
+  let currentNetworkName: string = getParam('waterlilyNetwork') || '';
   if (currentNetworkName == 'filecoinHyperspace')
     return networks.filecoinHyperspace;
   return networks.filecoinMainnet;
 };
 
 export const getAPIServer = (path: string = '') => {
-  if (typeof window === 'undefined') {
-    return DEFAULT_API_SERVER;
-  }
-  const urlSearchParams = new URLSearchParams((window as any).location.search);
-  const params = Object.fromEntries(urlSearchParams.entries());
-  const host = params.testAPI ? 'http://localhost:3500' : DEFAULT_API_SERVER;
+  const network = getNetwork()
+  const host = getParam('testAPI') ? 'http://localhost:3500' : network.apiServer;
   return `${host}/api/v1${path}`
 };
