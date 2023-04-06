@@ -19,6 +19,7 @@ export * from './Wallet/MyButton';
 export * from './Wallet/WalletButton';
 
 /** Feedback/Status/Helper Components */
+export * from './FeedbackAndStatus/StatusDisplay';
 export * from './FeedbackAndStatus/StatusMessage';
 export * from './FeedbackAndStatus/MessageStatus';
 export * from './FeedbackAndStatus/CalloutMessage';

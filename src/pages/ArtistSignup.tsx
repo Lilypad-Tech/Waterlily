@@ -28,20 +28,18 @@ import {
   ContractContext,
   defaultStatusState,
 } from '@/context';
-import { SectionLayout, HeaderLayout, TitleLayout } from '@/layouts';
+import { HeaderLayout, TitleLayout } from '@/layouts';
 import {
   Subtitle,
   Title,
   WalletButton,
   LinkTo,
-  FormTextField,
-  ErrorMessage,
   PersonalFormDetails,
   ArtFormDetails,
   ImagesFormDetails,
   AdminFormDetails,
   WalletFormDetails,
-  StatusMessage,
+  StatusDisplay,
 } from '@/components';
 import {
   FormData,
@@ -161,11 +159,7 @@ const ArtistSignup: React.FC<{}> = () => {
           <LinkTo text="FAQ Link" arrow={false} />
         </Box>
       </TitleLayout>
-      {statusState.isLoading && (
-        <Box sx={{ paddingTop: '2rem' }}>
-          <StatusMessage />
-        </Box>
-      )}
+      <StatusDisplay />
       {/* Check:
       1. that window.ethereum exists
       2. there's a web3 injected object
