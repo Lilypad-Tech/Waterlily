@@ -71,9 +71,24 @@ func (r *BacalhauClient) GetJobStatus(
 	}
 	if job.State.State.IsTerminal() {
 		if job.State.State == model.JobStateCompleted {
+			errorMessage := ""
+			// let's check to see if the execution was successful
+			for _, execution := range job.State.Executions {
+				if execution.State == model.ExecutionStateCompleted {
+					if execution.RunOutput.ExitCode != 0 {
+						errorMessage = execution.RunOutput.STDERR
+						if errorMessage == "" {
+							errorMessage = fmt.Sprintf("non zero exit code %d", execution.RunOutput.ExitCode)
+						}
+					}
+				}
+			}
+			if errorMessage != "" {
+				return types.BacalhauStateError, fmt.Errorf(errorMessage)
+			}
 			return types.BacalhauStateComplete, nil
 		} else {
-			return types.BacalhauStateError, nil
+			return types.BacalhauStateError, fmt.Errorf("terminal state: %s", job.State.State.String())
 		}
 	}
 	return types.BacalhauStateRunning, nil

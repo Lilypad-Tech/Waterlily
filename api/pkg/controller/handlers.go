@@ -48,7 +48,7 @@ func (c *Controller) checkForNewArtists(ctx context.Context) error {
 				return err
 			}
 			log.Info().Msgf("Bacalhau Job created: %s", jobID)
-			c.artistBacalhauComplete(ctx, artist.ID, jobID)
+			c.artistBacalhauRunning(ctx, artist.ID, jobID)
 		} else {
 			// check if the creation time is > 24 hours
 			// and delete the artist if it is
@@ -73,6 +73,23 @@ func (c *Controller) checkForRunningArtists(ctx context.Context) error {
 	// if the job is errored then update the bacalhau state to "Error"
 	// if the job is complete then update the bacalhau state to "Complete"
 	// if we error getting the state of the job then contunue (and assume network flake)
+	runningArtists, err := c.Store.ListArtists(ctx, store.ListArtistsQuery{
+		OnlyRunning: true,
+	})
+	if err != nil {
+		return err
+	}
+	if len(runningArtists) == 0 {
+		return nil
+	}
+	for _, artist := range runningArtists {
+		jobStatus, err := c.Bacalhau.GetJobStatus(ctx, artist.BacalhauTrainingID)
+		if err != nil {
+			log.Info().Msgf("Error checking job status: %s %s", artist.BacalhauTrainingID, err.Error())
+			continue
+		}
+		log.Info().Msgf("Found job status for artist: %s %s", artist.ID, jobStatus.String())
+	}
 	return nil
 }
 
@@ -150,7 +167,7 @@ func (c *Controller) artistBacalhauError(
 	})
 }
 
-func (c *Controller) artistBacalhauComplete(
+func (c *Controller) artistBacalhauRunning(
 	ctx context.Context,
 	id string,
 	jobID string,
