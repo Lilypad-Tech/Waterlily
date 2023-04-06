@@ -28,8 +28,7 @@ function download_images() {
 
 function run_training() {
   echo "run_training"
-  #python main.py -o "/outputs" -t "$ARTIST_ID" -ts 1000
-  echo "hello world" > /outputs/file.txt
+  python main.py -o "/outputs" -t "$ARTIST_ID" -ts 1000
 }
 
 function upload_weights() {

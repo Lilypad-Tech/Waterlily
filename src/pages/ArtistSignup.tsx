@@ -134,10 +134,10 @@ const ArtistSignup: React.FC<{}> = () => {
       //     new Date().getTime()
       // );
       if (!artistId) throw Error('Could not create artist ID');
-      //await registerArtistWithContract(artistId)
+      await registerArtistWithContract(artistId)
       await submitArtistFormToAPI(
-        //artistId,
-        TEST_ARTIST_ID,
+        artistId,
+        //TEST_ARTIST_ID,
         formattedValues.data,
         formattedValues.images,
         (formattedValues.avatar || []) as File[],

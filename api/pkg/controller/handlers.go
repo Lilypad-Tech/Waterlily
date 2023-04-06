@@ -93,7 +93,7 @@ func (c *Controller) checkForRunningArtists(ctx context.Context) error {
 			log.Error().Msgf("Training Job has error - artist: %s, job: %s, error: %s", artist.ID, artist.BacalhauTrainingID, artist.Error)
 			c.artistBacalhauError(ctx, artist.ID, jobError)
 		} else if jobStatus == types.BacalhauStateComplete {
-			log.Error().Msgf("Training Job is complete: %s, job: %s", artist.ID, artist.BacalhauTrainingID)
+			log.Info().Msgf("Training Job is complete: %s, job: %s", artist.ID, artist.BacalhauTrainingID)
 			c.artistBacalhauComplete(ctx, artist.ID)
 		}
 	}
@@ -225,15 +225,15 @@ func (c *Controller) checkForRunningImages(ctx context.Context) error {
 	for _, image := range runningImages {
 		jobStatus, jobError, err := c.Bacalhau.GetJobStatus(ctx, image.BacalhauInferenceID)
 		if err != nil {
-			log.Info().Msgf("Error checking job status for artist: %s, job: %s, error: %s", image.Artist, image.BacalhauInferenceID, err.Error())
+			log.Info().Msgf("Error checking job status for image: %s, job: %s, error: %s", image.Artist, image.BacalhauInferenceID, err.Error())
 			continue
 		}
 		// the job has errored
 		if jobStatus == types.BacalhauStateError {
-			log.Error().Msgf("Image Job has error - artist: %s, job: %s, error: %s", image.Artist, image.BacalhauInferenceID, err.Error())
+			log.Error().Msgf("Image Job has error - artist: %s, job: %s, error: %s", image.Artist, image.BacalhauInferenceID, image.Error)
 			c.imageBacalhauError(ctx, image.ID, jobError)
 		} else if jobStatus == types.BacalhauStateComplete {
-			log.Error().Msgf("Image Job is complete: %s, job: %s, error: %s", image.Artist, image.BacalhauInferenceID, err.Error())
+			log.Error().Msgf("Image Job is complete: %s, job: %s", image.Artist, image.BacalhauInferenceID)
 			c.imageBacalhauComplete(ctx, image.ID)
 		}
 	}
