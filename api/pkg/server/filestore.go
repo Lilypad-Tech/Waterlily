@@ -1,11 +1,23 @@
 package server
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/gorilla/mux"
+	"github.com/rs/zerolog/log"
 )
+
+func (apiServer *WaterlilyAPIServer) filestoreDownload(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	r.URL.Path = fmt.Sprintf("/%s", vars["path"])
+	log.Info().Msgf("file: %s", vars["path"])
+	fileserver := http.FileServer(http.Dir(apiServer.Options.FilestoreDirectory))
+	fileserver.ServeHTTP(w, r)
+}
 
 func (apiServer *WaterlilyAPIServer) filestoreUpload(w http.ResponseWriter, r *http.Request) {
 	// Parse the multipart form request
@@ -24,10 +36,7 @@ func (apiServer *WaterlilyAPIServer) filestoreUpload(w http.ResponseWriter, r *h
 	}
 
 	// the folder we should put this image into
-	path := r.FormValue("path")
-	uploadDir := filepath.Join(apiServer.Options.FilestoreDirectory, path)
-
-	err = os.MkdirAll(uploadDir, 0755)
+	uploadDir, err := apiServer.ensureFilestorePath(r.FormValue("path"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -57,5 +66,8 @@ func (apiServer *WaterlilyAPIServer) filestoreUpload(w http.ResponseWriter, r *h
 	}
 
 	// Return success
+
+	w.Header().Set("Content-Type", "text/plain") // set the content type to plain text
 	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, "OK")
 }

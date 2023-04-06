@@ -245,8 +245,6 @@ cd hardhat
 npm run compile
 ```
 
-
-
 ## deployment v2
 
 ```bash
@@ -256,4 +254,33 @@ npx hardhat compile
 npx hardhat --network filecoinHyperspace run scripts/deploy.ts
 ARTIST_COST=100 IMAGE_COST=100 ARTIST_COMMISSION=20 \
   npx hardhat --network filecoinHyperspace run scripts/changePrice.ts
+```
+
+Set the address that is printed to the `CONTRACT_ADDRESS` env var inside `.env` or `.env.testnet`.
+
+## dev v2
+
+Export vars:
+
+```bash
+export BACALHAU_API_HOST=ai-art-requester.cluster.world
+export CONTRACT_ADDRESS=...
+export WALLET_PRIVATE_KEY=...
+export FILESTORE_TOKEN=wGARXp2KbjPrf9wYdLjU
+export FILESTORE_DIRECTORY=/tmp/waterlily-files
+export RPC_ENDPOINT=https://api.hyperspace.node.glif.io/rpc/v1
+export CHAIN_ID=3141
+export BIND_PORT=3500
+```
+
+Create filestore dir:
+
+```bash
+mkdir -p $FILESTORE_DIRECTORY
+```
+
+Start server:
+
+```bash
+go run . serve
 ```

@@ -2,15 +2,14 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/bacalhau-project/bacalhau/pkg/system"
 	"github.com/gorilla/mux"
-	"github.com/rs/zerolog/log"
 )
 
 type ServerOptions struct {
@@ -53,9 +52,9 @@ func (apiServer *WaterlilyAPIServer) ListenAndServe(ctx context.Context, cm *sys
 
 	subrouter := router.PathPrefix("/api/v1").Subrouter()
 	subrouter.HandleFunc("/artists", apiServer.artists).Methods("GET")
-	subrouter.HandleFunc("/register", apiServer.artists).Methods("POST")
+	subrouter.HandleFunc("/register", apiServer.register).Methods("POST")
+	subrouter.HandleFunc("/files/{path:.*}", apiServer.filestoreDownload).Methods("GET")
 	subrouter.HandleFunc("/files", apiServer.filestoreUpload).Methods("POST")
-	subrouter.PathPrefix("/files").Handler(http.FileServer(http.Dir(apiServer.Options.FilestoreDirectory)))
 
 	srv := &http.Server{
 		Addr:              fmt.Sprintf("%s:%d", apiServer.Options.Host, apiServer.Options.Port),
@@ -68,14 +67,15 @@ func (apiServer *WaterlilyAPIServer) ListenAndServe(ctx context.Context, cm *sys
 	return srv.ListenAndServe()
 }
 
-func (apiServer *WaterlilyAPIServer) artists(res http.ResponseWriter, req *http.Request) {
-	res.Header().Set("Access-Control-Allow-Origin", "*")
-	var err error
-	data := []interface{}{}
-	err = json.NewEncoder(res).Encode(data)
+func (apiServer *WaterlilyAPIServer) getFilestorePath(path string) string {
+	return filepath.Join(apiServer.Options.FilestoreDirectory, path)
+}
+
+func (apiServer *WaterlilyAPIServer) ensureFilestorePath(path string) (string, error) {
+	fullPath := apiServer.getFilestorePath(path)
+	err := os.MkdirAll(fullPath, 0755)
 	if err != nil {
-		log.Ctx(req.Context()).Error().Msgf("error for job totals route: %s", err.Error())
-		http.Error(res, err.Error(), http.StatusInternalServerError)
-		return
+		return "", err
 	}
+	return fullPath, nil
 }

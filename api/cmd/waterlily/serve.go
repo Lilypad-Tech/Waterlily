@@ -8,6 +8,7 @@ import (
 	"github.com/bacalhau-project/waterlily/api/pkg/bacalhau"
 	"github.com/bacalhau-project/waterlily/api/pkg/contract"
 	"github.com/bacalhau-project/waterlily/api/pkg/server"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
@@ -21,9 +22,10 @@ type AllOptions struct {
 func NewAllOptions() *AllOptions {
 	return &AllOptions{
 		ServerOptions: server.ServerOptions{
-			Host:           getDefaultServeOptionString("BIND_HOST", "0.0.0.0"),
-			Port:           getDefaultServeOptionInt("BIND_PORT", 80), //nolint:gomnd
-			FilestoreToken: getDefaultServeOptionString("FILESTORE_TOKEN", ""),
+			Host:               getDefaultServeOptionString("BIND_HOST", "0.0.0.0"),
+			Port:               getDefaultServeOptionInt("BIND_PORT", 80), //nolint:gomnd
+			FilestoreToken:     getDefaultServeOptionString("FILESTORE_TOKEN", ""),
+			FilestoreDirectory: getDefaultServeOptionString("FILESTORE_DIRECTORY", ""),
 		},
 		BacalhauOptions: bacalhau.BacalhauOptions{
 			Host: getDefaultServeOptionString("BACALHAU_HOST", "ai-art-requester.cluster.world"),
@@ -53,21 +55,53 @@ func newServeCmd() *cobra.Command {
 
 	serveCmd.PersistentFlags().StringVar(
 		&allOptions.ServerOptions.Host, "host", allOptions.ServerOptions.Host,
-		`The host to bind the dashboard server to.`,
+		`The host to bind the api server to.`,
 	)
 	serveCmd.PersistentFlags().IntVar(
 		&allOptions.ServerOptions.Port, "port", allOptions.ServerOptions.Port,
-		`The host to bind the dashboard server to.`,
+		`The port to bind the api server to.`,
 	)
 	serveCmd.PersistentFlags().StringVar(
 		&allOptions.ServerOptions.FilestoreToken, "filestore-token", allOptions.ServerOptions.FilestoreToken,
 		`The secret for the filestore.`,
+	)
+	serveCmd.PersistentFlags().StringVar(
+		&allOptions.ServerOptions.FilestoreDirectory, "filestore-directory", allOptions.ServerOptions.FilestoreDirectory,
+		`The directory for the filestore.`,
+	)
+	serveCmd.PersistentFlags().StringVar(
+		&allOptions.BacalhauOptions.Host, "bacalhau-host", allOptions.BacalhauOptions.Host,
+		`The host to connect the bacalhau api client`,
+	)
+	serveCmd.PersistentFlags().IntVar(
+		&allOptions.BacalhauOptions.Port, "bacalhau-port", allOptions.BacalhauOptions.Port,
+		`The port to connect the bacalhau api client.`,
+	)
+	serveCmd.PersistentFlags().StringVar(
+		&allOptions.ContractOptions.Address, "contract-address", allOptions.ContractOptions.Address,
+		`The host to connect the bacalhau api client`,
+	)
+	serveCmd.PersistentFlags().StringVar(
+		&allOptions.ContractOptions.PrivateKey, "private-key", allOptions.ContractOptions.PrivateKey,
+		`The host to connect the bacalhau api client`,
+	)
+	serveCmd.PersistentFlags().StringVar(
+		&allOptions.ContractOptions.RPCEndpoint, "rpc-endpoint", allOptions.ContractOptions.RPCEndpoint,
+		`The host to connect the bacalhau api client`,
+	)
+	serveCmd.PersistentFlags().StringVar(
+		&allOptions.ContractOptions.ChainID, "chainid", allOptions.ContractOptions.ChainID,
+		`The host to connect the bacalhau api client`,
 	)
 
 	return serveCmd
 }
 
 func serve(cmd *cobra.Command, options *AllOptions) error {
+
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
+
 	// Cleanup manager ensures that resources are freed before exiting:
 	cm := system.NewCleanupManager()
 	defer cm.Cleanup(cmd.Context())
@@ -87,14 +121,14 @@ func serve(cmd *cobra.Command, options *AllOptions) error {
 		return err
 	}
 
+	log.Info().Msgf("Waterlily server listening on %s:%d", options.ServerOptions.Host, options.ServerOptions.Port)
+
 	go func() {
 		err := server.ListenAndServe(ctx, cm)
 		if err != nil {
 			panic(err)
 		}
 	}()
-
-	log.Ctx(ctx).Info().Msgf("Waterlily server listening on %s:%d", options.ServerOptions.Host, options.ServerOptions.Port)
 
 	<-ctx.Done()
 	return nil

@@ -13,6 +13,23 @@ type Image struct {
 	Prompt              string        `json:"prompt"`
 }
 
+type ArtistData struct {
+	Period          string   `json:"period"`
+	Name            string   `json:"name"`
+	Email           string   `json:"email"`
+	WalletAddress   string   `json:"walletAddress"`
+	Nationality     string   `json:"nationality"`
+	Biography       string   `json:"biography"`
+	Category        string   `json:"category"`
+	Style           string   `json:"style"`
+	Tags            []string `json:"tags"`
+	Portfolio       string   `json:"portfolio"`
+	OriginalArt     bool     `json:"originalArt"`
+	TrainingConsent bool     `json:"trainingConsent"`
+	LegalContent    bool     `json:"legalConsent"`
+	ArtistType      string   `json:"artistType"`
+}
+
 type Artist struct {
 	ID                 int           `json:"id"`
 	Created            time.Time     `json:"created"`
@@ -20,7 +37,7 @@ type Artist struct {
 	BacalhauTrainingID string        `json:"bacalhau_training_id"`
 	BacalhauState      BacalhauState `json:"bacalhau_state"`
 	ContractState      ContractState `json:"contract_state"`
-	Data               string        `json:"data"`
+	Data               ArtistData    `json:"data"`
 }
 
 type ArtistImage struct {

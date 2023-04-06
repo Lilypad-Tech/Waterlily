@@ -140,6 +140,7 @@ const ArtistSignup: React.FC<{}> = () => {
       const artistId: string = md5(formattedValues.data.name + formattedValues.data.email + new Date().getTime());
       if (!artistId) throw Error('Could not create artist ID');
       //await registerArtistWithContract(artistId)
+      //await submitArtistFormToAPI(artistId, formattedValues.data, formattedValues.images, (formattedValues.avatar || []) as File[], formattedValues.thumbnails)
       await submitArtistFormToAPI(TEST_ARTIST_ID, formattedValues.data, formattedValues.images, (formattedValues.avatar || []) as File[], formattedValues.thumbnails)
     } catch (err) {
       console.log(err);

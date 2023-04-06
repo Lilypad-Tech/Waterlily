@@ -529,6 +529,8 @@ export const ContractContextProvider = ({
 
       const url = getAPIServer('/register')
 
+      data.artistid = artistid;
+
       const formData = new FormData();
       Object.keys(data).forEach(key => {
         formData.append(key, data[key]);
@@ -557,10 +559,10 @@ export const ContractContextProvider = ({
 
       setStatusState((prevState) => ({
         ...prevState,
-        isLoading: 'Training your AI model on your images on Bacalhau...!',
+        isLoading: 'Form submitted - now training your AI model on your images on Bacalhau...!',
         isMessage: true,
         message: {
-          title: `Training your AI model on your images on Bacalhau...!`,
+          title: `Form submitted - now training your AI model on your images on Bacalhau...!`,
           description: (
             <>
               <div>
