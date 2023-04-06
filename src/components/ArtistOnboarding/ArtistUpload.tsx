@@ -5,7 +5,6 @@ import React, {
   createRef,
   CSSProperties,
   useContext,
-  useEffect,
 } from 'react';
 import Dropzone from 'react-dropzone';
 import {
@@ -18,7 +17,6 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import { ArtistContext } from '@/context';
-import { EnumDeclaration } from 'typescript';
 
 const baseStyle = {
   flex: 1,
@@ -168,7 +166,6 @@ const dropText: {
 };
 
 interface Props {
-  files: File[] | undefined;
   maxFiles: number;
   formik: any;
   name: string;
