@@ -22,12 +22,14 @@ type ArtistData struct {
 	Biography       string   `json:"biography"`
 	Category        string   `json:"category"`
 	Style           string   `json:"style"`
-	Tags            []string `json:"tags"`
+	Tags            string   `json:"tags"`
 	Portfolio       string   `json:"portfolio"`
 	OriginalArt     bool     `json:"originalArt"`
 	TrainingConsent bool     `json:"trainingConsent"`
 	LegalContent    bool     `json:"legalConsent"`
 	ArtistType      string   `json:"artistType"`
+	Avatar          string   `json:"avatar"`
+	Thumbnails      []string `json:"thumbnails"`
 }
 
 type Artist struct {
