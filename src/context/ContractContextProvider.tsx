@@ -235,7 +235,7 @@ export const ContractContextProvider = ({
 
     try {
       console.log('Calling stable diffusion function...');
-      const tx = await connectedContract.StableDiffusion(artistid, prompt, {
+      const tx = await connectedContract.CreateImage(artistid, prompt, {
         value: imageCost,
       });
       console.log('Got the tx hash', tx.hash); // Print the transaction hash
