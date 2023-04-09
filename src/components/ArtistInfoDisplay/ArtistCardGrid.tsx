@@ -36,13 +36,16 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
   const [searchStyle, setSearchStyle] = useState('');
 
   useEffect(() => {
-    const styles = new Set<string>();
-    artists.forEach((artist) => {
-      artist.style.split(',').forEach((style) => {
-        styles.add(style.trim());
+    console.log('artist style', artists, artists.length);
+    if (artists.length > 0) {
+      const styles = new Set<string>();
+      artists.forEach((artist) => {
+        artist.style.split(',').forEach((style) => {
+          styles.add(style.trim());
+        });
       });
-    });
-    setUniqueStyles(Array.from(styles));
+      setUniqueStyles(Array.from(styles));
+    }
   }, [artists]);
 
   const theme = useTheme();
@@ -74,13 +77,17 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-  // useEffect(() => {
-  //   console.log('filteredData', filteredData);
-  // }, [filteredData]);
+  useEffect(() => {
+    console.log('artists', artists);
+  }, [artists]);
 
-  // useEffect(() => {
-  //   console.log('currentData', currentData);
-  // }, [currentData]);
+  useEffect(() => {
+    console.log('filteredData', filteredData);
+  }, [filteredData]);
+
+  useEffect(() => {
+    console.log('currentData', currentData, currentData.length);
+  }, [currentData]);
 
   const handlePageChange = (event: any, value: number) => {
     setCurrentPage(value);
@@ -127,8 +134,11 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
         >
           <MenuItem value="">All Categories</MenuItem>
           {Object.keys(ArtistCategory).map((key) => (
-            <MenuItem key={key} value={ArtistCategory[key]}>
-              {ArtistCategory[key]}
+            <MenuItem
+              key={key}
+              value={ArtistCategory[key as keyof typeof ArtistCategory]}
+            >
+              {ArtistCategory[key as keyof typeof ArtistCategory]}
             </MenuItem>
           ))}
         </TextField>
@@ -148,22 +158,24 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
         </TextField>
       </Box>
       <Grid container>
-        {currentData.map((item: any) => (
-          <Grid item key={item?.name} xs={12} sm={6} md={4} lg={3} xl={2.4}>
-            <ArtistCard
-              artist={item}
-              disabled={statusState.isLoading ? true : false}
-              onClick={() => {
-                setImageArtist({
-                  name: item.name,
-                  key: item.artistId,
-                  style: item.style,
-                });
-                navigate();
-              }}
-            />
-          </Grid>
-        ))}
+        {currentData.length > 0 &&
+          artists.length > 0 &&
+          currentData.map((item: ArtistData) => (
+            <Grid item key={item.name} xs={12} sm={6} md={4} lg={3} xl={2.4}>
+              <ArtistCard
+                artist={item}
+                disabled={statusState.isLoading ? true : false}
+                onClick={() => {
+                  setImageArtist({
+                    name: item.name,
+                    key: item.artistId,
+                    style: item.style,
+                  });
+                  navigate();
+                }}
+              />
+            </Grid>
+          ))}
       </Grid>
       <Box
         sx={{ display: 'flex', padding: '0 2rem', justifyContent: 'flex-end' }}

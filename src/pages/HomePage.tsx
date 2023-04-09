@@ -16,7 +16,6 @@ import {
   Subtitle,
   Description,
   UserInput,
-  ArtistCard,
   WalletButton,
   ImageHeader,
   CalloutMessage,

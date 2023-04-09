@@ -1,4 +1,4 @@
-import { FC, ReactElement, useState, useContext } from 'react';
+import { FC, ReactElement, useState, useContext, useEffect } from 'react';
 import { Watermark } from '@hirohe/react-watermark';
 import {
   Box,
@@ -14,7 +14,6 @@ import {
   Chip,
 } from '@mui/material';
 import { WalletContext, ArtistData } from '@/context';
-import { artists } from '@/definitions';
 
 const boxStyle = {
   display: 'flex',
@@ -38,8 +37,11 @@ export const ArtistCard: FC<ArtistCardProps> = ({
   disabled = false,
   onClick,
 }): ReactElement => {
-  const [expanded, setExpanded] = useState(false);
   const { walletState } = useContext(WalletContext);
+
+  useEffect(() => {
+    console.log('artist', artist);
+  }, []);
 
   const subHeader = () => {
     return (
@@ -92,10 +94,8 @@ export const ArtistCard: FC<ArtistCardProps> = ({
               <CardMedia
                 component="img"
                 // height="250"
-                image={
-                  artist.thumbnails[0]?.link || './monet-water-lilies.jpeg'
-                }
-                alt={artist.thumbnails[0]?.alt || 'Monet Water Lilies'}
+                image={artist.thumbnails[0].link || './monet-water-lilies.jpeg'}
+                alt={artist?.thumbnails[0]?.alt || 'Monet Water Lilies'}
                 sx={{
                   pointerEvents: 'none',
                   border: '1px solid #fff',
@@ -115,15 +115,17 @@ export const ArtistCard: FC<ArtistCardProps> = ({
           <Typography sx={{ padding: 0, paddingBottom: '0.3rem' }}>
             {artist.style || 'Artist Style'}
           </Typography>
-          <Box display="flex" flexWrap="wrap" justifyContent="center">
-            {artist.tags.map((tag) => {
-              return (
-                <Box mr={1} mb={0.5}>
-                  <Chip label={tag} variant="outlined" size="small" />
-                </Box>
-              );
-            })}
-          </Box>
+          {/* <Box display="flex" flexWrap="wrap" justifyContent="center">
+            {artist.tags.length > 0
+              ? artist.tags.map((tag) => {
+                  return (
+                    <Box mr={1} mb={0.5}>
+                      <Chip label={tag} variant="outlined" size="small" />
+                    </Box>
+                  );
+                })
+              : null}
+          </Box> */}
           <Typography variant="body2" color="text.secondary">
             {artist.description || 'Artist Description'}
           </Typography>

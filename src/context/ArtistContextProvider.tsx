@@ -7,9 +7,7 @@ import React, {
 } from 'react';
 import Fuse from 'fuse.js';
 
-import {
-  getAPIServer,
-} from '../definitions/network'
+import { getAPIServer } from '../definitions/network';
 
 export const ArtStyleTags = [
   'Surrealism',
@@ -78,7 +76,7 @@ export enum ArtistCategory {
 }
 
 export interface ArtistData {
-  artistId: string; //how do we keep this hidden...
+  artistId?: string; //how do we keep this hidden...
   artistType: ArtistType;
   name: string;
   category: ArtistCategory;
@@ -89,6 +87,7 @@ export interface ArtistData {
   description: string;
   portfolio: string;
   thumbnails: ArtistThumbnail[]; //art thumbnails for the artist
+  metadata?: { bacalhau_state: string; contract_state: string; error: string };
 }
 
 const defaultArtistData: ArtistData = {
@@ -154,7 +153,29 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
     try {
       const response = await fetch(getAPIServer('/artists'));
       const data = await response.json();
-      setArtistState(data);
+      console.log('artist data fetched', data);
+      //for each to get the data. GRRRRRR
+      let formattedData: ArtistData[] = [];
+      data.forEach((item: any) => {
+        console.log('item', item);
+        let thumbs = item.data.thumbnails.map((thumb: string, i: number) => {
+          return { link: thumb, alt: `${item.name} thumbnail${i}` };
+        });
+        let newItem: ArtistData = {
+          ...item.data,
+          artistId: item.id,
+          metadata: {
+            bacalhau_state: item.bacalhau_state,
+            contract_state: item.contract_state,
+            error: item.error,
+          },
+          thumbnails: thumbs,
+        };
+        formattedData.push(newItem);
+        console.log('newitem', newItem);
+      });
+      setArtistState(formattedData);
+      console.log('artist data set', formattedData);
     } catch (error) {
       console.error(error);
     }
