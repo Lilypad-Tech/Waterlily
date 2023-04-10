@@ -1,5 +1,5 @@
-import { FC, ReactElement, useState, useContext, useEffect } from 'react';
-import { Watermark } from '@hirohe/react-watermark';
+import { FC, ReactElement, useState, useContext, useMemo } from 'react';
+// import { Watermark } from '@hirohe/react-watermark';
 import {
   Box,
   Card,
@@ -10,11 +10,11 @@ import {
   Typography,
   Link,
   Button,
-  Stack,
   Chip,
   MobileStepper,
 } from '@mui/material';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
+import { ArtistModal } from '@/components';
 import { WalletContext, ArtistData } from '@/context';
 
 const boxStyle = {
@@ -23,10 +23,6 @@ const boxStyle = {
   padding: '1rem',
 };
 
-type ImageThumbnail = {
-  link: string;
-  alt: string;
-};
 //TO DO fix this to work off artists definitions
 interface ArtistCardProps {
   artist: ArtistData;
@@ -41,27 +37,52 @@ export const ArtistCard: FC<ArtistCardProps> = ({
 }): ReactElement => {
   const { walletState } = useContext(WalletContext);
   const [activeStep, setActiveStep] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
   const maxSteps = artist.thumbnails.length;
 
-  useEffect(() => {
-    console.log('artist', artist);
-  }, []);
+  const preloadedImages = useMemo(() => {
+    const images = [];
+    for (let i = 0; i < maxSteps; i++) {
+      if (i !== activeStep) {
+        const img = new Image();
+        img.src = artist.thumbnails[i].link;
+        images.push(img);
+      }
+    }
+    return images;
+  }, [artist, activeStep, maxSteps]);
 
-  const subHeader = () => {
-    return (
-      <>
-        <Typography sx={{ padding: 0 }}>
-          {artist.period || 'Unknown'}
-        </Typography>
-        <Typography sx={{ padding: 0 }}>
-          {artist.style || 'Artist Style'}
-        </Typography>
-      </>
-    );
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => {
+      if (prevActiveStep === maxSteps - 1) {
+        return 0;
+      }
+      const nextStep = prevActiveStep + 1;
+      const nextImg = new Image();
+      nextImg.src = artist.thumbnails[nextStep].link;
+      return nextStep;
+    });
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => {
+      if (prevActiveStep === 0) {
+        return maxSteps - 1;
+      }
+      const prevStep = prevActiveStep - 1;
+      const prevImg = new Image();
+      prevImg.src = artist.thumbnails[prevStep].link;
+      return prevStep;
+    });
   };
 
   return (
     <Box sx={boxStyle}>
+      <ArtistModal
+        artist={artist}
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+      />
       <Card sx={{ maxWidth: 300, padding: 0, margin: 0 }}>
         <CardHeader
           title={artist.name || 'Artist Name'}
@@ -95,24 +116,27 @@ export const ArtistCard: FC<ArtistCardProps> = ({
           {/* TODO: link should open a modal with their generated art examples */}
           {/* <Link href={artist.portfolio} target="_blank" rel="noreferrer"> */}
           {/* <Watermark text={artist.name || 'ArtistName'}> */}
-          <CardMedia
-            component="img"
-            // height={210}
-            image={
-              artist.thumbnails[activeStep].link || './monet-water-lilies.jpeg'
-            }
-            alt={artist?.thumbnails[activeStep]?.alt || 'Monet Water Lilies'}
-            sx={{
-              pointerEvents: 'none',
-              '& .MuiCardMedia-img': {
-                border: '1px solid #fff',
-              }, //not working
-              padding: 0,
-              margin: 0,
-              maxHeight: 200,
-              minWidth: 280,
-            }}
-          />
+          <Box onClick={() => setModalOpen(true)}>
+            <CardMedia
+              component="img"
+              // height={210}
+              image={
+                artist.thumbnails[activeStep].link ||
+                './monet-water-lilies.jpeg'
+              }
+              alt={artist?.thumbnails[activeStep]?.alt || 'Monet Water Lilies'}
+              sx={{
+                pointerEvents: 'none',
+                '& .MuiCardMedia-img': {
+                  border: '1px solid #fff',
+                }, //not working
+                padding: 0,
+                margin: 0,
+                maxHeight: 200,
+                minWidth: 280,
+              }}
+            />
+          </Box>
           <MobileStepper
             steps={maxSteps}
             position="static"
@@ -128,9 +152,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
             nextButton={
               <Button
                 size="small"
-                onClick={() =>
-                  setActiveStep((prevActiveStep) => prevActiveStep + 1)
-                }
+                onClick={handleNext}
                 disabled={activeStep === maxSteps - 1}
                 // sx={{ color: 'black' }}
               >
@@ -141,9 +163,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
             backButton={
               <Button
                 size="small"
-                onClick={() =>
-                  setActiveStep((prevActiveStep) => prevActiveStep - 1)
-                }
+                onClick={handleBack}
                 disabled={activeStep === 0}
               >
                 <KeyboardArrowLeft />
@@ -176,7 +196,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
               artist.tags.map((tag) => {
                 if (tag === '') return;
                 return (
-                  <Box mr={1} mb={0.5}>
+                  <Box mr={1} mb={0.5} key={tag}>
                     <Chip label={tag} variant="outlined" size="small" />
                   </Box>
                 );

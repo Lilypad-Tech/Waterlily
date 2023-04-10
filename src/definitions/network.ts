@@ -3,7 +3,7 @@ enum currentNetworkType {
   Mainnet = 'mainnet',
 }
 
-export const currentNetwork: currentNetworkType = currentNetworkType.Mainnet; //or 'mainnet'
+export const currentNetwork: currentNetworkType = currentNetworkType.Testnet; //or 'mainnet'
 
 export const networks = {
   filecoinHyperspace: {
@@ -55,7 +55,10 @@ export const networks = {
 };
 
 export const getParam = (field: string = '') => {
+  console.log('url', window.location.href);
   const urlSearchParams = new URLSearchParams((window as any).location.search);
+  const hasParam = urlSearchParams.has(field);
+  console.log('url hasparam', hasParam);
   const params = Object.fromEntries(urlSearchParams.entries());
   return params[field] || '';
 };

@@ -174,7 +174,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
       await window.ethereum
         .request({ method: 'eth_accounts' })
         .then(async (accounts: string[]) => {
-          console.log('Connected to wallet...');
+          console.log('Connected to wallet...', accounts);
           const chainId = await fetchChainId();
           const balance = await fetchWalletBalance();
           const connected = accounts.length > 0;
@@ -211,6 +211,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
             isConnected: true,
             web3: true,
           });
+          fetchWalletBalance();
         }
       });
       // Subscribe to chainId change
@@ -229,13 +230,16 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
             ...prevState,
             chainId: chainId,
           }));
+          fetchWalletBalance();
         }
       });
       window.ethereum.on(
         'balanceChanged',
         (address: string, balance: ethers.BigNumber) => {
           console.log('Balance Changed', address, balance);
-          setWalletState({ ...walletState, balance });
+          const formattedBalance = ethers.utils.formatEther(balance);
+          const balanceNumber = parseFloat(formattedBalance);
+          setWalletState({ ...walletState, balance: balanceNumber });
         }
       );
       window.ethereum.on('transactionHash', (hash: string) => {
@@ -250,9 +254,14 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
     if (!window.ethereum || !walletState.accounts[0]) {
       return 0;
     }
-    const provider = new ethers.providers.JsonRpcProvider(network.rpc[0]);
+    // const provider = new ethers.providers.JsonRpcProvider(network.rpc[0]);
     try {
-      const balance = await provider.getBalance(walletState.accounts[0]);
+      // const balance = await provider.getBalance(walletState.accounts[0]);
+      const balance = await window.ethereum.request({
+        method: 'eth_getBalance',
+        params: [walletState.accounts[0]],
+      });
+      console.log('balance', balance);
       const formattedBalance = ethers.utils.formatEther(balance);
       console.log('format balance', formattedBalance);
       const balanceNumber = parseFloat(formattedBalance);

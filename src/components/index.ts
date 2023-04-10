@@ -29,6 +29,7 @@ export * from './FeedbackAndStatus/TwitterLink';
 /** Homepage Art Display */
 export * from './ArtistInfoDisplay/ArtistCard';
 export * from './ArtistInfoDisplay/ArtistCardGrid';
+export * from './ArtistInfoDisplay/ArtistModal';
 
 /** Artist Onboarding Form */
 export * from './ArtistOnboarding/ArtistUpload';
