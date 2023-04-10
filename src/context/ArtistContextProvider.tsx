@@ -265,7 +265,7 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
 
     //position
     const x = image.width / 2 - textWidth / 2;
-    const y = fontSize * 1.3; //image.height - fontSize / 2;
+    const y = image.height - fontSize / 2; //fontSize * 1.3; //image.height - fontSize / 2;
 
     // Add text shadow
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';

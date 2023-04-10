@@ -13,7 +13,11 @@ import {
   Chip,
   MobileStepper,
 } from '@mui/material';
-import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
+import {
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  OpenInNewOutlined,
+} from '@mui/icons-material';
 import { ArtistModal } from '@/components';
 import { WalletContext, ArtistData } from '@/context';
 
@@ -40,17 +44,17 @@ export const ArtistCard: FC<ArtistCardProps> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const maxSteps = artist.thumbnails.length;
 
-  const preloadedImages = useMemo(() => {
-    const images = [];
-    for (let i = 0; i < maxSteps; i++) {
-      if (i !== activeStep) {
-        const img = new Image();
-        img.src = artist.thumbnails[i].link;
-        images.push(img);
-      }
-    }
-    return images;
-  }, [artist, activeStep, maxSteps]);
+  // const preloadedImages = useMemo(() => {
+  //   const images = [];
+  //   for (let i = 0; i < maxSteps; i++) {
+  //     if (i !== activeStep) {
+  //       const img = new Image();
+  //       img.src = artist.thumbnails[i].link;
+  //       images.push(img);
+  //     }
+  //   }
+  //   return images;
+  // }, [artist, activeStep, maxSteps]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => {
@@ -104,7 +108,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
         />
         <Box
           sx={{
-            height: '240px',
+            height: '275px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -116,75 +120,91 @@ export const ArtistCard: FC<ArtistCardProps> = ({
           {/* TODO: link should open a modal with their generated art examples */}
           {/* <Link href={artist.portfolio} target="_blank" rel="noreferrer"> */}
           {/* <Watermark text={artist.name || 'ArtistName'}> */}
-          <Box onClick={() => setModalOpen(true)}>
-            <CardMedia
-              component="img"
-              // height={210}
-              image={
-                artist.thumbnails[activeStep].link ||
-                './monet-water-lilies.jpeg'
-              }
-              alt={artist?.thumbnails[activeStep]?.alt || 'Monet Water Lilies'}
+          <Box
+            sx={{
+              // border: '1px solid #fff',
+              cursor: 'point',
+              position: 'relative',
+            }}
+          >
+            <Box
+              onClick={() => setModalOpen(true)}
+              sx={{ width: '100%', minWidth: 280 }}
+            >
+              <CardMedia
+                component="img"
+                // height={210}
+                image={
+                  artist.thumbnails[activeStep].link ||
+                  './monet-water-lilies.jpeg'
+                }
+                alt={
+                  artist?.thumbnails[activeStep]?.alt || 'Monet Water Lilies'
+                }
+                sx={{
+                  '& .MuiCardMedia-img': {
+                    border: '1px solid #fff',
+                  }, //not working
+                  padding: 0,
+                  margin: 0,
+                  maxHeight: 200,
+                  minWidth: 280,
+                  // borderBottom: '1px solid white',
+                  pointerEvents: 'none',
+                }}
+              />
+            </Box>
+            <OpenInNewOutlined
+              sx={{ position: 'absolute', top: '0.1rem', right: '0.2rem' }}
+            />
+            <MobileStepper
+              steps={maxSteps}
+              position="static"
+              activeStep={activeStep}
               sx={{
-                pointerEvents: 'none',
-                '& .MuiCardMedia-img': {
-                  border: '1px solid #fff',
-                }, //not working
-                padding: 0,
-                margin: 0,
-                maxHeight: 200,
-                minWidth: 280,
+                width: '100%',
+                position: 'relative',
+                // top: '-1rem',
+                padding: '0 0.2rem',
+                background: 'transparent',
+                // height: 0,
               }}
+              nextButton={
+                <Button
+                  size="small"
+                  onClick={handleNext}
+                  disabled={activeStep === maxSteps - 1}
+                >
+                  Next
+                  <KeyboardArrowRight />
+                </Button>
+              }
+              backButton={
+                <Button
+                  size="small"
+                  onClick={handleBack}
+                  disabled={activeStep === 0}
+                >
+                  <KeyboardArrowLeft />
+                  Back
+                </Button>
+              }
             />
           </Box>
-          <MobileStepper
-            steps={maxSteps}
-            position="static"
-            activeStep={activeStep}
-            sx={{
-              width: '100%',
-              position: 'relative',
-              top: '-1rem',
-              padding: 0,
-              background: 'transparent',
-              height: 0,
-            }}
-            nextButton={
-              <Button
-                size="small"
-                onClick={handleNext}
-                disabled={activeStep === maxSteps - 1}
-                // sx={{ color: 'black' }}
-              >
-                Next
-                <KeyboardArrowRight />
-              </Button>
-            }
-            backButton={
-              <Button
-                size="small"
-                onClick={handleBack}
-                disabled={activeStep === 0}
-              >
-                <KeyboardArrowLeft />
-                Back
-              </Button>
-            }
-          />
           <Link
             href={artist.portfolio}
             target="_blank"
             rel="noreferrer"
             sx={{ paddingTop: '0.5rem' }}
           >
-            <Typography variant="subtitle2">Artist Portfolio</Typography>
+            <Typography variant="subtitle1">Artist Portfolio</Typography>
           </Link>
           {/* </Watermark> */}
           {/* </Link> */}
         </Box>
         <CardContent
           sx={{
-            height: '275px',
+            height: '270px',
             padding: '0.5rem',
           }}
         >
@@ -202,7 +222,11 @@ export const ArtistCard: FC<ArtistCardProps> = ({
                 );
               })}
           </Box>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ paddingTop: '0.5rem' }}
+          >
             {artist.biography || 'Artist Description'}
           </Typography>
         </CardContent>
