@@ -53,7 +53,7 @@ interface ContractContextValue {
   artistCost: BigNumber;
   imageCost: BigNumber;
   runStableDiffusionJob: (prompt: string, artistId: string) => Promise<void>;
-  registerArtistWithContract: (artistId: string) => Promise<void>;
+  registerArtistWithContract: (artistId: string) => Promise<string>;
   submitArtistFormToAPI: (
     artistid: string,
     data: any,
@@ -77,7 +77,9 @@ export const defaultContractState = {
   imageCost: BigNumber.from(0),
   setContractState: () => {},
   runStableDiffusionJob: async () => {},
-  registerArtistWithContract: async () => {},
+  registerArtistWithContract: async () => {
+    return '';
+  },
   submitArtistFormToAPI: async () => {},
   mintNFT: async () => {},
 };
@@ -408,7 +410,7 @@ export const ContractContextProvider = ({
             'Please install and unlock a Web3 provider in your browser to use this application.',
         },
       });
-      return;
+      return '';
     }
 
     setStatusState({
@@ -430,10 +432,12 @@ export const ContractContextProvider = ({
         ...defaultStatusState.statusState,
         isError: 'Something went wrong connecting to contract',
       });
-      return;
+      return '';
     }
 
     const artistCost = await connectedContract.getArtistCost();
+    console.log('Couldnt fetch artist cost');
+    if (!artistCost) return '';
 
     try {
       const tx = await connectedContract.CreateArtist(artistid, '', {
@@ -501,6 +505,7 @@ export const ContractContextProvider = ({
           ), //receipt.transactionHash
         },
       }));
+      return receipt;
     } catch (error: any) {
       console.error(error);
       let errorMessage = error.toString();
@@ -528,9 +533,11 @@ export const ContractContextProvider = ({
           description: <span>{errorMessage}</span>,
         },
       }));
+      return '';
     }
   };
 
+  // MOVE TO IMAGE CONTEXT - doesn't belong in contract
   const submitArtistFormToAPI = async (
     artistid: string,
     data: any,
@@ -571,16 +578,15 @@ export const ContractContextProvider = ({
 
       setStatusState((prevState) => ({
         ...prevState,
-        isLoading:
-          'Form submitted - now training your AI model on your images on Bacalhau...!',
+        isLoading: '', //stop loading now
         isMessage: true,
         message: {
-          title: `Form submitted - now training your AI model on your images on Bacalhau...!`,
+          title: `Form submitted - now training your AI model on your images on Bacalhau!`,
           description: (
             <>
               <div>
-                Please be patient... This takes a few hours or so depending on
-                demand.
+                Check back in a few hours to find your profile on Waterlily.ai.
+                Training a model takes a few hours or so depending on demand.
               </div>
               <a
                 href={`${network.blockExplorer}${txHash}`}

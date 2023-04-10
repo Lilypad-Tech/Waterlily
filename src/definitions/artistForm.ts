@@ -29,55 +29,55 @@ export interface FormData {
   artistId?: string; // artistId: string; //need to generate this - should be be passing from FE or just generate in DB?
 }
 
-// export const initialFormValues: FormData = {
-//   // artistId: '', //gets created on form input and validation
-//   //Personal Data
-//   // artistType: ArtistType.Private, //need to toggle this for admin uploads
-//   name: '',
-//   email: '',
-//   walletAddress: '',
-//   nationality: '',
-//   biography: '',
-//   avatar: [],
-//   //ArtWork Data
-//   category: '' as ArtistCategory, //empty really
-//   style: '',
-//   tags: [],
-//   periodStart: new Date(2000, 0, 1),
-//   periodEnd: new Date(), //new Date().getFullYear().toString(),
-//   portfolio: '', //link to portfolio
-//   thumbnails: [], //up to 5 images, best 668x504 =
-//   //verification data
-//   originalArt: false,
-//   trainingConsent: false,
-//   legalContent: false,
-//   images: [], //send elsewhere
-//   //admin only
-//   artistType: 'Private' as ArtistType,
-//   artistId: '',
-// };
-
 export const initialFormValues: FormData = {
+  // artistId: '', //gets created on form input and validation
+  //Personal Data
+  // artistType: ArtistType.Private, //need to toggle this for admin uploads
+  name: '',
+  email: '',
+  walletAddress: '',
+  nationality: '',
+  biography: '',
+  avatar: [],
+  //ArtWork Data
+  category: '' as ArtistCategory, //empty really
+  style: '',
+  tags: [],
   periodStart: new Date(2000, 0, 1),
   periodEnd: new Date(), //new Date().getFullYear().toString(),
-  "name": "test",
-  "email": "test@test.com",
-  walletAddress: '',
-  "nationality": "test",
-  "biography": "test test test testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest test",
-  "category": "Modern Art" as ArtistCategory,
-  "style": "test",
-  "tags": [],
-  "avatar": [],
-  "thumbnails": [],
-  "images": [],
-  "portfolio": "https://test.com",
-  "originalArt": true,
-  "trainingConsent": true,
-  "legalContent": true,
-  "artistType": "Private" as ArtistType,
-  "artistId": ""
+  portfolio: '', //link to portfolio
+  thumbnails: [], //up to 5 images, best 668x504 =
+  //verification data
+  originalArt: false,
+  trainingConsent: false,
+  legalContent: false,
+  images: [], //send elsewhere
+  //admin only
+  artistType: 'Private' as ArtistType,
+  artistId: '',
 };
+
+// export const initialFormValues: FormData = {
+//   periodStart: new Date(2000, 0, 1),
+//   periodEnd: new Date(), //new Date().getFullYear().toString(),
+//   "name": "test",
+//   "email": "test@test.com",
+//   walletAddress: '',
+//   "nationality": "test",
+//   "biography": "test test test testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest testtest test",
+//   "category": "Modern Art" as ArtistCategory,
+//   "style": "test",
+//   "tags": [],
+//   "avatar": [],
+//   "thumbnails": [],
+//   "images": [],
+//   "portfolio": "https://test.com",
+//   "originalArt": true,
+//   "trainingConsent": true,
+//   "legalContent": true,
+//   "artistType": "Private" as ArtistType,
+//   "artistId": ""
+// };
 
 export const ethereumAddressValidator = (message?: string) => {
   return Yup.string().test(
@@ -90,7 +90,8 @@ export const ethereumAddressValidator = (message?: string) => {
 };
 
 // if we are in dev let's enable testing without 50 images
-export const MIN_TRAINING_IMAGES = process.env.NODE_ENV == 'development' ? 2 : 50
+export const MIN_TRAINING_IMAGES =
+  process.env.NODE_ENV == 'development' ? 2 : 50;
 
 export const formValidationSchema: Yup.ObjectSchema<FormData> =
   Yup.object().shape({
@@ -127,7 +128,10 @@ export const formValidationSchema: Yup.ObjectSchema<FormData> =
     legalContent: Yup.boolean().oneOf([true]).required(),
     images: Yup.array<File>()
       .required('Required')
-      .min(MIN_TRAINING_IMAGES, `At least ${MIN_TRAINING_IMAGES} unique images required to train`),
+      .min(
+        MIN_TRAINING_IMAGES,
+        `At least ${MIN_TRAINING_IMAGES} unique images required to train`
+      ),
     //Admin (if walletAddress === Lilypad "0x5617493b265E9d3CC65CE55eAB7798796D9108E4")
     artistType: Yup.string<ArtistType>(),
     artistId: Yup.string(),

@@ -90,20 +90,21 @@ export const ArtistCard: FC<ArtistCardProps> = ({
         >
           {/* TODO: link should open a modal with their generated art examples */}
           <Link href={artist.portfolio} target="_blank" rel="noreferrer">
-            <Watermark text={artist.name || 'ArtistName'}>
-              <CardMedia
-                component="img"
-                // height="250"
-                image={artist.thumbnails[0].link || './monet-water-lilies.jpeg'}
-                alt={artist?.thumbnails[0]?.alt || 'Monet Water Lilies'}
-                sx={{
-                  pointerEvents: 'none',
-                  border: '1px solid #fff',
-                  padding: 0,
-                  margin: 0,
-                }}
-              />
-            </Watermark>
+            {/* <Watermark text={artist.name || 'ArtistName'}> */}
+            <CardMedia
+              component="img"
+              height={220}
+              image={artist.thumbnails[0].link || './monet-water-lilies.jpeg'}
+              alt={artist?.thumbnails[0]?.alt || 'Monet Water Lilies'}
+              sx={{
+                pointerEvents: 'none',
+                border: '1px solid #fff',
+                padding: 0,
+                margin: 0,
+                objectFit: 'scale-down',
+              }}
+            />
+            {/* </Watermark> */}
           </Link>
         </Box>
         <CardContent
@@ -115,19 +116,18 @@ export const ArtistCard: FC<ArtistCardProps> = ({
           <Typography sx={{ padding: 0, paddingBottom: '0.3rem' }}>
             {artist.style || 'Artist Style'}
           </Typography>
-          {/* <Box display="flex" flexWrap="wrap" justifyContent="center">
-            {artist.tags.length > 0
-              ? artist.tags.map((tag) => {
-                  return (
-                    <Box mr={1} mb={0.5}>
-                      <Chip label={tag} variant="outlined" size="small" />
-                    </Box>
-                  );
-                })
-              : null}
-          </Box> */}
+          <Box display="flex" flexWrap="wrap" justifyContent="center">
+            {artist.tags.length > 0 &&
+              artist.tags.map((tag) => {
+                return (
+                  <Box mr={1} mb={0.5}>
+                    <Chip label={tag} variant="outlined" size="small" />
+                  </Box>
+                );
+              })}
+          </Box>
           <Typography variant="body2" color="text.secondary">
-            {artist.description || 'Artist Description'}
+            {artist.biography || 'Artist Description'}
           </Typography>
         </CardContent>
         <CardActions

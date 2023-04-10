@@ -18,7 +18,6 @@ import {
   Snackbar,
   Alert,
 } from '@mui/material';
-import { md5 } from 'pure-md5';
 import {
   useNavigation,
   defaultWalletState,
@@ -57,7 +56,8 @@ import {
   stepButtonWrapper,
 } from '@/styles';
 
-const TEST_ARTIST_ID = 'bafybeigzcrdmnjb2rtnradex62vkfenm764iud64lzpzjqhbzfg7gho6za';
+// const TEST_ARTIST_ID =
+//   'bafybeigzcrdmnjb2rtnradex62vkfenm764iud64lzpzjqhbzfg7gho6za';
 const adminAddress = process.env.NEXT_PUBLIC_ADMIN_WALLET;
 
 const ArtistSignup: React.FC<{}> = () => {
@@ -111,7 +111,6 @@ const ArtistSignup: React.FC<{}> = () => {
 
   //form functions
   const handleFormSubmit = async (values: FormData) => {
-    event?.preventDefault();
     console.log(values);
     setStatusState({
       ...defaultStatusState.statusState,
@@ -128,13 +127,12 @@ const ArtistSignup: React.FC<{}> = () => {
       const { images, ...cidData } = formattedValues;
       const artistId = await createArtistId(cidData);
       console.log('formattedValues', formattedValues);
-      // const artistId: string = md5(
-      //   formattedValues.data.name +
-      //     formattedValues.data.email +
-      //     new Date().getTime()
-      // );
       if (!artistId) throw Error('Could not create artist ID');
-      await registerArtistWithContract(artistId)
+      const receipt = await registerArtistWithContract(artistId);
+      if (Boolean(receipt))
+        throw Error(
+          'Could not call the contract - check your wallet transaction'
+        );
       await submitArtistFormToAPI(
         artistId,
         //TEST_ARTIST_ID,

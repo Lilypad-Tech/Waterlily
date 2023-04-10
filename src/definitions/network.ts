@@ -57,14 +57,14 @@ export const networks = {
 export const getParam = (field: string = '') => {
   const urlSearchParams = new URLSearchParams((window as any).location.search);
   const params = Object.fromEntries(urlSearchParams.entries());
-  return params[field] || ''
-}
+  return params[field] || '';
+};
 
 export const getNetwork = () => {
   if (typeof window === 'undefined') {
     return networks.filecoinHyperspace;
   }
-  if(window.location && window.location.hostname == 'localhost') {
+  if (window.location && window.location.hostname == 'localhost') {
     return networks.filecoinHyperspace;
   }
   let currentNetworkName: string = getParam('waterlilyNetwork') || '';
@@ -74,7 +74,9 @@ export const getNetwork = () => {
 };
 
 export const getAPIServer = (path: string = '') => {
-  const network = getNetwork()
-  const host = getParam('testAPI') ? 'http://localhost:3500' : network.apiServer;
-  return `${host}/api/v1${path}`
+  const network = getNetwork();
+  const host = getParam('testAPI')
+    ? 'http://localhost:3500'
+    : network.apiServer;
+  return `${host}/api/v1${path}`;
 };

@@ -39,6 +39,7 @@ export const ArtStyleTags = [
   'Neoclassicism',
   'Neo-Impressionism',
   'Post-Impressionism',
+  'Post-Surrealism',
   'Realism',
   'Avant-garde',
   'Baroque',
@@ -76,6 +77,7 @@ export enum ArtistCategory {
 }
 
 export interface ArtistData {
+  biography: string;
   artistId?: string; //how do we keep this hidden...
   artistType: ArtistType;
   name: string;
@@ -153,26 +155,29 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
     try {
       const response = await fetch(getAPIServer('/artists'));
       const data = await response.json();
-      console.log('artist data fetched', data);
-      //for each to get the data. GRRRRRR
+      // console.log('artist data fetched', data);
       let formattedData: ArtistData[] = [];
       data.forEach((item: any) => {
-        console.log('item', item);
-        let thumbs = item.data.thumbnails.map((thumb: string, i: number) => {
-          return { link: thumb, alt: `${item.name} thumbnail${i}` };
-        });
-        let newItem: ArtistData = {
-          ...item.data,
-          artistId: item.id,
-          metadata: {
-            bacalhau_state: item.bacalhau_state,
-            contract_state: item.contract_state,
-            error: item.error,
-          },
-          thumbnails: thumbs,
-        };
-        formattedData.push(newItem);
-        console.log('newitem', newItem);
+        if (item.bacalhau_state === 'Complete') {
+          let thumbs = item.data.thumbnails.map((thumb: string, i: number) => {
+            // const newThumb = await addWatermark(thumb, item.name);
+            // console.log('thumb', thumb);
+            return { link: thumb, alt: `${item.data.name} thumbnail${i}` };
+          });
+          let tags = item.data.tags.split(',');
+          let newItem: ArtistData = {
+            ...item.data,
+            artistId: item.id,
+            metadata: {
+              bacalhau_state: item.bacalhau_state,
+              contract_state: item.contract_state,
+              error: item.error,
+            },
+            thumbnails: thumbs,
+            tags: tags,
+          };
+          formattedData.push(newItem);
+        }
       });
       setArtistState(formattedData);
       console.log('artist data set', formattedData);
@@ -218,6 +223,7 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
 
   const addWatermark = async (imgSrc: string, wmText: string) => {
     const image = new Image();
+    image.crossOrigin = 'anonymous';
     image.src = imgSrc;
     await new Promise((resolve, reject) => {
       image.onload = resolve;
@@ -225,8 +231,21 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
     });
 
     const canvas = document.createElement('canvas');
-    canvas.width = image.width;
-    canvas.height = image.height;
+    // canvas.width = image.width;
+    // canvas.height = image.height;
+    let canvasWidth = 675;
+    let canvasHeight = 450;
+
+    // Maintain aspect ratio of the image
+    const aspectRatio = image.width / image.height;
+    if (aspectRatio > 1) {
+      canvasHeight = canvasWidth / aspectRatio;
+    } else {
+      canvasWidth = canvasHeight * aspectRatio;
+    }
+
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
 
     const ctx = canvas.getContext('2d');
     ctx?.drawImage(image, 0, 0);
@@ -257,8 +276,10 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
       textWidth = ctx?.measureText(text).width;
     }
 
-    const x = image.width / 2 - textWidth / 2;
-    const y = image.height - fontSize / 2;
+    // const x = image.width / 2 - textWidth / 2;
+    // const y = image.height - fontSize / 2;
+    const x = canvasWidth / 2 - textWidth / 2;
+    const y = canvasHeight - fontSize / 2;
 
     // Add text shadow
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';

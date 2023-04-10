@@ -161,14 +161,22 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
         {currentData.length > 0 &&
           artists.length > 0 &&
           currentData.map((item: ArtistData) => (
-            <Grid item key={item.name} xs={12} sm={6} md={4} lg={3} xl={2.4}>
+            <Grid
+              item
+              key={item.artistId}
+              xs={12}
+              sm={6}
+              md={4}
+              lg={3}
+              xl={2.4}
+            >
               <ArtistCard
                 artist={item}
                 disabled={statusState.isLoading ? true : false}
                 onClick={() => {
                   setImageArtist({
                     name: item.name,
-                    key: item.artistId,
+                    key: item.artistId || '',
                     style: item.style,
                   });
                   navigate();
