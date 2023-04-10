@@ -12,7 +12,9 @@ import {
   Button,
   Stack,
   Chip,
+  MobileStepper,
 } from '@mui/material';
+import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import { WalletContext, ArtistData } from '@/context';
 
 const boxStyle = {
@@ -38,6 +40,8 @@ export const ArtistCard: FC<ArtistCardProps> = ({
   onClick,
 }): ReactElement => {
   const { walletState } = useContext(WalletContext);
+  const [activeStep, setActiveStep] = useState(0);
+  const maxSteps = artist.thumbnails.length;
 
   useEffect(() => {
     console.log('artist', artist);
@@ -81,7 +85,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
           sx={{
             height: '240px',
             display: 'flex',
-            flexDirection: 'row',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             //backgroundColor: '#fff',
@@ -89,36 +93,88 @@ export const ArtistCard: FC<ArtistCardProps> = ({
           }}
         >
           {/* TODO: link should open a modal with their generated art examples */}
-          <Link href={artist.portfolio} target="_blank" rel="noreferrer">
-            {/* <Watermark text={artist.name || 'ArtistName'}> */}
-            <CardMedia
-              component="img"
-              height={220}
-              image={artist.thumbnails[0].link || './monet-water-lilies.jpeg'}
-              alt={artist?.thumbnails[0]?.alt || 'Monet Water Lilies'}
-              sx={{
-                pointerEvents: 'none',
+          {/* <Link href={artist.portfolio} target="_blank" rel="noreferrer"> */}
+          {/* <Watermark text={artist.name || 'ArtistName'}> */}
+          <CardMedia
+            component="img"
+            // height={210}
+            image={
+              artist.thumbnails[activeStep].link || './monet-water-lilies.jpeg'
+            }
+            alt={artist?.thumbnails[activeStep]?.alt || 'Monet Water Lilies'}
+            sx={{
+              pointerEvents: 'none',
+              '& .MuiCardMedia-img': {
                 border: '1px solid #fff',
-                padding: 0,
-                margin: 0,
-                objectFit: 'scale-down',
-              }}
-            />
-            {/* </Watermark> */}
+              }, //not working
+              padding: 0,
+              margin: 0,
+              maxHeight: 200,
+              minWidth: 280,
+            }}
+          />
+          <MobileStepper
+            steps={maxSteps}
+            position="static"
+            activeStep={activeStep}
+            sx={{
+              width: '100%',
+              position: 'relative',
+              top: '-1rem',
+              padding: 0,
+              background: 'transparent',
+              height: 0,
+            }}
+            nextButton={
+              <Button
+                size="small"
+                onClick={() =>
+                  setActiveStep((prevActiveStep) => prevActiveStep + 1)
+                }
+                disabled={activeStep === maxSteps - 1}
+                // sx={{ color: 'black' }}
+              >
+                Next
+                <KeyboardArrowRight />
+              </Button>
+            }
+            backButton={
+              <Button
+                size="small"
+                onClick={() =>
+                  setActiveStep((prevActiveStep) => prevActiveStep - 1)
+                }
+                disabled={activeStep === 0}
+              >
+                <KeyboardArrowLeft />
+                Back
+              </Button>
+            }
+          />
+          <Link
+            href={artist.portfolio}
+            target="_blank"
+            rel="noreferrer"
+            sx={{ paddingTop: '0.5rem' }}
+          >
+            <Typography variant="subtitle2">Artist Portfolio</Typography>
           </Link>
+          {/* </Watermark> */}
+          {/* </Link> */}
         </Box>
         <CardContent
           sx={{
-            height: '264px',
-            padding: '0 1rem',
+            height: '275px',
+            padding: '0.5rem',
           }}
         >
-          <Typography sx={{ padding: 0, paddingBottom: '0.3rem' }}>
+          {/* <Typography sx={{ padding: 0, paddingBottom: '0.3rem' }}>
             {artist.style || 'Artist Style'}
-          </Typography>
+          </Typography> */}
           <Box display="flex" flexWrap="wrap" justifyContent="center">
             {artist.tags.length > 0 &&
               artist.tags.map((tag) => {
+                if (tag === '') return;
                 return (
                   <Box mr={1} mb={0.5}>
                     <Chip label={tag} variant="outlined" size="small" />

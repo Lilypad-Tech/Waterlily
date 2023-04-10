@@ -231,21 +231,8 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
     });
 
     const canvas = document.createElement('canvas');
-    // canvas.width = image.width;
-    // canvas.height = image.height;
-    let canvasWidth = 675;
-    let canvasHeight = 450;
-
-    // Maintain aspect ratio of the image
-    const aspectRatio = image.width / image.height;
-    if (aspectRatio > 1) {
-      canvasHeight = canvasWidth / aspectRatio;
-    } else {
-      canvasWidth = canvasHeight * aspectRatio;
-    }
-
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
+    canvas.width = image.width;
+    canvas.height = image.height;
 
     const ctx = canvas.getContext('2d');
     ctx?.drawImage(image, 0, 0);
@@ -276,10 +263,9 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
       textWidth = ctx?.measureText(text).width;
     }
 
-    // const x = image.width / 2 - textWidth / 2;
-    // const y = image.height - fontSize / 2;
-    const x = canvasWidth / 2 - textWidth / 2;
-    const y = canvasHeight - fontSize / 2;
+    //position
+    const x = image.width / 2 - textWidth / 2;
+    const y = fontSize * 1.3; //image.height - fontSize / 2;
 
     // Add text shadow
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
