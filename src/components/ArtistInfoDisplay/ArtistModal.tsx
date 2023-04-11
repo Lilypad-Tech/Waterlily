@@ -205,7 +205,6 @@ export const ArtistModal = ({
               alignItems="center"
             >
               {artist.thumbnails.map((thumb, i) => {
-                console.log('thumb', thumb);
                 if (i > 3) return;
                 return (
                   <Grid
@@ -216,6 +215,7 @@ export const ArtistModal = ({
                     lg={3}
                     xl={3}
                     component="img"
+                    key={thumb.link}
                     // height={210}
                     src={thumb.link || './monet-water-lilies.jpeg'}
                     alt={thumb.alt || 'Monet Water Lilies'}
@@ -239,7 +239,6 @@ export const ArtistModal = ({
               alignItems="center"
             >
               {artist.thumbnails.map((thumb, i) => {
-                console.log('thumb', thumb);
                 if (i > 3) return;
                 return (
                   <Grid
@@ -250,6 +249,7 @@ export const ArtistModal = ({
                     lg={3}
                     xl={3}
                     component="img"
+                    key={thumb.link}
                     // height={210}
                     src={thumb.link || './monet-water-lilies.jpeg'}
                     alt={thumb.alt || 'Monet Water Lilies'}
@@ -276,7 +276,6 @@ export const ArtistModal = ({
               alignItems="center"
             >
               {artist.thumbnails.map((thumb) => {
-                console.log('thumb', thumb);
                 return (
                   <Grid
                     item
@@ -286,7 +285,7 @@ export const ArtistModal = ({
                     lg={4}
                     xl={4}
                     component="img"
-                    // height={210}
+                    key={thumb.link}
                     src={thumb.link || './monet-water-lilies.jpeg'}
                     alt={thumb.alt || 'Monet Water Lilies'}
                     sx={{

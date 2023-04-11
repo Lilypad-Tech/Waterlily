@@ -59,7 +59,32 @@ import {
 
 // const TEST_ARTIST_ID =
 //   'bafybeigzcrdmnjb2rtnradex62vkfenm764iud64lzpzjqhbzfg7gho6za';
-const adminAddress = process.env.NEXT_PUBLIC_ADMIN_WALLET;
+const adminAddress = '0x9e24343032E385a6d0FEaeAd89628F9110a43375'; //process.env.NEXT_PUBLIC_ADMIN_WALLET;
+
+const WalletRequirementsMessage = () => {
+  return (
+    <Box
+      sx={{
+        border: '1px solid #b583ff',
+        borderRadius: '10px',
+        padding: '0.5rem',
+        margin: '0 4rem',
+      }}
+    >
+      <Typography>
+        A wallet with a balance of min. 0.1FIL is required to sign up to
+        Waterlily.ai
+      </Typography>
+      <Typography>
+        We do this to try to deter imposters as well as to cover the costs of
+        adding new artists to the Waterlily contract.
+      </Typography>
+      <Typography>
+        Please contact us if you have trouble with this step.
+      </Typography>
+    </Box>
+  );
+};
 
 const ArtistSignup: React.FC<{}> = () => {
   const { handleNavigation } = useNavigation();
@@ -78,31 +103,6 @@ const ArtistSignup: React.FC<{}> = () => {
 
   const [activeStep, setActiveStep] = useState(0);
 
-  const renderWalletRequirementsMessage = () => {
-    return (
-      <Box
-        sx={{
-          border: '1px solid #b583ff',
-          borderRadius: '10px',
-          padding: '0.5rem',
-          margin: '0 4rem',
-        }}
-      >
-        <Typography>
-          A wallet with a balance of min. 0.1FIL is required to sign up to
-          Waterlily.ai
-        </Typography>
-        <Typography>
-          We do this to try to deter imposters as well as to cover the costs of
-          adding new artists to the Waterlily contract.
-        </Typography>
-        <Typography>
-          Please contact us if you have trouble with this step.
-        </Typography>
-      </Box>
-    );
-  };
-
   const validateFormInput = async (values: FormData) => {
     const isValid = await formValidationSchema
       .validate(values)
@@ -117,6 +117,22 @@ const ArtistSignup: React.FC<{}> = () => {
     return isValid; //boolean or void returned.
   };
 
+  const createFileFromBase64 = (base64: string, fileName: string): File => {
+    const parts = base64.split(',');
+    // if (parts.length !== 2) {
+    //   console.error('Invalid base64 string format');
+    //   return null;
+    // }
+    const byteString = Buffer.from(parts[1], 'base64').toString('binary');
+    const mimeString = parts[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    return new File([ab], fileName, { type: mimeString });
+  };
+
   const formatFormInput = (values: FormData) => {
     const periodStartYear = values.periodStart.getFullYear().toString();
     const periodEndYear =
@@ -125,6 +141,10 @@ const ArtistSignup: React.FC<{}> = () => {
         : values.periodEnd.getFullYear().toString();
     const { periodStart, periodEnd, images, avatar, thumbnails, ...rest } =
       values;
+    const newThumbnails = values.thumbnails.map((thumb: any) => {
+      return createFileFromBase64(thumb.preview, thumb.path);
+    });
+    console.log('new thumbs', newThumbnails);
     return {
       data: {
         period: `${periodStartYear} - ${periodEndYear}`,
@@ -132,7 +152,7 @@ const ArtistSignup: React.FC<{}> = () => {
       },
       images,
       avatar,
-      thumbnails,
+      thumbnails: newThumbnails,
     };
   };
 
@@ -155,12 +175,12 @@ const ArtistSignup: React.FC<{}> = () => {
       const artistId = await createArtistId(cidData);
       console.log('formattedValues', formattedValues);
       if (!artistId) throw Error('Could not create artist ID');
-      const receipt = await registerArtistWithContract(artistId);
-      console.log('receipt in signup', receipt);
-      if (Boolean(receipt))
-        throw Error(
-          'Could not call the contract - check your wallet transaction'
-        );
+      const receiptTx = await registerArtistWithContract(artistId);
+      console.log('receipt in signup', receiptTx);
+      // if (Boolean(receipt))
+      //   throw Error(
+      //     'Could not call the contract - check your wallet transaction'
+      //   );
       await submitArtistFormToAPI(
         artistId,
         //TEST_ARTIST_ID,
@@ -202,7 +222,7 @@ const ArtistSignup: React.FC<{}> = () => {
             Thankyou for your interest in joining Waterlily.ai!
           </Typography>
           <Typography>Let's get you started!</Typography>
-          <LinkTo text="FAQ Link" arrow={false} />
+          <LinkTo text="FAQ Link" icon={null} />
         </Box>
       </TitleLayout>
       <StatusDisplay />
@@ -216,10 +236,10 @@ const ArtistSignup: React.FC<{}> = () => {
       {!walletState.isConnected || !walletState.accounts[0] ? (
         <div>
           <WalletFormDetails />
-          {renderWalletRequirementsMessage()}
+          <WalletRequirementsMessage />
         </div>
       ) : walletState.accounts[0] && walletState.balance < 0.1 ? (
-        renderWalletRequirementsMessage()
+        <WalletRequirementsMessage />
       ) : walletState.chainId !== network.chainId ? (
         <div>wrong chain</div>
       ) : (
@@ -270,7 +290,7 @@ const ArtistSignup: React.FC<{}> = () => {
                     color="primary"
                     type="submit"
                     // disabled={formik.actions.isSubmitting}
-                    disabled={Boolean(!isValid) || statusState.isLoading}
+                    // disabled={Boolean(!isValid) || statusState.isLoading}
                   >
                     Submit
                   </Button>

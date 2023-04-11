@@ -13,8 +13,8 @@ export interface FormData {
   biography: string; //char limited
   //ArtWork Data
   category: ArtistCategory;
-  style: string;
-  tags?: string[]; //chips
+  style?: string;
+  tags: string[]; //chips
   portfolio: string;
   //verification data
   originalArt: Boolean;
@@ -109,8 +109,8 @@ export const formValidationSchema: Yup.ObjectSchema<FormData> =
     avatar: Yup.array<File>().optional(), //opt
     //ArtWork Data
     category: Yup.string<ArtistCategory>().required('Required'),
-    tags: Yup.array().optional(), //opt
-    style: Yup.string().required('Required'),
+    tags: Yup.array().required('Style Tags Required'), //opt
+    style: Yup.string().optional(),
     periodStart: Yup.date()
       .min(new Date(1200, 0, 1))
       .max(new Date(), 'Date is in the future')

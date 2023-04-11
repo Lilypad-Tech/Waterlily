@@ -8,7 +8,7 @@ export const boxStyle: SxProps = {
 };
 
 export const cardStyle: SxProps = {
-  maxWidth: 300,
+  width: 300,
   padding: 0,
   margin: 0,
 };

@@ -92,6 +92,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
 
   useEffect(() => {
     console.log('wallet state changed', walletState);
+    // fetchWalletBalance();
   }, [walletState]);
 
   ///wallet action functions

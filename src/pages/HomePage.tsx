@@ -56,7 +56,7 @@ const HomePage = () => {
   } = useContext(StatusContext);
   const { quickImages, imagePrompt, imageArtist, twitterLink } =
     useContext(ImageContext);
-  const { customerImages } = useContext(ContractContext);
+  const { customerImages, nftImages } = useContext(ContractContext);
 
   const goToTop = () => {
     return document.getElementById('justAboveTextField')?.scrollIntoView({
@@ -149,6 +149,26 @@ const HomePage = () => {
               }}
             >
               <GeneratedImages />
+            </Box>
+          </>
+        </SectionLayout>
+      )}
+      {nftImages.length > 0 && (
+        <SectionLayout>
+          <>
+            <Title
+              text="Your NFTs"
+              sx={{ fontSize: '3rem', paddingTop: '2rem' }}
+            />
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {/* <GeneratedImages /> */}
             </Box>
           </>
         </SectionLayout>

@@ -138,6 +138,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
               <CardMedia
                 component="img"
                 // height={210}
+                // width={280}
                 image={
                   artist.thumbnails[activeStep].link ||
                   './monet-water-lilies.jpeg'
