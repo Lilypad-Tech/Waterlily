@@ -12,8 +12,13 @@ import {
   Divider,
   Grid,
   Chip,
+  IconButton,
 } from '@mui/material';
-import { ContentCopyOutlined, OpenInNewOutlined } from '@mui/icons-material';
+import {
+  Close,
+  ContentCopyOutlined,
+  OpenInNewOutlined,
+} from '@mui/icons-material';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { ArtistData } from '@/context';
 import { LinkTo } from '@/components';
@@ -61,7 +66,19 @@ export const ArtistModal = ({
       fullWidth
       maxWidth="lg"
     >
-      <DialogTitle id="scroll-dialog-title">{artist.name}</DialogTitle>
+      <DialogTitle
+        id="scroll-dialog-title"
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        {artist.name}
+        <IconButton aria-label="close" onClick={() => setModalOpen(false)}>
+          <Close />
+        </IconButton>
+      </DialogTitle>
       <DialogContent
         sx={{
           overflowX: 'hidden',
@@ -195,7 +212,7 @@ export const ArtistModal = ({
                     item
                     xs={12}
                     sm={6}
-                    md={6}
+                    md={3}
                     lg={3}
                     xl={3}
                     component="img"
@@ -211,7 +228,7 @@ export const ArtistModal = ({
                 );
               })}
             </Grid>
-            <Divider />
+            <Divider sx={{ paddingTop: '1rem' }} />
             <Typography variant="subtitle1" sx={{ margin: '2rem 0 0 0' }}>
               Prompt: Prompt 2
             </Typography>
@@ -229,7 +246,7 @@ export const ArtistModal = ({
                     item
                     xs={12}
                     sm={6}
-                    md={6}
+                    md={3}
                     lg={3}
                     xl={3}
                     component="img"
@@ -245,7 +262,7 @@ export const ArtistModal = ({
                 );
               })}
             </Grid>
-            <Divider />
+            <Divider sx={{ paddingTop: '1rem' }} />
           </Box>
           <Box sx={{ paddingTop: '1rem' }}>
             {/* <Typography variant="h4" color="white"> */}
