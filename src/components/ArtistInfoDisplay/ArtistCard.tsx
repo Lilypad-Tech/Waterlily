@@ -172,15 +172,15 @@ export const ArtistCard: FC<ArtistCardProps> = ({
           {/* </Watermark> */}
           {/* </Link> */}
         </Box>
-        <CardContent
+        {/* <CardContent
           sx={{
             height: '270px',
             padding: '0.5rem',
           }}
         >
-          {/* <Typography sx={{ padding: 0, paddingBottom: '0.3rem' }}>
+          <Typography sx={{ padding: 0, paddingBottom: '0.3rem' }}>
             {artist.style || 'Artist Style'}
-          </Typography> */}
+          </Typography>
           <Box display="flex" flexWrap="wrap" justifyContent="center">
             {artist.tags.length > 0 &&
               artist.tags.map((tag) => {
@@ -199,7 +199,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
           >
             {artist.biography || 'Artist Description'}
           </Typography>
-        </CardContent>
+        </CardContent> */}
         <CardActions sx={cardActionStyle}>
           {walletState?.isConnected && (
             <Button variant="outlined" disabled={disabled} onClick={onClick}>
