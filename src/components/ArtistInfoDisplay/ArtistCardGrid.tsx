@@ -35,16 +35,29 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
   const [searchCategory, setSearchCategory] = useState('');
   const [searchStyle, setSearchStyle] = useState('');
 
+  // useEffect(() => {
+  //   console.log('artist style', artists, artists.length);
+  //   if (artists.length > 0) {
+  //     const styles = new Set<string>();
+  //     artists.forEach((artist) => {
+  //       artist.style.split(',').forEach((style) => {
+  //         styles.add(style.trim());
+  //       });
+  //     });
+  //     setUniqueStyles(Array.from(styles));
+  //   }
+  // }, [artists]);
+
   useEffect(() => {
-    console.log('artist style', artists, artists.length);
+    console.log('artist tags', artists, artists.length);
     if (artists.length > 0) {
-      const styles = new Set<string>();
+      const tags = new Set<string>();
       artists.forEach((artist) => {
-        artist.style.split(',').forEach((style) => {
-          styles.add(style.trim());
+        artist.tags.forEach((tag) => {
+          if (Boolean(tag)) tags.add(tag.trim());
         });
       });
-      setUniqueStyles(Array.from(styles));
+      setUniqueStyles(Array.from(tags));
     }
   }, [artists]);
 
@@ -60,7 +73,7 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
   // Filter the data based on the search text
   const fuseName = new Fuse(artists, { keys: ['name'] });
   const fuseCategory = new Fuse(artists, { keys: ['category'] });
-  const fuseStyle = new Fuse(artists, { keys: ['style'] });
+  const fuseStyle = new Fuse(artists, { keys: ['tags'] });
 
   //To do fix filtering
   const filteredData = artists.filter((artist: ArtistData) => {
@@ -77,19 +90,20 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-  useEffect(() => {
-    console.log('artists', artists);
-  }, [artists]);
+  // useEffect(() => {
+  //   console.log('artists', artists);
+  // }, [artists]);
 
-  useEffect(() => {
-    console.log('filteredData', filteredData);
-  }, [filteredData]);
+  // useEffect(() => {
+  //   console.log('filteredData', filteredData);
+  // }, [filteredData]);
 
   useEffect(() => {
     console.log('currentData', currentData, currentData.length);
   }, [currentData]);
 
   const handlePageChange = (event: any, value: number) => {
+    event.preventDefault();
     setCurrentPage(value);
   };
 
@@ -117,47 +131,53 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
   return (
     <Box sx={{ paddingTop: '1rem' }}>
       {/* TO DO search input no responsive to screen sizes aka should stack */}
-      <Box>
-        <TextField
-          label="Search by name"
-          value={searchName}
-          onChange={handleNameSearchChange}
-          sx={{ margin: '0 1rem' }}
-        />
-        <TextField
-          select
-          label="Category"
-          value={searchCategory}
-          onChange={handleCategorySearchChange}
-          sx={{ margin: '0 1rem', minWidth: '10rem' }}
-          size="medium"
-        >
-          <MenuItem value="">All Categories</MenuItem>
-          {Object.keys(ArtistCategory).map((key) => (
-            <MenuItem
-              key={key}
-              value={ArtistCategory[key as keyof typeof ArtistCategory]}
-            >
-              {ArtistCategory[key as keyof typeof ArtistCategory]}
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          select
-          label="Style"
-          value={searchStyle}
-          onChange={handleStyleSearchChange}
-          sx={{ margin: '0 1rem', minWidth: '10rem' }}
-        >
-          <MenuItem value="">All Styles</MenuItem>
-          {uniqueStyles.map((style) => (
-            <MenuItem key={style} value={style}>
-              {style}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Box>
-      <Grid container>
+      <Grid container spacing={1} justifyContent="center" alignItems="center">
+        <Grid item>
+          <TextField
+            label="Search by name"
+            value={searchName}
+            onChange={handleNameSearchChange}
+            sx={{ margin: '0 1rem' }}
+          />
+        </Grid>
+        <Grid item>
+          <TextField
+            select
+            label="Category"
+            value={searchCategory}
+            onChange={handleCategorySearchChange}
+            sx={{ margin: '0 1rem', minWidth: '10rem' }}
+            size="medium"
+          >
+            <MenuItem value="">All Categories</MenuItem>
+            {Object.keys(ArtistCategory).map((key) => (
+              <MenuItem
+                key={key}
+                value={ArtistCategory[key as keyof typeof ArtistCategory]}
+              >
+                {ArtistCategory[key as keyof typeof ArtistCategory]}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+        <Grid item>
+          <TextField
+            select
+            label="Style"
+            value={searchStyle}
+            onChange={handleStyleSearchChange}
+            sx={{ margin: '0 1rem', minWidth: '10rem' }}
+          >
+            <MenuItem value="">All Styles</MenuItem>
+            {uniqueStyles.map((style) => (
+              <MenuItem key={style} value={style}>
+                {style}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+      </Grid>
+      <Grid container justifyContent="center" alignItems="center">
         {currentData.length > 0 &&
           artists.length > 0 &&
           currentData.map((item: ArtistData) => (
