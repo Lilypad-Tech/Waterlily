@@ -84,6 +84,7 @@ export interface ArtistData {
   artistId?: string; //how do we keep this hidden...
   artistType: ArtistType;
   name: string;
+  walletAddress: string;
   category: ArtistCategory;
   style: string;
   period: string;

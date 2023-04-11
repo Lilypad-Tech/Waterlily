@@ -12,6 +12,7 @@ import {
   Button,
   Chip,
   MobileStepper,
+  IconButton,
 } from '@mui/material';
 import {
   KeyboardArrowLeft,
@@ -127,20 +128,33 @@ export const ArtistCard: FC<ArtistCardProps> = ({
                 sx={cardMediaStyle}
               />
             </Box>
-            <OpenInNewOutlined sx={openModalIconStyle} />
+            <IconButton
+              onClick={() => setModalOpen(true)}
+              sx={openModalIconStyle}
+            >
+              <OpenInNewOutlined sx={openModalIconStyle} />
+            </IconButton>
             <MobileStepper
               steps={maxSteps}
               position="static"
               activeStep={activeStep}
               sx={stepperStyle}
               nextButton={
-                <Button size="small" onClick={handleNext}>
+                <Button
+                  size="small"
+                  onClick={handleNext}
+                  disabled={maxSteps === 1}
+                >
                   Next
                   <KeyboardArrowRight />
                 </Button>
               }
               backButton={
-                <Button size="small" onClick={handleBack}>
+                <Button
+                  size="small"
+                  onClick={handleBack}
+                  disabled={maxSteps === 1}
+                >
                   <KeyboardArrowLeft />
                   Back
                 </Button>

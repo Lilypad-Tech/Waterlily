@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -10,8 +10,13 @@ import {
   Avatar,
   Typography,
   Divider,
+  Grid,
+  Chip,
 } from '@mui/material';
+import { ContentCopyOutlined, OpenInNewOutlined } from '@mui/icons-material';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { ArtistData } from '@/context';
+import { LinkTo } from '@/components';
 
 // {
 //   artist: ArtistData;
@@ -37,6 +42,15 @@ export const ArtistModal = ({
   modalOpen: boolean;
   setModalOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  };
+
   return (
     <Dialog
       open={modalOpen}
@@ -48,14 +62,35 @@ export const ArtistModal = ({
       maxWidth="lg"
     >
       <DialogTitle id="scroll-dialog-title">{artist.name}</DialogTitle>
-      <DialogContent>
+      <DialogContent
+        sx={{
+          overflowX: 'hidden',
+          whitespace: 'pre-wrap',
+          overflowWrap: 'break-word',
+        }}
+      >
         <DialogContentText
           id="scroll-dialog-description"
           // ref={descriptionElementRef}
           tabIndex={-1}
         >
-          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            <Box sx={{ width: '10%', margin: '0 1rem' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              paddingTop: '1rem',
+            }}
+          >
+            <Box
+              sx={{
+                width: '10%',
+                margin: '0 1rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                color: 'white',
+              }}
+            >
               {Boolean(artist.avatar) ? (
                 <Avatar
                   alt={artist.name}
@@ -68,35 +103,184 @@ export const ArtistModal = ({
                   sx={{ width: '100%', height: 'auto' }}
                 />
               )}
-            </Box>
-            <Box
-              sx={{ display: 'flex', flexDirection: 'column', width: '90%' }}
-            >
-              <Typography>{artist.name}</Typography>
+              <LinkTo
+                text="Portfolio"
+                href={artist.portfolio}
+                icon={<OpenInNewOutlined sx={{ height: '18px' }} />}
+              />
               <Typography>{artist.period}</Typography>
               <Typography>{artist.nationality}</Typography>
-              <Typography>{artist.biography}</Typography>
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: '90%',
+                paddingLeft: '1rem',
+                alignItems: 'flex-start',
+              }}
+            >
+              <Typography gutterBottom>{artist.category}</Typography>
+              <Box display="flex" flexWrap="wrap" paddingBottom="1rem">
+                {artist.tags.length > 0 &&
+                  artist.tags.map((tag) => {
+                    if (tag === '') return;
+                    return (
+                      <Box mr={1} mb={0.5} key={tag}>
+                        <Chip
+                          label={tag}
+                          variant="outlined"
+                          size="small"
+                          color="primary"
+                        />
+                      </Box>
+                    );
+                  })}
+              </Box>
+              <Typography
+                gutterBottom
+                variant="body1"
+                sx={{ flexWrap: 'wrap', overflowWrap: 'break-word' }}
+              >
+                {artist.biography}
+              </Typography>
+              <CopyToClipboard text={artist.walletAddress} onCopy={handleCopy}>
+                <Typography
+                  // variant={props.variant}
+                  sx={{
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    paddingTop: '2rem',
+                    color: 'white',
+                  }}
+                  // color={copied ? 'success' : 'text.primary'}
+                >
+                  <Typography sx={{ paddingRight: '8px' }}>
+                    Donation Address:{' '}
+                  </Typography>
+                  <Typography
+                    color="primary"
+                    sx={{ overflowWrap: 'break-word' }}
+                  >
+                    {artist.walletAddress}
+                  </Typography>
+                  <ContentCopyOutlined
+                    sx={{ margin: '0 8px', padding: '2px' }}
+                  />
+                  {copied && 'Copied!'}
+                </Typography>
+              </CopyToClipboard>
             </Box>
           </Box>
-          <Box>
+          <Box sx={{ paddingTop: '1rem' }}>
             {/* <Typography variant="h4" color="white"> */}
             <DialogTitle sx={{ margin: 0, paddingLeft: 0, color: 'white' }}>
-              Generated Images Examples
+              Generated Image Examples
             </DialogTitle>
             {/* </Typography> */}
-            <Typography>Prompt:</Typography>
-            <div>images here</div>
+            <Typography variant="subtitle1">Prompt: Prompt 1</Typography>
+            <Grid
+              container
+              spacing={1}
+              justifyContent="center"
+              alignItems="center"
+            >
+              {artist.thumbnails.map((thumb, i) => {
+                console.log('thumb', thumb);
+                if (i > 3) return;
+                return (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={6}
+                    lg={3}
+                    xl={3}
+                    component="img"
+                    // height={210}
+                    src={thumb.link || './monet-water-lilies.jpeg'}
+                    alt={thumb.alt || 'Monet Water Lilies'}
+                    sx={{
+                      width: '100%',
+                      aspectRatio: '4/3',
+                    }}
+                    style={{ objectFit: 'cover' }}
+                  />
+                );
+              })}
+            </Grid>
             <Divider />
-            <Typography>Prompt:</Typography>
-            <div>images here</div>
+            <Typography variant="subtitle1" sx={{ margin: '2rem 0 0 0' }}>
+              Prompt: Prompt 2
+            </Typography>
+            <Grid
+              container
+              spacing={1}
+              justifyContent="center"
+              alignItems="center"
+            >
+              {artist.thumbnails.map((thumb, i) => {
+                console.log('thumb', thumb);
+                if (i > 3) return;
+                return (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={6}
+                    lg={3}
+                    xl={3}
+                    component="img"
+                    // height={210}
+                    src={thumb.link || './monet-water-lilies.jpeg'}
+                    alt={thumb.alt || 'Monet Water Lilies'}
+                    sx={{
+                      width: '100%',
+                      aspectRatio: '4/3',
+                    }}
+                    style={{ objectFit: 'cover' }}
+                  />
+                );
+              })}
+            </Grid>
             <Divider />
           </Box>
-          <Box>
+          <Box sx={{ paddingTop: '1rem' }}>
             {/* <Typography variant="h4" color="white"> */}
             <DialogTitle sx={{ margin: 0, paddingLeft: 0, color: 'white' }}>
               Artwork Examples
             </DialogTitle>
-            <div>images here</div>
+            <Grid
+              container
+              spacing={1}
+              justifyContent="center"
+              alignItems="center"
+            >
+              {artist.thumbnails.map((thumb) => {
+                console.log('thumb', thumb);
+                return (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    lg={4}
+                    xl={4}
+                    component="img"
+                    // height={210}
+                    src={thumb.link || './monet-water-lilies.jpeg'}
+                    alt={thumb.alt || 'Monet Water Lilies'}
+                    sx={{
+                      width: '100%',
+                      aspectRatio: '3/2',
+                    }}
+                    style={{ objectFit: 'cover' }}
+                  />
+                );
+              })}
+            </Grid>
           </Box>
         </DialogContentText>
       </DialogContent>

@@ -47,7 +47,11 @@ export const cardMediaContentsStyle: SxProps = {
   position: 'relative',
 };
 
-export const modalContainer: SxProps = { width: '100%', minWidth: 280 };
+export const modalContainer: SxProps = {
+  width: '100%',
+  minWidth: 280,
+  cursor: 'pointer',
+};
 
 export const openModalIconStyle: SxProps = {
   position: 'absolute',
