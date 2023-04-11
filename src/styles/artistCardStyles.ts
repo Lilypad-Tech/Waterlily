@@ -14,13 +14,13 @@ export const cardStyle: SxProps = {
 };
 
 export const cardHeaderStyle: SxProps = {
-  height: '120px',
+  height: '140px',
   padding: '0.5rem',
-  paddingTop: '1rem',
+  paddingTop: '1.5rem',
 };
 
 export const cardMediaContainer: SxProps = {
-  height: '275px',
+  height: '255px',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -73,5 +73,5 @@ export const cardActionStyle: SxProps = {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'flex-end',
-  paddingTop: '1rem',
+  paddingTop: '0.5rem',
 };

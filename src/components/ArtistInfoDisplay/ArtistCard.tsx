@@ -96,16 +96,36 @@ export const ArtistCard: FC<ArtistCardProps> = ({
       />
       <Card sx={cardStyle}>
         <CardHeader
-          title={artist.name || 'Artist Name'}
+          title={
+            <Typography variant="h5">{artist.name || 'Artist Name'}</Typography>
+          }
           subheader={
             <>
-              <Typography sx={{ padding: 0 }}>
-                {artist.period || 'Unknown'}
-              </Typography>
-              <Typography sx={{ padding: 0, fontSize: '0.8rem' }}>
-                {artist.nationality || 'Nationality'}
+              <Link
+                href={artist.portfolio}
+                target="_blank"
+                rel="noreferrer"
+                sx={{ paddingTop: '0.5rem' }}
+              >
+                <Typography variant="subtitle1">Artist Portfolio</Typography>
+              </Link>
+              <Typography
+                sx={{
+                  paddingTop: '0.5rem',
+                  color: 'rgba(255, 255, 255, 0.7);',
+                }}
+              >
+                {artist.category} {/*artist.artistType*/}
               </Typography>
             </>
+            // <>
+            //   <Typography sx={{ padding: 0 }}>
+            //     {artist.period || 'Unknown'}
+            //   </Typography>
+            //   <Typography sx={{ padding: 0, fontSize: '0.8rem' }}>
+            //     {artist.nationality || 'Nationality'}
+            //   </Typography>
+            // </>
           }
           sx={cardHeaderStyle}
         />
@@ -161,14 +181,14 @@ export const ArtistCard: FC<ArtistCardProps> = ({
               }
             />
           </Box>
-          <Link
+          {/* <Link
             href={artist.portfolio}
             target="_blank"
             rel="noreferrer"
             sx={{ paddingTop: '0.5rem' }}
           >
             <Typography variant="subtitle1">Artist Portfolio</Typography>
-          </Link>
+          </Link> */}
           {/* </Watermark> */}
           {/* </Link> */}
         </Box>
