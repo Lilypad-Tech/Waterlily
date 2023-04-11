@@ -238,7 +238,7 @@ const ArtistSignup: React.FC<{}> = () => {
           <WalletFormDetails />
           <WalletRequirementsMessage />
         </div>
-      ) : walletState.accounts[0] && walletState.balance < 0.1 ? (
+      ) : walletState.accounts[0] && walletState.balance < 0 ? (
         <WalletRequirementsMessage />
       ) : walletState.chainId !== network.chainId ? (
         <div>wrong chain</div>
@@ -289,11 +289,16 @@ const ArtistSignup: React.FC<{}> = () => {
                     variant="contained"
                     color="primary"
                     type="submit"
+                    size="large"
+                    sx={{ marginBottom: '2rem' }}
                     // disabled={formik.actions.isSubmitting}
-                    // disabled={Boolean(!isValid) || statusState.isLoading}
+                    disabled={
+                      Boolean(!isValid) || Boolean(statusState.isLoading)
+                    }
                   >
                     Submit
                   </Button>
+                  <StatusDisplay />
                 </Box>
               )}
               <Box sx={stepButtonWrapper}>

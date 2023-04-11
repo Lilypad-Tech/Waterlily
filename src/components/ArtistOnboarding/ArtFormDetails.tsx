@@ -72,6 +72,7 @@ export const ArtFormDetails = ({
               {...params}
               variant="outlined"
               label="Tags"
+              required
               placeholder={
                 values.tags.length >= 4
                   ? 'Only 4 tags allowable'
@@ -97,7 +98,7 @@ export const ArtFormDetails = ({
           </Tooltip>
         )}
       />
-      <FormTextField fieldKey="style" formik={formik} step={1} />
+      {/* <FormTextField fieldKey="style" formik={formik} step={1} /> */}
 
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Tooltip
