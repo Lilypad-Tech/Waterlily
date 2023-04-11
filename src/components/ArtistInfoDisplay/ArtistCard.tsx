@@ -20,12 +20,18 @@ import {
 } from '@mui/icons-material';
 import { ArtistModal } from '@/components';
 import { WalletContext, ArtistData } from '@/context';
-
-const boxStyle = {
-  display: 'flex',
-  justifyContent: 'center',
-  padding: '1rem',
-};
+import {
+  boxStyle,
+  cardActionStyle,
+  cardHeaderStyle,
+  cardMediaContainer,
+  cardMediaContentsStyle,
+  cardMediaStyle,
+  cardStyle,
+  modalContainer,
+  openModalIconStyle,
+  stepperStyle,
+} from '@/styles/artistCardStyles';
 
 //TO DO fix this to work off artists definitions
 interface ArtistCardProps {
@@ -44,17 +50,17 @@ export const ArtistCard: FC<ArtistCardProps> = ({
   const [modalOpen, setModalOpen] = useState(false);
   const maxSteps = artist.thumbnails.length;
 
-  // const preloadedImages = useMemo(() => {
-  //   const images = [];
-  //   for (let i = 0; i < maxSteps; i++) {
-  //     if (i !== activeStep) {
-  //       const img = new Image();
-  //       img.src = artist.thumbnails[i].link;
-  //       images.push(img);
-  //     }
-  //   }
-  //   return images;
-  // }, [artist, activeStep, maxSteps]);
+  const preloadedImages = useMemo(() => {
+    const images = [];
+    for (let i = 0; i < maxSteps; i++) {
+      if (i !== activeStep) {
+        const img = new Image();
+        img.src = artist.thumbnails[i].link;
+        images.push(img);
+      }
+    }
+    return images;
+  }, [artist, activeStep, maxSteps]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => {
@@ -87,7 +93,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
         modalOpen={modalOpen}
         setModalOpen={setModalOpen}
       />
-      <Card sx={{ maxWidth: 300, padding: 0, margin: 0 }}>
+      <Card sx={cardStyle}>
         <CardHeader
           title={artist.name || 'Artist Name'}
           subheader={
@@ -100,37 +106,14 @@ export const ArtistCard: FC<ArtistCardProps> = ({
               </Typography>
             </>
           }
-          sx={{
-            height: '120px',
-            padding: '0.5rem',
-            paddingTop: '1rem',
-          }}
+          sx={cardHeaderStyle}
         />
-        <Box
-          sx={{
-            height: '275px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            //backgroundColor: '#fff',
-            // mb: 1,
-          }}
-        >
+        <Box sx={cardMediaContainer}>
           {/* TODO: link should open a modal with their generated art examples */}
           {/* <Link href={artist.portfolio} target="_blank" rel="noreferrer"> */}
           {/* <Watermark text={artist.name || 'ArtistName'}> */}
-          <Box
-            sx={{
-              // border: '1px solid #fff',
-              cursor: 'point',
-              position: 'relative',
-            }}
-          >
-            <Box
-              onClick={() => setModalOpen(true)}
-              sx={{ width: '100%', minWidth: 280 }}
-            >
+          <Box sx={cardMediaContentsStyle}>
+            <Box onClick={() => setModalOpen(true)} sx={modalContainer}>
               <CardMedia
                 component="img"
                 // height={210}
@@ -141,50 +124,23 @@ export const ArtistCard: FC<ArtistCardProps> = ({
                 alt={
                   artist?.thumbnails[activeStep]?.alt || 'Monet Water Lilies'
                 }
-                sx={{
-                  '& .MuiCardMedia-img': {
-                    border: '1px solid #fff',
-                  }, //not working
-                  padding: 0,
-                  margin: 0,
-                  maxHeight: 200,
-                  minWidth: 280,
-                  // borderBottom: '1px solid white',
-                  pointerEvents: 'none',
-                }}
+                sx={cardMediaStyle}
               />
             </Box>
-            <OpenInNewOutlined
-              sx={{ position: 'absolute', top: '0.1rem', right: '0.2rem' }}
-            />
+            <OpenInNewOutlined sx={openModalIconStyle} />
             <MobileStepper
               steps={maxSteps}
               position="static"
               activeStep={activeStep}
-              sx={{
-                width: '100%',
-                position: 'relative',
-                // top: '-1rem',
-                padding: '0 0.2rem',
-                background: 'transparent',
-                // height: 0,
-              }}
+              sx={stepperStyle}
               nextButton={
-                <Button
-                  size="small"
-                  onClick={handleNext}
-                  disabled={activeStep === maxSteps - 1}
-                >
+                <Button size="small" onClick={handleNext}>
                   Next
                   <KeyboardArrowRight />
                 </Button>
               }
               backButton={
-                <Button
-                  size="small"
-                  onClick={handleBack}
-                  disabled={activeStep === 0}
-                >
+                <Button size="small" onClick={handleBack}>
                   <KeyboardArrowLeft />
                   Back
                 </Button>
@@ -230,15 +186,7 @@ export const ArtistCard: FC<ArtistCardProps> = ({
             {artist.biography || 'Artist Description'}
           </Typography>
         </CardContent>
-        <CardActions
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            paddingTop: '1rem',
-          }}
-        >
+        <CardActions sx={cardActionStyle}>
           {walletState?.isConnected && (
             <Button variant="outlined" disabled={disabled} onClick={onClick}>
               Use This Style

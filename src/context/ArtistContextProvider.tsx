@@ -57,6 +57,9 @@ export const ArtStyleTags = [
   'Pixel Art',
   'Watercolour',
   'Conceptual',
+  'Contemporary',
+  'Fantasy',
+  'Pin-up',
 ]; //string of available styles - should be generated from current
 
 export enum ArtistType {
@@ -85,9 +88,10 @@ export interface ArtistData {
   style: string;
   period: string;
   tags: string[];
-  nationality: string;
+  nationality?: string;
   description: string;
   portfolio: string;
+  avatar?: string;
   thumbnails: ArtistThumbnail[]; //art thumbnails for the artist
   metadata?: { bacalhau_state: string; contract_state: string; error: string };
 }
@@ -155,7 +159,7 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
     try {
       const response = await fetch(getAPIServer('/artists'));
       const data = await response.json();
-      // console.log('artist data fetched', data);
+      console.log('artist data fetched', data);
       let formattedData: ArtistData[] = [];
       data.forEach((item: any) => {
         if (item.bacalhau_state === 'Complete') {

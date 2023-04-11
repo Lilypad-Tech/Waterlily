@@ -211,7 +211,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
             isConnected: true,
             web3: true,
           });
-          fetchWalletBalance();
+          fetchWalletBalance(accounts[0]);
         }
       });
       // Subscribe to chainId change
@@ -230,7 +230,8 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
             ...prevState,
             chainId: chainId,
           }));
-          fetchWalletBalance();
+          console.log('wallet update', walletState);
+          fetchWalletBalance(walletState.accounts[0]);
         }
       });
       window.ethereum.on(
@@ -250,8 +251,10 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
     }
   };
 
-  const fetchWalletBalance = async () => {
-    if (!window.ethereum || !walletState.accounts[0]) {
+  const fetchWalletBalance = async (
+    account: string = walletState.accounts[0]
+  ) => {
+    if (!window.ethereum || !account) {
       return 0;
     }
     // const provider = new ethers.providers.JsonRpcProvider(network.rpc[0]);
@@ -259,7 +262,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
       // const balance = await provider.getBalance(walletState.accounts[0]);
       const balance = await window.ethereum.request({
         method: 'eth_getBalance',
-        params: [walletState.accounts[0]],
+        params: [account],
       });
       console.log('balance', balance);
       const formattedBalance = ethers.utils.formatEther(balance);

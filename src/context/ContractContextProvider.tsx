@@ -505,7 +505,8 @@ export const ContractContextProvider = ({
           ), //receipt.transactionHash
         },
       }));
-      return receipt;
+
+      return JSON.stringify(receipt, null, 4);
     } catch (error: any) {
       console.error(error);
       let errorMessage = error.toString();
