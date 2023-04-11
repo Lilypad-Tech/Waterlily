@@ -6,6 +6,7 @@ import ArtistSignup from './ArtistSignup';
 //I think my context's maybe shouldn't have children
 export default function Home() {
   const router = useRouter();
+
   return (
     <>
       {/* <WebHeader />

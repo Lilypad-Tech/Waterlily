@@ -4,8 +4,8 @@ import { ArrowRightAltOutlined } from '@mui/icons-material';
 export const LinkTo: React.FC<{
   text: string;
   href?: string;
-  arrow?: boolean;
-}> = ({ text, href, arrow = true }) => {
+  icon?: any;
+}> = ({ text, href, icon = <ArrowRightAltOutlined /> }) => {
   return (
     <Link
       href={
@@ -26,7 +26,7 @@ export const LinkTo: React.FC<{
         }}
       >
         <Typography>{text}</Typography>
-        {arrow && <ArrowRightAltOutlined />}
+        {icon}
       </Box>
     </Link>
   );

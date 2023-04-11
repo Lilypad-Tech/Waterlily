@@ -18,7 +18,6 @@ import {
   Snackbar,
   Alert,
 } from '@mui/material';
-import { md5 } from 'pure-md5';
 import {
   useNavigation,
   defaultWalletState,
@@ -27,6 +26,7 @@ import {
   StatusContext,
   ContractContext,
   defaultStatusState,
+  NetworkContext,
 } from '@/context';
 import { HeaderLayout, TitleLayout } from '@/layouts';
 import {
@@ -57,7 +57,8 @@ import {
   stepButtonWrapper,
 } from '@/styles';
 
-const TEST_ARTIST_ID = 'bafybeigzcrdmnjb2rtnradex62vkfenm764iud64lzpzjqhbzfg7gho6za';
+// const TEST_ARTIST_ID =
+//   'bafybeigzcrdmnjb2rtnradex62vkfenm764iud64lzpzjqhbzfg7gho6za';
 const adminAddress = process.env.NEXT_PUBLIC_ADMIN_WALLET;
 
 const ArtistSignup: React.FC<{}> = () => {
@@ -66,6 +67,7 @@ const ArtistSignup: React.FC<{}> = () => {
     useContext(WalletContext);
   const { registerArtistWithContract, submitArtistFormToAPI } =
     useContext(ContractContext);
+  const { network } = useContext(NetworkContext);
   const {
     snackbar,
     closeSnackbar,
@@ -75,6 +77,31 @@ const ArtistSignup: React.FC<{}> = () => {
   const { createArtistId } = useContext(ImageContext);
 
   const [activeStep, setActiveStep] = useState(0);
+
+  const renderWalletRequirementsMessage = () => {
+    return (
+      <Box
+        sx={{
+          border: '1px solid #b583ff',
+          borderRadius: '10px',
+          padding: '0.5rem',
+          margin: '0 4rem',
+        }}
+      >
+        <Typography>
+          A wallet with a balance of min. 0.1FIL is required to sign up to
+          Waterlily.ai
+        </Typography>
+        <Typography>
+          We do this to try to deter imposters as well as to cover the costs of
+          adding new artists to the Waterlily contract.
+        </Typography>
+        <Typography>
+          Please contact us if you have trouble with this step.
+        </Typography>
+      </Box>
+    );
+  };
 
   const validateFormInput = async (values: FormData) => {
     const isValid = await formValidationSchema
@@ -111,7 +138,6 @@ const ArtistSignup: React.FC<{}> = () => {
 
   //form functions
   const handleFormSubmit = async (values: FormData) => {
-    event?.preventDefault();
     console.log(values);
     setStatusState({
       ...defaultStatusState.statusState,
@@ -128,13 +154,13 @@ const ArtistSignup: React.FC<{}> = () => {
       const { images, ...cidData } = formattedValues;
       const artistId = await createArtistId(cidData);
       console.log('formattedValues', formattedValues);
-      // const artistId: string = md5(
-      //   formattedValues.data.name +
-      //     formattedValues.data.email +
-      //     new Date().getTime()
-      // );
       if (!artistId) throw Error('Could not create artist ID');
-      await registerArtistWithContract(artistId)
+      const receipt = await registerArtistWithContract(artistId);
+      console.log('receipt in signup', receipt);
+      if (Boolean(receipt))
+        throw Error(
+          'Could not call the contract - check your wallet transaction'
+        );
       await submitArtistFormToAPI(
         artistId,
         //TEST_ARTIST_ID,
@@ -165,7 +191,7 @@ const ArtistSignup: React.FC<{}> = () => {
   return (
     <Box sx={container}>
       <HeaderLayout>
-        <Box onClick={() => handleNavigation('/')}>{'<- Back'}</Box>
+        <Box onClick={() => handleNavigation('')}>{'<- Back'}</Box>
         <WalletButton />
       </HeaderLayout>
       <TitleLayout>
@@ -188,8 +214,15 @@ const ArtistSignup: React.FC<{}> = () => {
       3. There is more than 0.1 FIL in the user's fil account
        */}
       {!walletState.isConnected || !walletState.accounts[0] ? (
-        <WalletFormDetails />
-      ) : walletState.accounts[0] ? (
+        <div>
+          <WalletFormDetails />
+          {renderWalletRequirementsMessage()}
+        </div>
+      ) : walletState.accounts[0] && walletState.balance < 0.1 ? (
+        renderWalletRequirementsMessage()
+      ) : walletState.chainId !== network.chainId ? (
+        <div>wrong chain</div>
+      ) : (
         <Formik
           initialValues={initialFormValues}
           validationSchema={formValidationSchema}
@@ -276,8 +309,6 @@ const ArtistSignup: React.FC<{}> = () => {
             </Box>
           )}
         </Formik>
-      ) : (
-        <div>error</div>
       )}
       <LinkTo text="Got Questions? Check out the FAQ" />
       {snackbar.open && (

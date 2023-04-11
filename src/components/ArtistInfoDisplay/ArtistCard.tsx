@@ -1,5 +1,5 @@
-import { FC, ReactElement, useState, useContext } from 'react';
-import { Watermark } from '@hirohe/react-watermark';
+import { FC, ReactElement, useState, useContext, useMemo } from 'react';
+// import { Watermark } from '@hirohe/react-watermark';
 import {
   Box,
   Card,
@@ -10,22 +10,30 @@ import {
   Typography,
   Link,
   Button,
-  Stack,
   Chip,
+  MobileStepper,
+  IconButton,
 } from '@mui/material';
+import {
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  OpenInNewOutlined,
+} from '@mui/icons-material';
+import { ArtistModal } from '@/components';
 import { WalletContext, ArtistData } from '@/context';
-import { artists } from '@/definitions';
+import {
+  boxStyle,
+  cardActionStyle,
+  cardHeaderStyle,
+  cardMediaContainer,
+  cardMediaContentsStyle,
+  cardMediaStyle,
+  cardStyle,
+  modalContainer,
+  openModalIconStyle,
+  stepperStyle,
+} from '@/styles/artistCardStyles';
 
-const boxStyle = {
-  display: 'flex',
-  justifyContent: 'center',
-  padding: '1rem',
-};
-
-type ImageThumbnail = {
-  link: string;
-  alt: string;
-};
 //TO DO fix this to work off artists definitions
 interface ArtistCardProps {
   artist: ArtistData;
@@ -38,105 +46,181 @@ export const ArtistCard: FC<ArtistCardProps> = ({
   disabled = false,
   onClick,
 }): ReactElement => {
-  const [expanded, setExpanded] = useState(false);
   const { walletState } = useContext(WalletContext);
+  const [activeStep, setActiveStep] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
+  const maxSteps = artist.thumbnails.length;
 
-  const subHeader = () => {
-    return (
-      <>
-        <Typography sx={{ padding: 0 }}>
-          {artist.period || 'Unknown'}
-        </Typography>
-        <Typography sx={{ padding: 0 }}>
-          {artist.style || 'Artist Style'}
-        </Typography>
-      </>
-    );
+  const preloadedImages = useMemo(() => {
+    const images = [];
+    for (let i = 0; i < maxSteps; i++) {
+      if (i !== activeStep) {
+        const img = new Image();
+        img.src = artist.thumbnails[i].link;
+        images.push(img);
+      }
+    }
+    return images;
+  }, [artist, activeStep, maxSteps]);
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => {
+      if (prevActiveStep === maxSteps - 1) {
+        return 0;
+      }
+      const nextStep = prevActiveStep + 1;
+      const nextImg = new Image();
+      nextImg.src = artist.thumbnails[nextStep].link;
+      return nextStep;
+    });
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => {
+      if (prevActiveStep === 0) {
+        return maxSteps - 1;
+      }
+      const prevStep = prevActiveStep - 1;
+      const prevImg = new Image();
+      prevImg.src = artist.thumbnails[prevStep].link;
+      return prevStep;
+    });
   };
 
   return (
     <Box sx={boxStyle}>
-      <Card sx={{ maxWidth: 300, padding: 0, margin: 0 }}>
+      <ArtistModal
+        artist={artist}
+        modalOpen={modalOpen}
+        setModalOpen={setModalOpen}
+      />
+      <Card sx={cardStyle}>
         <CardHeader
-          title={artist.name || 'Artist Name'}
+          title={
+            <Typography variant="h5">{artist.name || 'Artist Name'}</Typography>
+          }
           subheader={
             <>
-              <Typography sx={{ padding: 0 }}>
-                {artist.period || 'Unknown'}
-              </Typography>
-              <Typography sx={{ padding: 0, fontSize: '0.8rem' }}>
-                {artist.nationality || 'Nationality'}
+              <Link
+                href={artist.portfolio}
+                target="_blank"
+                rel="noreferrer"
+                sx={{ paddingTop: '0.5rem' }}
+              >
+                <Typography variant="subtitle1">Artist Portfolio</Typography>
+              </Link>
+              <Typography
+                sx={{
+                  paddingTop: '0.5rem',
+                  color: 'rgba(255, 255, 255, 0.7);',
+                }}
+              >
+                {artist.category} {/*artist.artistType*/}
               </Typography>
             </>
+            // <>
+            //   <Typography sx={{ padding: 0 }}>
+            //     {artist.period || 'Unknown'}
+            //   </Typography>
+            //   <Typography sx={{ padding: 0, fontSize: '0.8rem' }}>
+            //     {artist.nationality || 'Nationality'}
+            //   </Typography>
+            // </>
           }
-          sx={{
-            height: '120px',
-            padding: '0.5rem',
-            paddingTop: '1rem',
-          }}
+          sx={cardHeaderStyle}
         />
-        <Box
-          sx={{
-            height: '240px',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            //backgroundColor: '#fff',
-            // mb: 1,
-          }}
-        >
+        <Box sx={cardMediaContainer}>
           {/* TODO: link should open a modal with their generated art examples */}
-          <Link href={artist.portfolio} target="_blank" rel="noreferrer">
-            <Watermark text={artist.name || 'ArtistName'}>
+          {/* <Link href={artist.portfolio} target="_blank" rel="noreferrer"> */}
+          {/* <Watermark text={artist.name || 'ArtistName'}> */}
+          <Box sx={cardMediaContentsStyle}>
+            <Box onClick={() => setModalOpen(true)} sx={modalContainer}>
               <CardMedia
                 component="img"
-                // height="250"
+                // height={210}
                 image={
-                  artist.thumbnails[0]?.link || './monet-water-lilies.jpeg'
+                  artist.thumbnails[activeStep].link ||
+                  './monet-water-lilies.jpeg'
                 }
-                alt={artist.thumbnails[0]?.alt || 'Monet Water Lilies'}
-                sx={{
-                  pointerEvents: 'none',
-                  border: '1px solid #fff',
-                  padding: 0,
-                  margin: 0,
-                }}
+                alt={
+                  artist?.thumbnails[activeStep]?.alt || 'Monet Water Lilies'
+                }
+                sx={cardMediaStyle}
               />
-            </Watermark>
-          </Link>
+            </Box>
+            <IconButton
+              onClick={() => setModalOpen(true)}
+              sx={openModalIconStyle}
+            >
+              <OpenInNewOutlined sx={openModalIconStyle} />
+            </IconButton>
+            <MobileStepper
+              steps={maxSteps}
+              position="static"
+              activeStep={activeStep}
+              sx={stepperStyle}
+              nextButton={
+                <Button
+                  size="small"
+                  onClick={handleNext}
+                  disabled={maxSteps === 1}
+                >
+                  Next
+                  <KeyboardArrowRight />
+                </Button>
+              }
+              backButton={
+                <Button
+                  size="small"
+                  onClick={handleBack}
+                  disabled={maxSteps === 1}
+                >
+                  <KeyboardArrowLeft />
+                  Back
+                </Button>
+              }
+            />
+          </Box>
+          {/* <Link
+            href={artist.portfolio}
+            target="_blank"
+            rel="noreferrer"
+            sx={{ paddingTop: '0.5rem' }}
+          >
+            <Typography variant="subtitle1">Artist Portfolio</Typography>
+          </Link> */}
+          {/* </Watermark> */}
+          {/* </Link> */}
         </Box>
-        <CardContent
+        {/* <CardContent
           sx={{
-            height: '264px',
-            padding: '0 1rem',
+            height: '270px',
+            padding: '0.5rem',
           }}
         >
           <Typography sx={{ padding: 0, paddingBottom: '0.3rem' }}>
             {artist.style || 'Artist Style'}
           </Typography>
           <Box display="flex" flexWrap="wrap" justifyContent="center">
-            {artist.tags.map((tag) => {
-              return (
-                <Box mr={1} mb={0.5}>
-                  <Chip label={tag} variant="outlined" size="small" />
-                </Box>
-              );
-            })}
+            {artist.tags.length > 0 &&
+              artist.tags.map((tag) => {
+                if (tag === '') return;
+                return (
+                  <Box mr={1} mb={0.5} key={tag}>
+                    <Chip label={tag} variant="outlined" size="small" />
+                  </Box>
+                );
+              })}
           </Box>
-          <Typography variant="body2" color="text.secondary">
-            {artist.description || 'Artist Description'}
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ paddingTop: '0.5rem' }}
+          >
+            {artist.biography || 'Artist Description'}
           </Typography>
-        </CardContent>
-        <CardActions
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            paddingTop: '1rem',
-          }}
-        >
+        </CardContent> */}
+        <CardActions sx={cardActionStyle}>
           {walletState?.isConnected && (
             <Button variant="outlined" disabled={disabled} onClick={onClick}>
               Use This Style

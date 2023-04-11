@@ -7,9 +7,7 @@ import React, {
 } from 'react';
 import Fuse from 'fuse.js';
 
-import {
-  getAPIServer,
-} from '../definitions/network'
+import { getAPIServer } from '../definitions/network';
 
 export const ArtStyleTags = [
   'Surrealism',
@@ -41,6 +39,7 @@ export const ArtStyleTags = [
   'Neoclassicism',
   'Neo-Impressionism',
   'Post-Impressionism',
+  'Post-Surrealism',
   'Realism',
   'Avant-garde',
   'Baroque',
@@ -58,6 +57,9 @@ export const ArtStyleTags = [
   'Pixel Art',
   'Watercolour',
   'Conceptual',
+  'Contemporary',
+  'Fantasy',
+  'Pin-up',
 ]; //string of available styles - should be generated from current
 
 export enum ArtistType {
@@ -78,17 +80,21 @@ export enum ArtistCategory {
 }
 
 export interface ArtistData {
-  artistId: string; //how do we keep this hidden...
+  biography: string;
+  artistId?: string; //how do we keep this hidden...
   artistType: ArtistType;
   name: string;
+  walletAddress: string;
   category: ArtistCategory;
   style: string;
   period: string;
   tags: string[];
-  nationality: string;
+  nationality?: string;
   description: string;
   portfolio: string;
+  avatar?: string;
   thumbnails: ArtistThumbnail[]; //art thumbnails for the artist
+  metadata?: { bacalhau_state: string; contract_state: string; error: string };
 }
 
 const defaultArtistData: ArtistData = {
@@ -154,7 +160,32 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
     try {
       const response = await fetch(getAPIServer('/artists'));
       const data = await response.json();
-      setArtistState(data);
+      console.log('artist data fetched', data);
+      let formattedData: ArtistData[] = [];
+      data.forEach((item: any) => {
+        if (item.bacalhau_state === 'Complete') {
+          let thumbs = item.data.thumbnails.map((thumb: string, i: number) => {
+            // const newThumb = await addWatermark(thumb, item.name);
+            // console.log('thumb', thumb);
+            return { link: thumb, alt: `${item.data.name} thumbnail${i}` };
+          });
+          let tags = item.data.tags.split(',');
+          let newItem: ArtistData = {
+            ...item.data,
+            artistId: item.id,
+            metadata: {
+              bacalhau_state: item.bacalhau_state,
+              contract_state: item.contract_state,
+              error: item.error,
+            },
+            thumbnails: thumbs,
+            tags: tags,
+          };
+          formattedData.push(newItem);
+        }
+      });
+      setArtistState(formattedData);
+      console.log('artist data set', formattedData);
     } catch (error) {
       console.error(error);
     }
@@ -197,6 +228,7 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
 
   const addWatermark = async (imgSrc: string, wmText: string) => {
     const image = new Image();
+    image.crossOrigin = 'anonymous';
     image.src = imgSrc;
     await new Promise((resolve, reject) => {
       image.onload = resolve;
@@ -236,8 +268,9 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
       textWidth = ctx?.measureText(text).width;
     }
 
+    //position
     const x = image.width / 2 - textWidth / 2;
-    const y = image.height - fontSize / 2;
+    const y = image.height - fontSize / 2; //fontSize * 1.3; //image.height - fontSize / 2;
 
     // Add text shadow
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';

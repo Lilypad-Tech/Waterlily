@@ -72,13 +72,8 @@ export const UserInput: FC<UserInputProps> = ({
     setStatusState,
     setSnackbar,
   } = useContext(StatusContext);
-  const {
-    walletState,
-    verifyChainId,
-    changeWalletChain,
-    checkBalance,
-    addNetwork,
-  } = useContext(WalletContext);
+  const { walletState, verifyChainId, changeWalletChain, addNetwork } =
+    useContext(WalletContext);
   const { setImagePrompt, setImageArtist, resetAllImageContext } =
     useContext(ImageContext);
   const artistObj = artists.reduce<Record<string, any>>((acc, artist) => {
@@ -101,12 +96,21 @@ export const UserInput: FC<UserInputProps> = ({
       isLoading: 'Submitting Waterlily job to the FVM network ...',
     });
     if (verifyChainId(network.chainId)) {
-      let balance = await checkBalance();
+      let balance = walletState?.balance;
       if (!balance || balance < MIN_BALANCE) {
         setSnackbar({
           open: true,
           type: 'warning',
           message: "Sorry, you don't have enough $FIL for this transaction :(",
+        });
+        setStatusState({
+          ...defaultStatusState.statusState,
+          isMessage: true,
+          message: {
+            title: 'Please top up your wallet balance',
+            description:
+              "Sorry, you don't have enough $FIL for this transaction :(",
+          },
         });
         return;
       }

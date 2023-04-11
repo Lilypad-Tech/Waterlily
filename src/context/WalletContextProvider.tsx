@@ -174,7 +174,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
       await window.ethereum
         .request({ method: 'eth_accounts' })
         .then(async (accounts: string[]) => {
-          console.log('Connected to wallet...');
+          console.log('Connected to wallet...', accounts);
           const chainId = await fetchChainId();
           const balance = await fetchWalletBalance();
           const connected = accounts.length > 0;
@@ -211,6 +211,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
             isConnected: true,
             web3: true,
           });
+          fetchWalletBalance(accounts[0]);
         }
       });
       // Subscribe to chainId change
@@ -229,13 +230,17 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
             ...prevState,
             chainId: chainId,
           }));
+          console.log('wallet update', walletState);
+          fetchWalletBalance(walletState.accounts[0]);
         }
       });
       window.ethereum.on(
         'balanceChanged',
         (address: string, balance: ethers.BigNumber) => {
           console.log('Balance Changed', address, balance);
-          setWalletState({ ...walletState, balance });
+          const formattedBalance = ethers.utils.formatEther(balance);
+          const balanceNumber = parseFloat(formattedBalance);
+          setWalletState({ ...walletState, balance: balanceNumber });
         }
       );
       window.ethereum.on('transactionHash', (hash: string) => {
@@ -246,13 +251,20 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
     }
   };
 
-  const fetchWalletBalance = async () => {
-    if (!window.ethereum || !walletState.accounts[0]) {
+  const fetchWalletBalance = async (
+    account: string = walletState.accounts[0]
+  ) => {
+    if (!window.ethereum || !account) {
       return 0;
     }
-    const provider = new ethers.providers.JsonRpcProvider(network.rpc[0]);
+    // const provider = new ethers.providers.JsonRpcProvider(network.rpc[0]);
     try {
-      const balance = await provider.getBalance(walletState.accounts[0]);
+      // const balance = await provider.getBalance(walletState.accounts[0]);
+      const balance = await window.ethereum.request({
+        method: 'eth_getBalance',
+        params: [account],
+      });
+      console.log('balance', balance);
       const formattedBalance = ethers.utils.formatEther(balance);
       console.log('format balance', formattedBalance);
       const balanceNumber = parseFloat(formattedBalance);

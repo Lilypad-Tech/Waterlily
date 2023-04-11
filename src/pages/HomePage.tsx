@@ -16,7 +16,6 @@ import {
   Subtitle,
   Description,
   UserInput,
-  ArtistCard,
   WalletButton,
   ImageHeader,
   CalloutMessage,
@@ -114,15 +113,15 @@ const HomePage = () => {
       <SectionLayout>
         {!walletState?.isConnected ? (
           <WalletButton />
-        ) : !Boolean(statusState.isLoading) ? (
-          <UserInputLayout>
-            <UserInput
-              initialPrompt={imagePrompt}
-              initialArtist={imageArtist}
-            />
-          </UserInputLayout>
         ) : (
-          <StatusMessage />
+          !Boolean(statusState.isLoading) && (
+            <UserInputLayout>
+              <UserInput
+                initialPrompt={imagePrompt}
+                initialArtist={imageArtist}
+              />
+            </UserInputLayout>
+          )
         )}
       </SectionLayout>
       <ArtistLayout>
