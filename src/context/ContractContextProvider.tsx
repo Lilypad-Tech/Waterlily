@@ -595,12 +595,12 @@ export const ContractContextProvider = ({
         isLoading: '', //stop loading now
         isMessage: true,
         message: {
-          title: `Congratulations ${data.name}! - now training your AI model on your images on Bacalhau!`,
+          title: `Congratulations ${data.name}! We're training an AI model on your images with Bacalhau!`,
           description: (
             <>
               <div>
                 Training a model takes a few hours or so depending on demand.
-                Check back then to find your profile on Waterlily.ai!
+                Check back soon to find your profile live on Waterlily.ai!
               </div>
               <a
                 href={`${network.blockExplorer}${txHash}`}

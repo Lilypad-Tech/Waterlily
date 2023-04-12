@@ -63,6 +63,11 @@ declare let window: any;
 const adminAddress = '0x9e24343032E385a6d0FEaeAd89628F9110a43375'; //process.env.NEXT_PUBLIC_ADMIN_WALLET;
 
 const WalletRequirementsMessage = () => {
+  const { connectWallet } = useContext(WalletContext);
+  const init = async () => {
+    await connectWallet();
+  };
+  init();
   return (
     <Box
       sx={{
@@ -89,12 +94,8 @@ const WalletRequirementsMessage = () => {
 
 const ArtistSignup: React.FC<{}> = () => {
   const { handleNavigation } = useNavigation();
-  const {
-    walletState = defaultWalletState.walletState,
-    connectWallet,
-    fetchWalletBalance,
-    checkForWalletConnection,
-  } = useContext(WalletContext);
+  const { walletState = defaultWalletState.walletState, connectWallet } =
+    useContext(WalletContext);
   const { registerArtistWithContract, submitArtistFormToAPI } =
     useContext(ContractContext);
   const { network } = useContext(NetworkContext);
@@ -117,6 +118,10 @@ const ArtistSignup: React.FC<{}> = () => {
       walletInit();
     }
   }, []);
+
+  const checkConnection = async () => {
+    return await connectWallet();
+  };
 
   const validateFormInput = async (values: FormData) => {
     const isValid = await formValidationSchema
