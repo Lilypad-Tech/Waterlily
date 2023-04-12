@@ -20,6 +20,7 @@ import {
   defaultStatusState,
   ImageContext,
   ArtistContext,
+  defaultWalletState,
 } from '@/context';
 
 const MIN_BALANCE = 0.15;
@@ -72,8 +73,13 @@ export const UserInput: FC<UserInputProps> = ({
     setStatusState,
     setSnackbar,
   } = useContext(StatusContext);
-  const { walletState, verifyChainId, changeWalletChain, addNetwork } =
-    useContext(WalletContext);
+  const {
+    walletState = defaultWalletState.walletState,
+    verifyChainId,
+    changeWalletChain,
+    addNetwork,
+    fetchWalletBalance,
+  } = useContext(WalletContext);
   const { setImagePrompt, setImageArtist, resetAllImageContext } =
     useContext(ImageContext);
   const artistObj = artists.reduce<Record<string, any>>((acc, artist) => {
@@ -96,8 +102,9 @@ export const UserInput: FC<UserInputProps> = ({
       isLoading: 'Submitting Waterlily job to the FVM network ...',
     });
     if (verifyChainId(network.chainId)) {
-      let balance = walletState?.balance;
-      if (!balance || balance < MIN_BALANCE) {
+      let balance = await fetchWalletBalance(walletState.accounts[0]);
+      console.log('balance verify', balance, typeof balance);
+      if (balance < MIN_BALANCE) {
         setSnackbar({
           open: true,
           type: 'warning',

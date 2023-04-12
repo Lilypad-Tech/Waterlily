@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import {
   Formik,
   // useFormikContext,
@@ -57,6 +57,7 @@ import {
   stepButtonWrapper,
 } from '@/styles';
 
+declare let window: any;
 // const TEST_ARTIST_ID =
 //   'bafybeigzcrdmnjb2rtnradex62vkfenm764iud64lzpzjqhbzfg7gho6za';
 const adminAddress = '0x9e24343032E385a6d0FEaeAd89628F9110a43375'; //process.env.NEXT_PUBLIC_ADMIN_WALLET;
@@ -88,8 +89,12 @@ const WalletRequirementsMessage = () => {
 
 const ArtistSignup: React.FC<{}> = () => {
   const { handleNavigation } = useNavigation();
-  const { walletState = defaultWalletState.walletState } =
-    useContext(WalletContext);
+  const {
+    walletState = defaultWalletState.walletState,
+    connectWallet,
+    fetchWalletBalance,
+    checkForWalletConnection,
+  } = useContext(WalletContext);
   const { registerArtistWithContract, submitArtistFormToAPI } =
     useContext(ContractContext);
   const { network } = useContext(NetworkContext);
@@ -102,6 +107,16 @@ const ArtistSignup: React.FC<{}> = () => {
   const { createArtistId } = useContext(ImageContext);
 
   const [activeStep, setActiveStep] = useState(0);
+
+  //why do i need this gah
+  useEffect(() => {
+    if (window.ethereum) {
+      const walletInit = async () => {
+        await connectWallet();
+      };
+      walletInit();
+    }
+  }, []);
 
   const validateFormInput = async (values: FormData) => {
     const isValid = await formValidationSchema
@@ -238,10 +253,13 @@ const ArtistSignup: React.FC<{}> = () => {
           <WalletFormDetails />
           <WalletRequirementsMessage />
         </div>
-      ) : walletState.accounts[0] && walletState.balance < 0 ? (
+      ) : walletState.accounts[0] && walletState.balance < 0.1 ? (
         <WalletRequirementsMessage />
       ) : walletState.chainId !== network.chainId ? (
-        <div>wrong chain</div>
+        <>
+          <div>Wrong chain {walletState.chainId}</div>
+          <div>{network.chainId}</div>
+        </>
       ) : (
         <Formik
           initialValues={initialFormValues}

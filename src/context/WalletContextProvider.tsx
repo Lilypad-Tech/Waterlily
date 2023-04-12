@@ -34,7 +34,7 @@ interface WalletContextValue {
   changeWalletChain: (reqChainId: string) => Promise<void>;
   addNetwork: (networkData: NetworkDataType) => Promise<void>;
   disconnectWallet: () => void;
-  fetchWalletBalance: () => Promise<number> | number;
+  fetchWalletBalance: (acct?: string) => Promise<number>;
 }
 
 export const defaultWalletState = {
@@ -141,16 +141,18 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
       const accounts: string[] = await fetchWalletAccounts();
       const chainId = await fetchChainId();
       const balance = await fetchWalletBalance();
-      setWalletState({
+      setWalletState((prevState) => ({
+        ...prevState,
         web3: true,
         isConnected: true,
-        accounts,
-        chainId,
-        balance,
-      });
+        accounts: accounts,
+        chainId: chainId,
+        balance: balance,
+      }));
       if (!verifyChainId(network.chainId)) {
         await changeWalletChain(network.chainId);
       }
+      setWalletListeners();
     } else {
       setWalletState(defaultWalletState.walletState);
     }
@@ -254,11 +256,12 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
 
   const fetchWalletBalance = async (
     account: string = walletState.accounts[0]
-  ) => {
+  ): Promise<number> => {
     if (!window.ethereum || !account) {
       return 0;
     }
     // const provider = new ethers.providers.JsonRpcProvider(network.rpc[0]);
+    let balanceNumber: number;
     try {
       // const balance = await provider.getBalance(walletState.accounts[0]);
       const balance = await window.ethereum.request({
@@ -268,9 +271,9 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
       console.log('balance', balance);
       const formattedBalance = ethers.utils.formatEther(balance);
       console.log('format balance', formattedBalance);
-      const balanceNumber = parseFloat(formattedBalance);
+      balanceNumber = parseFloat(formattedBalance);
       console.log('balance', balanceNumber);
-      setWalletState({ ...walletState, balance: balanceNumber });
+      setWalletState((prevState) => ({ ...prevState, balance: balanceNumber }));
       return balanceNumber;
     } catch (error) {
       console.log('error getting balance', error);
