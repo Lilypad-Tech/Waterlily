@@ -266,7 +266,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
   };
 
   const getQuickImageURL = (jobID: number, imageIndex: number) => {
-    const base = getAPIServer(`files/generated_images/${jobID}`);
+    const base = getAPIServer(`/files/generated_images/${jobID}`);
     if (imageIndex < 0) return `${base}/combined.jpg`;
     return `${base}/image_${imageIndex}.png`;
   };
