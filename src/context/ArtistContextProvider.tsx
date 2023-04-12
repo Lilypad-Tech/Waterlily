@@ -198,12 +198,13 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
     return artistData[0].item;
   };
 
-  const findArtistById = (artistId: string) => {
+  const findArtistById = (artistId: string): ArtistData | null => {
     //search artistState
     const fuse = new Fuse(artistState, { keys: ['artistId'] });
     const artistData: any = fuse.search(artistId);
     console.log('artist data found', artistData);
-    return artistData[0].item;
+    if (artistData.length < 1) return {} as ArtistData;
+    else return artistData[0].item as ArtistData;
   };
 
   const addArtistToDB = () => {

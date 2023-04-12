@@ -18,10 +18,9 @@ import {
   defaultStatusState,
   defaultWalletState,
   ArtistContext,
+  ArtistData,
 } from '.';
-import {
-  getAPIServer,
-} from '../definitions/network'
+import { getAPIServer } from '../definitions/network';
 import { TokenInput } from 'nft.storage/dist/src/token';
 
 export interface StableDiffusionImage {
@@ -50,6 +49,23 @@ interface NFTProperties {
 
 export interface NFTMetadata extends TokenInput {
   properties: NFTProperties;
+}
+
+interface NFTJson extends TokenInput {
+  name: string;
+  description: string;
+  image: Blob; //,image.link, //should be a Blob - need to make it
+  properties: {
+    type: string;
+    prompt: string;
+    originalArtist: ArtistData | {};
+    imageID: number;
+    origins: {
+      ipfs: string; //original bacalhau ipfs link... hmm where to get this
+      img: { link: string; alt: string };
+    };
+    mintedBy: string;
+  };
 }
 
 export interface ImageState {
@@ -250,7 +266,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
   };
 
   const getQuickImageURL = (jobID: number, imageIndex: number) => {
-    const base = getAPIServer(`files/generated_images/${jobID}`)
+    const base = getAPIServer(`files/generated_images/${jobID}`);
     if (imageIndex < 0) return `${base}/combined.jpg`;
     return `${base}/image_${imageIndex}.png`;
   };
@@ -298,20 +314,25 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     }
 
     //fetch artist details...
-    const artistData = findArtistById(imageArtist.key);
+    const artistData: ArtistData | {} = findArtistById(imageArtist.key);
     console.log('artistData in image context', artistData);
+    const origArtist =
+      Object.keys(artistData).length > 0
+        ? artistData
+        : { name: imageArtist.name, artistId: imageArtist.key };
 
-    const nftJson: TokenInput = {
+    const nftJson: NFTJson = {
       name: 'Waterlily Ethical AI NFTs',
       description: `This NFT created by Waterlily.ai from artwork trained on artworks by ${imageArtist.name}. Creators are paid for every use of their artwork on waterlily.ai. Be part of the change.`,
       image: imageBlob, //,image.link, //should be a Blob - need to make it
       properties: {
         type: `Stable Diffusion Ethical AI-generated image by Waterlily.ai`,
         prompt: imagePrompt,
-        originalArtist: artistData,
+        originalArtist: origArtist,
         imageID: imageID,
         origins: {
           ipfs: ``, //original bacalhau ipfs link... hmm where to get this
+          img: image,
         },
         mintedBy: walletState?.accounts[0] || '',
       },
@@ -338,6 +359,8 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
           'Something went wrong creating the NFT metadata for storing to NFT.Storage',
       });
     }
+    let ipfsImageBlob = await NFTStorageClient.storeBlob(nftJson.image);
+    nftJson.properties.origins.ipfs = ipfsImageBlob;
     //setStatus here to loading
     let metadata: any = await NFTStorageClient.store(nftJson)
       .then((metadata) => {
