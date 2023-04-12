@@ -326,13 +326,24 @@ sudo sqlite3 /data/waterlily/staging/data.db
 select * from artist;
 ```
 
-## todo
+## manage bacalhau cluster
 
- * write the 6 control loops to trigger "actions"
- * get the artist training job spec working
-   * hijack the entrypoint to a script that first downloads the training data from the filestore
-   * the env needs to point back at the API filestore
-   * check this works with a "sleep 10 && ls -la /inputs" job
-   * post back the weights file to the filestore when done
- * once job is complete - write the state
- * trigger the contract
+Login to https://cloud.lambdalabs.com/instances
+
+Our instances are all labelled with `nodeXX-aXX-ai-art-cluster`
+
+Click the `Launch` link - there is a tmux session with bacalhau running.
+
+## job timeouts
+
+The `ClientID` for the waterlily requester node is: `e8d05c629ae033fb38af58acfe895c8df639cc95a51b7300fbea98429ee0bcb9`
+
+We add this to the `--job-execution-timeout-bypass-client-id` flag on the cluster.
+
+This means we can add timeouts to jobs of 1 hour and not suffer from the default 30 min timeout.
+
+```
+--job-execution-timeout-bypass-client-id e8d05c629ae033fb38af58acfe895c8df639cc95a51b7300fbea98429ee0bcb9
+```
+
+

@@ -19,7 +19,7 @@ var baseSpec = model.Spec{
 	Verifier:  model.VerifierNoop,
 	Publisher: model.PublisherIpfs,
 	Docker:    model.JobSpecDocker{},
-	Timeout:   0,
+	Timeout:   3600,
 	Resources: model.ResourceUsageConfig{
 		GPU: "1",
 	},
