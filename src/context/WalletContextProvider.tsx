@@ -34,7 +34,7 @@ interface WalletContextValue {
   changeWalletChain: (reqChainId: string) => Promise<void>;
   addNetwork: (networkData: NetworkDataType) => Promise<void>;
   disconnectWallet: () => void;
-  fetchWalletBalance: (acct?: string) => number;
+  fetchWalletBalance: (acct?: string) => Promise<number>;
 }
 
 export const defaultWalletState = {
@@ -63,7 +63,7 @@ export const defaultWalletState = {
   changeWalletChain: async (reqChainId: string) => {},
   addNetwork: async () => {},
   disconnectWallet: () => {},
-  fetchWalletBalance: () => {
+  fetchWalletBalance: async (): Promise<number> => {
     return 0;
   },
 };
@@ -256,7 +256,7 @@ export const WalletContextProvider = ({ children }: MyContextProviderProps) => {
 
   const fetchWalletBalance = async (
     account: string = walletState.accounts[0]
-  ): Promise<number> => {
+  ): Promise<any> => {
     if (!window.ethereum || !account) {
       return 0;
     }
