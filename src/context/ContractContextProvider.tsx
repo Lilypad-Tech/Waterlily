@@ -309,7 +309,7 @@ export const ContractContextProvider = ({
         isLoading: 'Generating your unique images on Bacalhau...!',
         isMessage: true,
         message: {
-          title: `Please be patient... This takes 30 seconds or so depending on demand.`,
+          title: `Please be patient... This takes 1-2 minutes depending on demand.`,
           description: (
             <a
               href={`${network.blockExplorer}${tx.hash}`}

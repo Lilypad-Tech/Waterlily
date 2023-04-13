@@ -1,15 +1,24 @@
 import { useContext } from 'react';
-import { Box, Typography, CardMedia, Card } from '@mui/material';
-import { ContractContext, ImageContext, IMAGE_NUMBER_ARRAY } from '@/context';
-import { artists } from '@/definitions';
+import { Box, Typography } from '@mui/material';
+import {
+  ContractContext,
+  ArtistContext,
+  ArtistData,
+  ImageContext,
+  IMAGE_NUMBER_ARRAY,
+} from '@/context';
+import { ImageQuickCard } from '@/components';
 
 export const GeneratedImages = () => {
   const { customerImages } = useContext(ContractContext);
   const { getQuickImageURL } = useContext(ImageContext);
+  const { findArtistById } = useContext(ArtistContext);
   return (
     <>
       {customerImages.map((image) => {
-        const artist = artists.find((a) => a.artistId === image.artist);
+        console.log('generated', image);
+        const artist: ArtistData | null = findArtistById(image.artist);
+        console.log('generated artist', artist);
         return (
           <Box
             key={image.id.toString()}
@@ -33,22 +42,22 @@ export const GeneratedImages = () => {
                 mt: 2,
               }}
             >
-              {IMAGE_NUMBER_ARRAY.map((imageNumber) => {
+              {IMAGE_NUMBER_ARRAY.map((imageNumber, idx) => {
+                console.log('artist?', artist);
+                const link = getQuickImageURL(image.id.toNumber(), imageNumber);
+                const alt = artist
+                  ? `${artist.name}-${image.id}-image${idx}`
+                  : `${image.id}-image${idx}`;
                 return (
-                  <Card
-                    key={imageNumber}
-                    sx={{
-                      maxWidth: 250,
-                      border: '1px solid white',
-                      ml: 1,
-                      mr: 1,
+                  <ImageQuickCard
+                    image={{
+                      link: link,
+                      alt: alt,
+                      minted: false,
                     }}
-                  >
-                    <CardMedia
-                      component="img"
-                      image={getQuickImageURL(image.id.toNumber(), imageNumber)}
-                    />
-                  </Card>
+                    idx={imageNumber}
+                    key={alt}
+                  />
                 );
               })}
             </Box>
