@@ -168,7 +168,7 @@ const dropText: Record<DropTextKey, JSX.Element> = {
 interface Props {
   maxFiles: number;
   formik: any;
-  name: string;
+  name: DropTextKey;
 }
 
 const ArtistPreview: FC<{
