@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
 import {
   Formik,
+  FormikErrors,
   // useFormikContext,
   // FormikHelpers,
   // FormikProps,
@@ -342,7 +343,13 @@ const ArtistSignup: React.FC<{}> = () => {
                       activeStep === formStepSections.length - 1 || // Disable on last step
                       !Object.keys(touched).length ||
                       formStepSectionValues[`values${activeStep}`].some(
-                        (fieldName) => Boolean(errors[fieldName])
+                        (fieldName: string) => {
+                          const fieldErrors =
+                            errors[fieldName as keyof FormData];
+                          const isFieldTouched =
+                            touched[fieldName as keyof FormData];
+                          return Boolean(fieldErrors && isFieldTouched);
+                        }
                       )
                     }
                   >
