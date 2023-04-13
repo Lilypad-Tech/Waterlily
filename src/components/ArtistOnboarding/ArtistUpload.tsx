@@ -211,7 +211,16 @@ const ArtistPreview: FC<{
           paddingBottom: '1rem',
         }}
       >
-        <Typography sx={{ ...filenameStyle, padding: 0, margin: 0 }}>
+        <Typography
+          sx={{
+            ...filenameStyle,
+            padding: 0,
+            margin: 0,
+            marginRight: '16px',
+            maxWidth: '225px',
+            overflowWrap: 'break-word',
+          }}
+        >
           {file.path}
         </Typography>
         {name === 'avatar' && (

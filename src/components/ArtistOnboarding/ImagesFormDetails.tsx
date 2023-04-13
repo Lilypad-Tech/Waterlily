@@ -34,7 +34,7 @@ export const ImagesFormDetails = ({
           placement="top-start"
         >
           <Box sx={{ width: '80%' }}>
-            <ArtistUpload maxFiles={200} formik={formik} name="images" />
+            <ArtistUpload maxFiles={300} formik={formik} name="images" />
           </Box>
         </Tooltip>
         <FormControlLabel
@@ -43,10 +43,10 @@ export const ImagesFormDetails = ({
           value="originalArt"
           control={
             <Checkbox
-              checked={values.originalArt || false}
+              checked={Boolean(values.originalArt) || false}
               onChange={handleChange}
               onBlur={handleBlur}
-              error={touched.originalArt && Boolean(errors.originalArt)}
+              // error={Boolean(touched.originalArt && errors.originalArt)}
             />
           }
           label="Is your art your own original work?"
@@ -59,10 +59,10 @@ export const ImagesFormDetails = ({
           value="trainingConsent"
           control={
             <Checkbox
-              checked={values.trainingConsent || false}
+              checked={Boolean(values.trainingConsent) || false}
               onChange={handleChange}
               onBlur={handleBlur}
-              error={touched.trainingConsent && Boolean(errors.trainingConsent)}
+              // error={touched.trainingConsent && Boolean(errors.trainingConsent)}
             />
           }
           label="Do you consent to having an ML Model trained on your artworks?"
@@ -75,10 +75,10 @@ export const ImagesFormDetails = ({
           value="legalContent"
           control={
             <Checkbox
-              checked={values.legalContent || false}
+              checked={Boolean(values.legalContent) || false}
               onChange={handleChange}
               onBlur={handleBlur}
-              error={touched.legalContent && Boolean(errors.legalContent)}
+              // error={touched.legalContent && Boolean(errors.legalContent)}
             />
           }
           label="Is this art legal content?"

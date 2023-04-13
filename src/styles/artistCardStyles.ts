@@ -35,22 +35,33 @@ export const cardMediaStyle: SxProps = {
   }, //not working
   padding: 0,
   margin: 0,
-  maxHeight: 200,
-  minWidth: 280,
+  height: 200,
+  width: '100%',
+  // width: 300,
+  // objectFit: 'scale-down',
   // borderBottom: '1px solid white',
   pointerEvents: 'none',
+  justifySelf: 'center',
 };
 
 export const cardMediaContentsStyle: SxProps = {
   // border: '1px solid #fff',
-  cursor: 'point',
+  cursor: 'pointer',
   position: 'relative',
+  display: 'grid',
+  alignContent: 'center',
+  justifyItems: 'center',
 };
 
 export const modalContainer: SxProps = {
-  width: '100%',
-  minWidth: 280,
+  // width: '100%',
+  // minWidth: 280,
+  // maxWidth: 300,
   cursor: 'pointer',
+  display: 'flex',
+  flexDirection: 'column',
+  alignContent: 'center',
+  justifyItems: 'center',
 };
 
 export const openModalIconStyle: SxProps = {
@@ -60,11 +71,12 @@ export const openModalIconStyle: SxProps = {
 };
 
 export const stepperStyle: SxProps = {
-  width: '100%',
+  // width: '100%',
   position: 'relative',
   // top: '-1rem',
   padding: '0 0.2rem',
   background: 'transparent',
+  width: 280,
   // height: 0,
 };
 
