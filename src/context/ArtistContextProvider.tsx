@@ -60,6 +60,10 @@ export const ArtStyleTags = [
   'Contemporary',
   'Fantasy',
   'Pin-up',
+  'Pop Surrealism',
+  'Acrylic',
+  'Screen Art',
+  'Graphic Art',
 ]; //string of available styles - should be generated from current
 
 export enum ArtistType {
@@ -97,20 +101,6 @@ export interface ArtistData {
   metadata?: { bacalhau_state: string; contract_state: string; error: string };
 }
 
-const defaultArtistData: ArtistData = {
-  artistId: '',
-  artistType: ArtistType.Public,
-  name: '',
-  category: ArtistCategory.Classical,
-  style: '',
-  period: '',
-  tags: [],
-  nationality: '',
-  description: '',
-  portfolio: '',
-  thumbnails: [],
-};
-
 export interface Artists {
   publicArtists: ArtistData[];
   privateArtists: ArtistData[];
@@ -120,7 +110,7 @@ interface ArtistContextValue {
   artistState: ArtistData[];
   setArtistState: Dispatch<SetStateAction<ArtistData[]>>;
   fetchArtistData: () => void;
-  findArtistById: (artistId: string) => object;
+  findArtistById: (artistId: string) => ArtistData | null;
   getBase64: (file: File) => Promise<string>;
   addWatermark: (imgSrc: string, wmText: string) => Promise<string>;
 }
@@ -130,7 +120,7 @@ export const defaultArtistState: ArtistContextValue = {
   setArtistState: () => {},
   fetchArtistData: () => {},
   findArtistById: () => {
-    return {};
+    return {} as ArtistData;
   },
   addWatermark: (imgSrc: string, wmText: string) => {
     return {} as Promise<string>;
