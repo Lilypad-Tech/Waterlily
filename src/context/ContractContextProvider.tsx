@@ -21,6 +21,7 @@ import {
   IMAGE_COUNT,
   WalletContext,
   NetworkContext,
+  defaultWalletState,
 } from '.';
 
 // /* Contracts */
@@ -128,7 +129,8 @@ export const ContractContextProvider = ({
   } = useContext(StatusContext);
   const { setImageID, quickImages, saveToNFTStorage } =
     useContext(ImageContext);
-  const { walletState } = useContext(WalletContext);
+  const { walletState = defaultWalletState.walletState } =
+    useContext(WalletContext);
   const [txHash, setTxHash] = useState('');
 
   useEffect(() => {
