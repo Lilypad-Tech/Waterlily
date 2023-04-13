@@ -36,9 +36,9 @@ export const cardMediaStyle: SxProps = {
   padding: 0,
   margin: 0,
   height: 200,
-  width: 'auto',
+  width: '100%',
   // width: 300,
-  objectFit: 'scale-down',
+  // objectFit: 'scale-down',
   // borderBottom: '1px solid white',
   pointerEvents: 'none',
   justifySelf: 'center',
@@ -54,9 +54,9 @@ export const cardMediaContentsStyle: SxProps = {
 };
 
 export const modalContainer: SxProps = {
-  width: '100%',
-  minWidth: 280,
-  maxWidth: 300,
+  // width: '100%',
+  // minWidth: 280,
+  // maxWidth: 300,
   cursor: 'pointer',
   display: 'flex',
   flexDirection: 'column',
@@ -71,11 +71,12 @@ export const openModalIconStyle: SxProps = {
 };
 
 export const stepperStyle: SxProps = {
-  width: '100%',
+  // width: '100%',
   position: 'relative',
   // top: '-1rem',
   padding: '0 0.2rem',
   background: 'transparent',
+  width: 280,
   // height: 0,
 };
 
