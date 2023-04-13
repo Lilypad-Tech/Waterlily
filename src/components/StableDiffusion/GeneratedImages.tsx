@@ -56,6 +56,7 @@ export const GeneratedImages = () => {
                       minted: false,
                     }}
                     idx={imageNumber}
+                    key={alt}
                   />
                 );
               })}
