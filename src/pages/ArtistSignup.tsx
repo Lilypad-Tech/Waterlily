@@ -119,10 +119,6 @@ const ArtistSignup: React.FC<{}> = () => {
     }
   }, []);
 
-  const checkConnection = async () => {
-    return await connectWallet();
-  };
-
   const validateFormInput = async (values: FormData) => {
     const isValid = await formValidationSchema
       .validate(values)
