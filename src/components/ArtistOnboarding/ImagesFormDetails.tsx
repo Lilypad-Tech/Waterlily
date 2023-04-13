@@ -34,7 +34,7 @@ export const ImagesFormDetails = ({
           placement="top-start"
         >
           <Box sx={{ width: '80%' }}>
-            <ArtistUpload maxFiles={300} formik={formik} name="images" />
+            <ArtistUpload maxFiles={1000} formik={formik} name="images" />
           </Box>
         </Tooltip>
         <FormControlLabel
