@@ -815,7 +815,7 @@ export const ContractContextProvider = ({
 
   //happens on wallet account change...useEffect
   const fetchNFTImagesByOwner = async () => {
-    return;
+    // return;
     console.log('fetching nfts');
     if (
       !walletState?.isConnected ||
@@ -823,7 +823,7 @@ export const ContractContextProvider = ({
       !Boolean(contractState.connectedWaterlilyNFTContract)
     )
       return;
-    if (contractState.connectedWaterlilyNFTContract) {
+    if (contractState && contractState.connectedWaterlilyNFTContract) {
       await contractState.connectedWaterlilyNFTContract
         .getNFTCollectionByOwner(walletState.accounts[0])
         .then((nftCollection: any) => {
