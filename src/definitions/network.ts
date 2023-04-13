@@ -47,7 +47,7 @@ export const networks = {
       'https://filfox.info/tx/',
     ],
     contracts: {
-      WATERLILY_CONTRACT_ADDRESS: '0xdC7612fa94F098F1d7BB40E0f4F4db8fF0bC8820',
+      WATERLILY_CONTRACT_ADDRESS: '0x24c6C64650E4E27Ca6EfBE9C23B963e001499222',
       WATERLILY_NFT_CONTRACT_ADDRESS: '',
     },
     imageUrlRoot: `https://api.waterlily.cluster.world/api/v1/images/`,
@@ -67,10 +67,11 @@ export const getNetwork = () => {
   if (typeof window === 'undefined') {
     return networks.filecoinHyperspace;
   }
-  if (window.location && window.location.hostname == 'localhost') {
+  let currentNetworkName: string = getParam('waterlilyNetwork') || '';
+  if (window.location && window.location.hostname == 'localhost' && !currentNetworkName) {
     return networks.filecoinHyperspace;
   }
-  let currentNetworkName: string = getParam('waterlilyNetwork') || '';
+  
   if (currentNetworkName == 'filecoinHyperspace')
     return networks.filecoinHyperspace;
   return networks.filecoinMainnet;
