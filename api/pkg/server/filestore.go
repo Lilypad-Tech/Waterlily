@@ -12,6 +12,7 @@ import (
 )
 
 func (apiServer *WaterlilyAPIServer) filestoreDownload(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	vars := mux.Vars(r)
 	r.URL.Path = fmt.Sprintf("/%s", vars["path"])
 	log.Info().Msgf("file: %s", vars["path"])
