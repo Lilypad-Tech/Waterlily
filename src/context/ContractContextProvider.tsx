@@ -643,7 +643,13 @@ export const ContractContextProvider = ({
     }
   };
 
-  const formatNFTCollectionForDisplay = async (nftCollection: Object[]) => {
+  interface NFTCollection {
+    tokenURI: string;
+  }
+
+  const formatNFTCollectionForDisplay = async (
+    nftCollection: NFTCollection[]
+  ) => {
     await createImageURLsForRetrieval(nftCollection)
       .then((data: any) => {
         console.log('formatted nfts', data);
@@ -662,9 +668,6 @@ export const ContractContextProvider = ({
     return fetchURL;
   };
 
-  interface NFTCollection {
-    tokenURI: string;
-  }
   /* 
     Helper function for fetching the Filecoin data through IPFS gateways 
     to display the images in the UI 
