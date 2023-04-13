@@ -3,6 +3,7 @@ import { Box, Typography } from '@mui/material';
 import {
   ContractContext,
   ArtistContext,
+  ArtistData,
   ImageContext,
   IMAGE_NUMBER_ARRAY,
 } from '@/context';
@@ -16,7 +17,7 @@ export const GeneratedImages = () => {
     <>
       {customerImages.map((image) => {
         console.log('generated', image);
-        const artist = findArtistById(image.artist);
+        const artist: ArtistData | null = findArtistById(image.artist);
         console.log('generated artist', artist);
         return (
           <Box
@@ -41,11 +42,19 @@ export const GeneratedImages = () => {
                 mt: 2,
               }}
             >
-              {IMAGE_NUMBER_ARRAY.map((imageNumber) => {
+              {IMAGE_NUMBER_ARRAY.map((imageNumber, idx) => {
+                console.log('artist?', artist);
                 const link = getQuickImageURL(image.id.toNumber(), imageNumber);
+                const alt = artist
+                  ? `${artist.name}-${image.id}-image${idx}`
+                  : `${image.id}-image${idx}`;
                 return (
                   <ImageQuickCard
-                    image={{ link: link, alt: image.id, minted: false }}
+                    image={{
+                      link: link,
+                      alt: alt,
+                      minted: false,
+                    }}
                     idx={imageNumber}
                   />
                 );
