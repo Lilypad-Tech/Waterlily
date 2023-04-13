@@ -231,47 +231,49 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
     canvas.height = image.height;
 
     const ctx = canvas.getContext('2d');
-    ctx?.drawImage(image, 0, 0);
+    if (ctx) {
+      ctx?.drawImage(image, 0, 0);
 
-    // Add text watermark
-    let text = wmText || 'Waterlily';
-    const fontSize = image.height / 12;
-    const color = 'rgba(255, 255, 255, 0.8)';
-    const outlineColor = 'rgba(0, 0, 0, 0.3)';
-    const outlineWidth = 4;
+      // Add text watermark
+      let text = wmText || 'Waterlily';
+      const fontSize = image.height / 12;
+      const color = 'rgba(255, 255, 255, 0.8)';
+      const outlineColor = 'rgba(0, 0, 0, 0.3)';
+      const outlineWidth = 4;
 
-    ctx.font = `${fontSize}px cursive`;
-    ctx.fillStyle = color;
-    ctx.strokeStyle = outlineColor;
-    ctx.lineWidth = outlineWidth;
+      ctx.font = `${fontSize}px cursive`;
+      ctx.fillStyle = color;
+      ctx.strokeStyle = outlineColor;
+      ctx.lineWidth = outlineWidth;
 
-    let textWidth = ctx?.measureText(text).width;
+      let textWidth = ctx?.measureText(text).width;
 
-    // console.log('textwidth', textWidth, image.width, canvas.width);
-    if (textWidth > image.width) {
-      const words = wmText.split(' ');
-      //KuKula (Nataly Abramovitch)
-      console.log('words', words);
-      text = words[0];
-      if (words[0].length > 20) {
-        text = words[0].substring(0, 20);
+      // console.log('textwidth', textWidth, image.width, canvas.width);
+      if (textWidth > image.width) {
+        const words = wmText.split(' ');
+        //KuKula (Nataly Abramovitch)
+        console.log('words', words);
+        text = words[0];
+        if (words[0].length > 20) {
+          text = words[0].substring(0, 20);
+        }
+        textWidth = ctx?.measureText(text).width;
       }
-      textWidth = ctx?.measureText(text).width;
+
+      //position
+      const x = image.width / 2 - textWidth / 2;
+      const y = image.height - fontSize / 2; //fontSize * 1.3; //image.height - fontSize / 2;
+
+      // Add text shadow
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      ctx.shadowBlur = 4;
+
+      ctx?.fillText(text, x, y);
+      ctx?.strokeText(text, x, y);
+      ctx?.fillText(text, x, y);
     }
-
-    //position
-    const x = image.width / 2 - textWidth / 2;
-    const y = image.height - fontSize / 2; //fontSize * 1.3; //image.height - fontSize / 2;
-
-    // Add text shadow
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 2;
-    ctx.shadowBlur = 4;
-
-    ctx?.fillText(text, x, y);
-    ctx?.strokeText(text, x, y);
-    ctx?.fillText(text, x, y);
     return canvas.toDataURL('image/jpeg');
   };
 
