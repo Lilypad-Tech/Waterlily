@@ -35,16 +35,20 @@ export const cardMediaStyle: SxProps = {
   }, //not working
   padding: 0,
   margin: 0,
-  maxHeight: 200,
-  minWidth: 280,
+  height: 200,
+  width: 'auto',
+  // width: 300,
+  // objectFit: 'scale-down',
   // borderBottom: '1px solid white',
   pointerEvents: 'none',
+  justifySelf: 'center',
 };
 
 export const cardMediaContentsStyle: SxProps = {
   // border: '1px solid #fff',
   cursor: 'point',
   position: 'relative',
+  display: 'grid',
 };
 
 export const modalContainer: SxProps = {

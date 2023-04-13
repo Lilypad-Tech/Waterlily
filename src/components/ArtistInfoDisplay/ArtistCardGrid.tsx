@@ -62,11 +62,12 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
   }, [artists]);
 
   const theme = useTheme();
+  const sm = useMediaQuery(theme.breakpoints.up('sm'));
   const md = useMediaQuery(theme.breakpoints.up('md'));
   const lg = useMediaQuery(theme.breakpoints.up('lg'));
   const xl = useMediaQuery(theme.breakpoints.up('xl'));
 
-  let itemsPerPage = xl ? 5 : lg ? 4 : md ? 3 : 2;
+  let itemsPerPage = xl ? 10 : lg ? 8 : md ? 6 : sm ? 4 : 2;
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
 
