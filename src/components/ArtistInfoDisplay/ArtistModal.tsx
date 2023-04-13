@@ -209,21 +209,21 @@ export const ArtistModal = ({
                 return (
                   <Grid
                     item
-                    xs={12}
-                    sm={6}
-                    md={3}
-                    lg={3}
-                    xl={3}
+                    xs="auto" //{12}
+                    sm="auto" //{6}
+                    md="auto" //{3}
+                    lg="auto" //{3}
+                    xl="auto" //{3}
                     component="img"
                     key={thumb.link}
                     // height={210}
                     src={thumb.link || './monet-water-lilies.jpeg'}
                     alt={thumb.alt || 'Monet Water Lilies'}
-                    sx={{
-                      width: '100%',
-                      aspectRatio: '3/3',
-                    }}
-                    style={{ objectFit: 'cover' }}
+                    // sx={{
+                    //   width: '100%',
+                    //   aspectRatio: '3/3',
+                    // }}
+                    style={{ objectFit: 'cover', maxHeight: '200px' }}
                   />
                 );
               })}
@@ -243,21 +243,21 @@ export const ArtistModal = ({
                 return (
                   <Grid
                     item
-                    xs={12}
-                    sm={6}
-                    md={3}
-                    lg={3}
-                    xl={3}
+                    xs="auto" //{12}
+                    sm="auto" //{6}
+                    md="auto" //{3}
+                    lg="auto" //{3}
+                    xl="auto" //{3}
                     component="img"
                     key={thumb.link}
                     // height={210}
                     src={thumb.link || './monet-water-lilies.jpeg'}
                     alt={thumb.alt || 'Monet Water Lilies'}
-                    sx={{
-                      width: '100%',
-                      aspectRatio: '3/3',
-                    }}
-                    style={{ objectFit: 'cover' }}
+                    // sx={{
+                    //   width: '100%',
+                    //   aspectRatio: '3/3',
+                    // }}
+                    style={{ objectFit: 'cover', maxHeight: '200px' }}
                   />
                 );
               })}
@@ -269,6 +269,7 @@ export const ArtistModal = ({
             <DialogTitle sx={{ margin: 0, paddingLeft: 0, color: 'white' }}>
               Artwork Examples
             </DialogTitle>
+            {/* Consider using autolayout here https://mui.com/material-ui/react-grid/ */}
             <Grid
               container
               spacing={2}
@@ -279,20 +280,22 @@ export const ArtistModal = ({
                 return (
                   <Grid
                     item
-                    xs={12}
-                    sm={6}
-                    md={4}
-                    lg={4}
-                    xl={4}
+                    xs="auto" //{12}
+                    sm="auto" //{6}
+                    md="auto" //{4}
+                    lg="auto" //{4}
+                    xl="auto" //{4}
                     component="img"
                     key={thumb.link}
                     src={thumb.link || './monet-water-lilies.jpeg'}
                     alt={thumb.alt || 'Monet Water Lilies'}
-                    sx={{
-                      width: '100%',
-                      aspectRatio: '3/2',
-                    }}
-                    style={{ objectFit: 'scale-down' }}
+                    sx={
+                      {
+                        // width: '100%',
+                        // aspectRatio: '3/2',
+                      }
+                    }
+                    style={{ objectFit: 'scale-down', maxHeight: '270px' }}
                   />
                 );
               })}
