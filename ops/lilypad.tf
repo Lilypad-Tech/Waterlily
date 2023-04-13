@@ -99,7 +99,7 @@ resource "google_compute_disk" "data_disk" {
   name     = "waterlily-data-disk"
   type     = "pd-ssd"
   zone     = "us-central1-a"
-  size     = 100
+  size     = 1024
   lifecycle {
     prevent_destroy = true
   }
