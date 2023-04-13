@@ -153,7 +153,7 @@ const HomePage = () => {
           </>
         </SectionLayout>
       )}
-      {nftImages.length > 0 && (
+      {nftImages && nftImages.length > 0 && (
         <SectionLayout>
           <>
             <Title
