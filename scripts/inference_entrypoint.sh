@@ -41,22 +41,12 @@ function run_inference() {
   python main.py --o "/outputs" --seed "$IMAGE_ID" --p "$PROMPT in the style of $ARTIST_ID"
 }
 
-function rename_images() {
-  echo "rename_images"
-  mv *_0.png image_0.png
-  mv *_1.png image_1.png
-  mv *_2.png image_2.png
-  mv *_3.png image_3.png
-  mv *.jpg combined.jpg
-}
-
 function upload_image() {
   curl -XPOST --insecure -F "uploads=@/outputs/$1" "$IMAGES_UPLOAD_URL"
 }
 
 function upload_images() {
   echo "upload_images"
-  (cd /outputs && rename_images)
   upload_image image_0.png
   upload_image image_1.png
   upload_image image_2.png
