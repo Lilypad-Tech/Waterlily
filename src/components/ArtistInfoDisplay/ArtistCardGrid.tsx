@@ -178,6 +178,23 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
           </TextField>
         </Grid>
       </Grid>
+      {/* <Box
+        sx={{
+          display: 'flex',
+          padding: '1rem 2rem 0 2rem',
+          justifyContent: 'center',
+        }}
+      >
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={handlePageChange}
+          showFirstButton
+          showLastButton
+          size="large"
+          color="primary"
+        />
+      </Box> */}
       <Grid container justifyContent="center" alignItems="center">
         {currentData.length > 0 &&
           artists.length > 0 &&
@@ -207,7 +224,11 @@ export const ArtistCardGrid = ({ navigate }: ArtistCardGridProps) => {
           ))}
       </Grid>
       <Box
-        sx={{ display: 'flex', padding: '0 2rem', justifyContent: 'flex-end' }}
+        sx={{
+          display: 'flex',
+          padding: '0 2rem',
+          justifyContent: 'flex-end',
+        }}
       >
         <Pagination
           count={totalPages}

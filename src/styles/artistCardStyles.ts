@@ -38,7 +38,7 @@ export const cardMediaStyle: SxProps = {
   height: 200,
   width: 'auto',
   // width: 300,
-  // objectFit: 'scale-down',
+  objectFit: 'scale-down',
   // borderBottom: '1px solid white',
   pointerEvents: 'none',
   justifySelf: 'center',
@@ -46,15 +46,22 @@ export const cardMediaStyle: SxProps = {
 
 export const cardMediaContentsStyle: SxProps = {
   // border: '1px solid #fff',
-  cursor: 'point',
+  cursor: 'pointer',
   position: 'relative',
   display: 'grid',
+  alignContent: 'center',
+  justifyItems: 'center',
 };
 
 export const modalContainer: SxProps = {
   width: '100%',
   minWidth: 280,
+  maxWidth: 300,
   cursor: 'pointer',
+  display: 'flex',
+  flexDirection: 'column',
+  alignContent: 'center',
+  justifyItems: 'center',
 };
 
 export const openModalIconStyle: SxProps = {
