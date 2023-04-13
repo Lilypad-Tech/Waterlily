@@ -823,8 +823,8 @@ export const ContractContextProvider = ({
       !Boolean(contractState.connectedWaterlilyNFTContract)
     )
       return;
-    contractState.connectedWaterlilyNFTContract &&
-      (await contractState.connectedWaterlilyNFTContract
+    if (contractState.connectedWaterlilyNFTContract) {
+      await contractState.connectedWaterlilyNFTContract
         .getNFTCollectionByOwner(walletState.accounts[0])
         .then((nftCollection: any) => {
           console.log('fetched nfts', nftCollection);
@@ -842,7 +842,8 @@ export const ContractContextProvider = ({
         })
         .catch((err: any) => {
           console.log('error fetching nfts', err.message);
-        }));
+        });
+    }
   };
 
   const mintNFT = async (image: { link: string; alt: string }) => {
