@@ -60,6 +60,10 @@ export const ArtStyleTags = [
   'Contemporary',
   'Fantasy',
   'Pin-up',
+  'Pop Surrealism',
+  'Acrylic',
+  'Screen Art',
+  'Graphic Art',
 ]; //string of available styles - should be generated from current
 
 export enum ArtistType {
@@ -97,20 +101,6 @@ export interface ArtistData {
   metadata?: { bacalhau_state: string; contract_state: string; error: string };
 }
 
-const defaultArtistData: ArtistData = {
-  artistId: '',
-  artistType: ArtistType.Public,
-  name: '',
-  category: ArtistCategory.Classical,
-  style: '',
-  period: '',
-  tags: [],
-  nationality: '',
-  description: '',
-  portfolio: '',
-  thumbnails: [],
-};
-
 export interface Artists {
   publicArtists: ArtistData[];
   privateArtists: ArtistData[];
@@ -120,7 +110,7 @@ interface ArtistContextValue {
   artistState: ArtistData[];
   setArtistState: Dispatch<SetStateAction<ArtistData[]>>;
   fetchArtistData: () => void;
-  findArtistById: (artistId: string) => object;
+  findArtistById: (artistId: string) => ArtistData | null;
   getBase64: (file: File) => Promise<string>;
   addWatermark: (imgSrc: string, wmText: string) => Promise<string>;
 }
@@ -130,7 +120,7 @@ export const defaultArtistState: ArtistContextValue = {
   setArtistState: () => {},
   fetchArtistData: () => {},
   findArtistById: () => {
-    return {};
+    return {} as ArtistData;
   },
   addWatermark: (imgSrc: string, wmText: string) => {
     return {} as Promise<string>;
@@ -241,47 +231,49 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
     canvas.height = image.height;
 
     const ctx = canvas.getContext('2d');
-    ctx?.drawImage(image, 0, 0);
+    if (ctx) {
+      ctx?.drawImage(image, 0, 0);
 
-    // Add text watermark
-    let text = wmText || 'Waterlily';
-    const fontSize = image.height / 12;
-    const color = 'rgba(255, 255, 255, 0.8)';
-    const outlineColor = 'rgba(0, 0, 0, 0.3)';
-    const outlineWidth = 4;
+      // Add text watermark
+      let text = wmText || 'Waterlily';
+      const fontSize = image.height / 12;
+      const color = 'rgba(255, 255, 255, 0.8)';
+      const outlineColor = 'rgba(0, 0, 0, 0.3)';
+      const outlineWidth = 4;
 
-    ctx.font = `${fontSize}px cursive`;
-    ctx.fillStyle = color;
-    ctx.strokeStyle = outlineColor;
-    ctx.lineWidth = outlineWidth;
+      ctx.font = `${fontSize}px cursive`;
+      ctx.fillStyle = color;
+      ctx.strokeStyle = outlineColor;
+      ctx.lineWidth = outlineWidth;
 
-    let textWidth = ctx?.measureText(text).width;
+      let textWidth = ctx?.measureText(text).width;
 
-    // console.log('textwidth', textWidth, image.width, canvas.width);
-    if (textWidth > image.width) {
-      const words = wmText.split(' ');
-      //KuKula (Nataly Abramovitch)
-      console.log('words', words);
-      text = words[0];
-      if (words[0].length > 20) {
-        text = words[0].substring(0, 20);
+      // console.log('textwidth', textWidth, image.width, canvas.width);
+      if (textWidth > image.width) {
+        const words = wmText.split(' ');
+        //KuKula (Nataly Abramovitch)
+        console.log('words', words);
+        text = words[0];
+        if (words[0].length > 20) {
+          text = words[0].substring(0, 20);
+        }
+        textWidth = ctx?.measureText(text).width;
       }
-      textWidth = ctx?.measureText(text).width;
+
+      //position
+      const x = image.width / 2 - textWidth / 2;
+      const y = image.height - fontSize / 2; //fontSize * 1.3; //image.height - fontSize / 2;
+
+      // Add text shadow
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      ctx.shadowBlur = 4;
+
+      ctx?.fillText(text, x, y);
+      ctx?.strokeText(text, x, y);
+      ctx?.fillText(text, x, y);
     }
-
-    //position
-    const x = image.width / 2 - textWidth / 2;
-    const y = image.height - fontSize / 2; //fontSize * 1.3; //image.height - fontSize / 2;
-
-    // Add text shadow
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 2;
-    ctx.shadowBlur = 4;
-
-    ctx?.fillText(text, x, y);
-    ctx?.strokeText(text, x, y);
-    ctx?.fillText(text, x, y);
     return canvas.toDataURL('image/jpeg');
   };
 

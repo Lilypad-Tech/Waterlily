@@ -70,7 +70,7 @@ function createArtistData(row: any[]): ArtistData {
     period,
     tags,
     nationality,
-  };
+  } as ArtistData;
 }
 
 export default async function handler(

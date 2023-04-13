@@ -29,7 +29,7 @@ export const networks = {
       WATERLILY_NFT_CONTRACT_ADDRESS:
         '0x3619c1f295B3081985e581Ea3b8546CE629C5A3D',
     },
-    imageUrlRoot: `https://staging.api.waterlily.cluster.world/api/v1/images`,
+    imageUrlRoot: `https://staging.api.waterlily.cluster.world/api/v1/images/`,
   },
   filecoinMainnet: {
     name: 'Filecoin Mainnet',
@@ -50,7 +50,7 @@ export const networks = {
       WATERLILY_CONTRACT_ADDRESS: '0xdC7612fa94F098F1d7BB40E0f4F4db8fF0bC8820',
       WATERLILY_NFT_CONTRACT_ADDRESS: '',
     },
-    imageUrlRoot: `https://api.waterlily.cluster.world/api/v1/images`,
+    imageUrlRoot: `https://api.waterlily.cluster.world/api/v1/images/`,
   },
 };
 

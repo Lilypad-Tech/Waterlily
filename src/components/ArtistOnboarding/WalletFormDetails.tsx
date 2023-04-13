@@ -1,23 +1,10 @@
 // Deals with cases where no wallet is connected or balance <0.11FIL
-import { useContext, useEffect, useState } from 'react';
-import { Box } from '@mui/material';
 import { SectionLayout } from '@/layouts';
 import { WalletButton } from '..';
-import {
-  WalletContext,
-  defaultWalletState,
-  StatusContext,
-  statusState,
-  defaultStatusState,
-} from '@/context';
-const MIN_FUNDS = 0.1;
+
 //https://docs.filecoin.io/smart-contracts/wallets/metamask/
 
 export const WalletFormDetails = () => {
-  const { walletState = defaultWalletState.walletState, fetchWalletBalance } =
-    useContext(WalletContext);
-  const { statusState = defaultStatusState } = useContext(StatusContext);
-
   return (
     //
     <SectionLayout>

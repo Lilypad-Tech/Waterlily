@@ -21,6 +21,7 @@ import {
   IMAGE_COUNT,
   WalletContext,
   NetworkContext,
+  defaultWalletState,
 } from '.';
 
 // /* Contracts */
@@ -128,7 +129,8 @@ export const ContractContextProvider = ({
   } = useContext(StatusContext);
   const { setImageID, quickImages, saveToNFTStorage } =
     useContext(ImageContext);
-  const { walletState } = useContext(WalletContext);
+  const { walletState = defaultWalletState.walletState } =
+    useContext(WalletContext);
   const [txHash, setTxHash] = useState('');
 
   useEffect(() => {
@@ -643,7 +645,13 @@ export const ContractContextProvider = ({
     }
   };
 
-  const formatNFTCollectionForDisplay = async (nftCollection: Object[]) => {
+  interface NFTCollection {
+    tokenURI: string;
+  }
+
+  const formatNFTCollectionForDisplay = async (
+    nftCollection: NFTCollection[]
+  ) => {
     await createImageURLsForRetrieval(nftCollection)
       .then((data: any) => {
         console.log('formatted nfts', data);
@@ -667,7 +675,7 @@ export const ContractContextProvider = ({
     to display the images in the UI 
     Needs to be a hook with loading state
   */
-  const createImageURLsForRetrieval = async (collection: Object[]) => {
+  const createImageURLsForRetrieval = async (collection: NFTCollection[]) => {
     if (!collection || !collection[0]) return;
     // only return the 5 most recent NFT images
     // this collection is fetched on webpage load
@@ -807,7 +815,7 @@ export const ContractContextProvider = ({
 
   //happens on wallet account change...useEffect
   const fetchNFTImagesByOwner = async () => {
-    return;
+    // return;
     console.log('fetching nfts');
     if (
       !walletState?.isConnected ||
@@ -815,8 +823,8 @@ export const ContractContextProvider = ({
       !Boolean(contractState.connectedWaterlilyNFTContract)
     )
       return;
-    contractState.connectedWaterlilyNFTContract &&
-      (await contractState.connectedWaterlilyNFTContract
+    if (contractState && contractState.connectedWaterlilyNFTContract) {
+      await contractState.connectedWaterlilyNFTContract
         .getNFTCollectionByOwner(walletState.accounts[0])
         .then((nftCollection: any) => {
           console.log('fetched nfts', nftCollection);
@@ -834,7 +842,8 @@ export const ContractContextProvider = ({
         })
         .catch((err: any) => {
           console.log('error fetching nfts', err.message);
-        }));
+        });
+    }
   };
 
   const mintNFT = async (image: { link: string; alt: string }) => {

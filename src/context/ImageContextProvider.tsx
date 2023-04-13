@@ -314,31 +314,33 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     }
 
     //fetch artist details...
-    const artistData: ArtistData | {} = findArtistById(imageArtist.key);
-    console.log('artistData in image context', artistData);
-    const origArtist =
-      Object.keys(artistData).length > 0
-        ? artistData
-        : { name: imageArtist.name, artistId: imageArtist.key };
+    const artistData: ArtistData | null = findArtistById(imageArtist.key);
+    if (artistData) {
+      console.log('artistData in image context', artistData);
+      const origArtist =
+        Object.keys(artistData).length > 0
+          ? artistData
+          : { name: imageArtist.name, artistId: imageArtist.key };
 
-    const nftJson: NFTJson = {
-      name: 'Waterlily Ethical AI NFTs',
-      description: `This NFT created by Waterlily.ai from artwork trained on artworks by ${imageArtist.name}. Creators are paid for every use of their artwork on waterlily.ai. Be part of the change.`,
-      image: imageBlob, //,image.link, //should be a Blob - need to make it
-      properties: {
-        type: `Stable Diffusion Ethical AI-generated image by Waterlily.ai`,
-        prompt: imagePrompt,
-        originalArtist: origArtist,
-        imageID: imageID,
-        origins: {
-          ipfs: ``, //original bacalhau ipfs link... hmm where to get this
-          img: image,
+      const nftJson: NFTJson = {
+        name: 'Waterlily Ethical AI NFTs',
+        description: `This NFT created by Waterlily.ai from artwork trained on artworks by ${imageArtist.name}. Creators are paid for every use of their artwork on waterlily.ai. Be part of the change.`,
+        image: imageBlob, //,image.link, //should be a Blob - need to make it
+        properties: {
+          type: `Stable Diffusion Ethical AI-generated image by Waterlily.ai`,
+          prompt: imagePrompt,
+          originalArtist: origArtist,
+          imageID: imageID,
+          origins: {
+            ipfs: ``, //original bacalhau ipfs link... hmm where to get this
+            img: image,
+          },
+          mintedBy: walletState?.accounts[0] || '',
         },
-        mintedBy: walletState?.accounts[0] || '',
-      },
-    };
-
-    return nftJson;
+      };
+      return nftJson;
+    }
+    return;
   };
 
   const saveToNFTStorage = async (image: { link: string; alt: string }) => {
@@ -351,7 +353,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
       ...defaultStatusState.statusState,
       isLoading: 'Creating & Storing NFT Metadata to NFT.Storage...',
     });
-    let nftJson: TokenInput | undefined = await createNFTMetadata(image);
+    let nftJson: NFTJson | undefined = await createNFTMetadata(image);
     if (!nftJson) {
       setStatusState({
         ...defaultStatusState.statusState,
@@ -359,41 +361,42 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
           'Something went wrong creating the NFT metadata for storing to NFT.Storage',
       });
     }
-    let ipfsImageBlob = await NFTStorageClient.storeBlob(nftJson.image);
-    nftJson.properties.origins.ipfs = ipfsImageBlob;
-    //setStatus here to loading
-    let metadata: any = await NFTStorageClient.store(nftJson)
-      .then((metadata) => {
-        console.log('NFT Data pinned to IPFS & stored on Filecoin');
-        console.log('Metadata URI:', metadata.url, metadata);
-        setStatusState((prevState) => ({
-          ...prevState,
-          isLoading: 'Sending to minting function - check your wallet!', //'NFT Metadata successfully saved to NFT.Storage!',
-          isMessage: true,
-          message: {
-            title: `NFT Metadata successfully saved to NFT.Storage!`,
-            description: (
-              <a href={metadata.url} target="_blank" rel="no_referrer">
-                {metadata.url}
-              </a>
-            ),
-          },
-        }));
+    if (nftJson) {
+      let ipfsImageBlob = await NFTStorageClient.storeBlob(nftJson.image);
+      nftJson.properties.origins.ipfs = ipfsImageBlob;
+      //setStatus here to loading
+      await NFTStorageClient.store(nftJson)
+        .then((metadata) => {
+          console.log('NFT Data pinned to IPFS & stored on Filecoin');
+          console.log('Metadata URI:', metadata.url, metadata);
+          setStatusState((prevState) => ({
+            ...prevState,
+            isLoading: 'Sending to minting function - check your wallet!', //'NFT Metadata successfully saved to NFT.Storage!',
+            isMessage: true,
+            message: {
+              title: `NFT Metadata successfully saved to NFT.Storage!`,
+              description: (
+                <a href={metadata.url} target="_blank" rel="no_referrer">
+                  {metadata.url}
+                </a>
+              ),
+            },
+          }));
 
-        setNftMetadata(metadata);
-        return metadata;
-        //mint the NFT now
-      })
-      .catch((err) => {
-        console.log('Error uploading to NFT.storage', err);
-        setStatusState({
-          ...defaultStatusState.statusState,
-          isError:
-            'Something went wrong saving the NFT metadata to NFT.Storage',
+          setNftMetadata(metadata);
+          return metadata;
+          //mint the NFT now
+        })
+        .catch((err) => {
+          console.log('Error uploading to NFT.storage', err);
+          setStatusState({
+            ...defaultStatusState.statusState,
+            isError:
+              'Something went wrong saving the NFT metadata to NFT.Storage',
+          });
+          throw err;
         });
-        throw err;
-      });
-    return metadata;
+    }
   };
 
   const createArtistId = async (values: {

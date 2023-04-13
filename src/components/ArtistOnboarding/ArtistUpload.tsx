@@ -114,9 +114,9 @@ const aStyle: CSSProperties = {
   justifyContent: 'center',
 };
 
-const dropText: {
-  [key in 'avatar' | 'images' | 'thumbnails']: JSX.Element;
-} = {
+type DropTextKey = 'avatar' | 'images' | 'thumbnails';
+
+const dropText: Record<DropTextKey, JSX.Element> = {
   images: (
     <Box sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
       <Typography variant="h5" sx={{ paddingBottom: '1rem' }}>
@@ -168,13 +168,13 @@ const dropText: {
 interface Props {
   maxFiles: number;
   formik: any;
-  name: string;
+  name: DropTextKey;
 }
 
 const ArtistPreview: FC<{
   file: any;
   onRemove: () => void;
-  name: string;
+  name: DropTextKey;
 }> = ({ file, onRemove, name }) => {
   return (
     <Box
