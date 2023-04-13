@@ -19,7 +19,8 @@ var baseSpec = model.Spec{
 	Verifier:  model.VerifierNoop,
 	Publisher: model.PublisherIpfs,
 	Docker:    model.JobSpecDocker{},
-	Timeout:   3600,
+	// 6 hours should be long enough to train a model
+	Timeout: 3600 * 6,
 	Resources: model.ResourceUsageConfig{
 		GPU: "1",
 	},
