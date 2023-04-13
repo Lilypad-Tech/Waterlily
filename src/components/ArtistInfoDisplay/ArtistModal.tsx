@@ -200,7 +200,7 @@ export const ArtistModal = ({
             <Typography variant="subtitle1">Prompt: Prompt 1</Typography>
             <Grid
               container
-              spacing={1}
+              spacing={3}
               justifyContent="center"
               alignItems="center"
             >
@@ -221,7 +221,7 @@ export const ArtistModal = ({
                     alt={thumb.alt || 'Monet Water Lilies'}
                     sx={{
                       width: '100%',
-                      aspectRatio: '4/3',
+                      aspectRatio: '3/3',
                     }}
                     style={{ objectFit: 'cover' }}
                   />
@@ -234,7 +234,7 @@ export const ArtistModal = ({
             </Typography>
             <Grid
               container
-              spacing={1}
+              spacing={3}
               justifyContent="center"
               alignItems="center"
             >
@@ -255,7 +255,7 @@ export const ArtistModal = ({
                     alt={thumb.alt || 'Monet Water Lilies'}
                     sx={{
                       width: '100%',
-                      aspectRatio: '4/3',
+                      aspectRatio: '3/3',
                     }}
                     style={{ objectFit: 'cover' }}
                   />
@@ -271,7 +271,7 @@ export const ArtistModal = ({
             </DialogTitle>
             <Grid
               container
-              spacing={1}
+              spacing={2}
               justifyContent="center"
               alignItems="center"
             >
@@ -292,7 +292,7 @@ export const ArtistModal = ({
                       width: '100%',
                       aspectRatio: '3/2',
                     }}
-                    style={{ objectFit: 'cover' }}
+                    style={{ objectFit: 'scale-down' }}
                   />
                 );
               })}
