@@ -662,12 +662,15 @@ export const ContractContextProvider = ({
     return fetchURL;
   };
 
+  interface NFTCollection {
+    tokenURI: string;
+  }
   /* 
     Helper function for fetching the Filecoin data through IPFS gateways 
     to display the images in the UI 
     Needs to be a hook with loading state
   */
-  const createImageURLsForRetrieval = async (collection: Object[]) => {
+  const createImageURLsForRetrieval = async (collection: NFTCollection[]) => {
     if (!collection || !collection[0]) return;
     // only return the 5 most recent NFT images
     // this collection is fetched on webpage load
