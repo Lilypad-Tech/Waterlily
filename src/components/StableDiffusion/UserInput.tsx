@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { MyButton } from '@/components';
-import { ArtistType, networks } from '@/definitions';
 import {
   NetworkContext,
   WalletContext,
