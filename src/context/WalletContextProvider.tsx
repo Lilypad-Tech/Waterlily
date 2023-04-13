@@ -34,7 +34,7 @@ interface WalletContextValue {
   changeWalletChain: (reqChainId: string) => Promise<void>;
   addNetwork: (networkData: NetworkDataType) => Promise<void>;
   disconnectWallet: () => void;
-  fetchWalletBalance: (acct?: string) => Promise<number>;
+  fetchWalletBalance: (acct?: string) => number;
 }
 
 export const defaultWalletState = {
