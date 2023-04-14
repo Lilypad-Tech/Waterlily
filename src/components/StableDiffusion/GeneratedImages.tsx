@@ -15,7 +15,7 @@ export const GeneratedImages = () => {
   const { getQuickImageURL } = useContext(ImageContext);
   const { findArtistById } = useContext(ArtistContext);
   const [activeStep, setActiveStep] = useState(0);
-  console.log('customerimages', customerImages);
+  // console.log('customerimages', customerImages);
   const reversedImages = [...customerImages].reverse();
   const [allImages, setAllImages] = useState([] as any[]);
   const imagesPerPage = 1;
@@ -30,7 +30,7 @@ export const GeneratedImages = () => {
 
         let proms = IMAGE_NUMBER_ARRAY.map((imageNumber, idx) => {
           const link = getQuickImageURL(el.id.toNumber(), imageNumber);
-          console.log('link', link);
+          // console.log('link', link);
           const alt = artist
             ? `${artist.name}-${el.id}-image${idx}`
             : `${el.id}-image${idx}`;
@@ -41,21 +41,21 @@ export const GeneratedImages = () => {
             img.onload = resolve;
           });
         });
-        console.log('proms', proms);
+        // console.log('proms', proms);
 
         const loadedImages = await Promise.all(proms); // wait for inner promises to resolve
         promises.push(loadedImages);
       }
 
-      console.log('promises', promises);
+      // console.log('promises', promises);
       setAllImages(promises);
     };
     preloadImages();
   }, []);
 
-  useEffect(() => {
-    console.log('allImages', allImages);
-  }, [allImages]);
+  // useEffect(() => {
+  //   console.log('allImages', allImages);
+  // }, [allImages]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => {
