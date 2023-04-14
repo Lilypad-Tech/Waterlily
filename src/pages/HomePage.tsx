@@ -103,6 +103,7 @@ const HomePage = () => {
                       maxWidth: 250,
                       border: '1px solid white',
                     }}
+                    newImg={true}
                   />
                 );
               })}
@@ -134,7 +135,7 @@ const HomePage = () => {
         <ArtistCardGrid navigate={goToTop} />
         {isCallout && <CalloutMessage />}
       </ArtistLayout>
-      {customerImages.length > 0 && (
+      {customerImages.length > 0 && customerImages[0].prompt && (
         <SectionLayout>
           <>
             <Title
