@@ -4,6 +4,7 @@ import React from 'react';
 
 export interface NetworkDataType {
   name: string;
+  apiServer: string;
   chainId: string;
   rpc: string[];
   nativeCurrency: {
@@ -14,7 +15,8 @@ export interface NetworkDataType {
   blockExplorer: string[];
   contracts: {
     WATERLILY_CONTRACT_ADDRESS: string;
-    LILYPAD_EVENTS_CONTRACT_ADDRESS: string;
+    LILYPAD_EVENTS_CONTRACT_ADDRESS?: string;
+    WATERLILY_NFT_CONTRACT_ADDRESS: string;
   };
   imageUrlRoot: string;
 }

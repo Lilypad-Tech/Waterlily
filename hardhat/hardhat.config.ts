@@ -23,8 +23,13 @@ const config: HardhatUserConfig = {
     hardhat: {},
     localhost: {},
     filecoinHyperspace: {
-      url: 'https://rpc.ankr.com/filecoin_testnet', //'https://api.hyperspace.node.glif.io/rpc/v1', //https://filecoin-hyperspace.chainstacklabs.com/rpc/v1
+      url: 'https://api.hyperspace.node.glif.io/rpc/v1', //'https://rpc.ankr.com/filecoin_testnet', //https://filecoin-hyperspace.chainstacklabs.com/rpc/v1, "https://hyperspace.filfox.info/rpc/v1", wss://wss.hyperspace.node.glif.io/apigw/lotus/rpc/v1
       chainId: 3141,
+      accounts: [walletPrivateKey],
+    },
+    filecoinMainnet: {
+      url: 'https://api.node.glif.io', //'https://rpc.ankr.com/filecoin_testnet', //https://filecoin-hyperspace.chainstacklabs.com/rpc/v1
+      chainId: 314,
       accounts: [walletPrivateKey],
     },
   },

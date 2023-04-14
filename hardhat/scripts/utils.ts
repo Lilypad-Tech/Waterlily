@@ -2,6 +2,7 @@ import hre, { ethers } from 'hardhat'
 import { BigNumber } from 'ethers'
 
 export const BASE_COST = BigNumber.from('650000000000000')
+export const DEFAULT_ARTIST_COST = BASE_COST.mul(BigNumber.from('2500'))
 export const DEFAULT_IMAGE_COST = BASE_COST.mul(BigNumber.from('250'))
 export const DEFAULT_IMAGE_COMMISSION = BASE_COST.mul(BigNumber.from('50'))
 
@@ -9,8 +10,7 @@ export const getContract = async (address = '') => {
   let owner: any
   [owner] = await ethers.getSigners()
 
-  if(hre.network.name == 'filecoinHyperspace') {
-    address = process.env.ARTIST_CONTRACT_ADDRESS || ''
+  if(hre.network.name == 'filecoinHyperspace' || hre.network.name == 'filecoinMainnet') {
     owner = new ethers.Wallet(
       process.env.WALLET_PRIVATE_KEY || '',
       ethers.provider

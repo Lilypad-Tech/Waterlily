@@ -3,6 +3,8 @@ set -euo pipefail
 IFS=$'\n\t'
 set -x
 
+export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 ZONE="us-central1-a"
 NAME="artist-vm-0"
 
@@ -14,28 +16,39 @@ function gSCP() {
     gcloud compute scp --quiet --zone=$ZONE $1 $NAME:$2
 }
 
-gSCP ../hardhat/.env /tmp/env
-gSSH mv /tmp/env /root/lilypad.env
-gSSH chmod 0400 /root/lilypad.env
+function upload() {
+  (cd $DIR/../api && go build)
+  gSCP $DIR/../api/api /tmp/waterlily
+  gSSH mv /tmp/waterlily /usr/bin/waterlily
+  gSSH chmod 0555 /usr/bin/waterlily
+}
 
-gSCP ../hardhat/.env.testnet /tmp/env.testnet
-gSSH mv /tmp/env.testnet /root/lilypad.testnet.env
-gSSH chmod 0400 /root/lilypad.testnet.env
+function deploystaging() {
+  gSCP $DIR/../hardhat/.env.testnet /tmp/env.testnet
+  gSSH mv /tmp/env.testnet /root/waterlily.staging.env
+  gSSH chmod 0400 /root/waterlily.staging.env
 
-gSCP lilypad.service /tmp/lilypad.service
-gSSH mv /tmp/lilypad.service /etc/systemd/system/lilypad.service
-gSSH chmod 0444 /etc/systemd/system/lilypad.service
+  gSCP $DIR/waterlily-staging.service /tmp/waterlily-staging.service
+  gSSH mv /tmp/waterlily-staging.service /etc/systemd/system/waterlily-staging.service
+  gSSH chmod 0444 /etc/systemd/system/waterlily-staging.service
 
-gSCP lilypad-testnet.service /tmp/lilypad-testnet.service
-gSSH mv /tmp/lilypad-testnet.service /etc/systemd/system/lilypad-testnet.service
-gSSH chmod 0444 /etc/systemd/system/lilypad-testnet.service
+  gSSH systemctl daemon-reload
+  gSSH systemctl enable waterlily-staging
+  gSSH systemctl restart waterlily-staging
+}
 
-gSCP ./../../lilypad/bin/lilypad-linux-amd64 /tmp/lilypad
-gSSH mv /tmp/lilypad /usr/bin/lilypad
-gSSH chmod 0555 /usr/bin/lilypad
+function deployproduction() {
+  gSCP $DIR/../hardhat/.env /tmp/env
+  gSSH mv /tmp/env /root/waterlily.env
+  gSSH chmod 0400 /root/waterlily.env
 
-gSSH systemctl daemon-reload
-gSSH systemctl enable lilypad
-gSSH systemctl enable lilypad-testnet
-gSSH systemctl restart lilypad
-gSSH systemctl restart lilypad-testnet
+  gSCP $DIR/waterlily.service /tmp/waterlily.service
+  gSSH mv /tmp/waterlily.service /etc/systemd/system/waterlily.service
+  gSSH chmod 0444 /etc/systemd/system/waterlily.service
+
+  gSSH systemctl daemon-reload
+  gSSH systemctl enable waterlily
+  gSSH systemctl restart waterlily
+}
+
+eval "$@"

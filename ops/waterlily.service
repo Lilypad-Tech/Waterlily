@@ -1,0 +1,16 @@
+[Unit]
+Description=Waterlily
+After=network-online.target
+Wants=network-online.target systemd-networkd-wait-online.service
+
+[Service]
+Environment="LOG_TYPE=json"
+Environment="LOG_LEVEL=debug"
+Environment="HOME=/tmp"
+EnvironmentFile=/root/waterlily.env
+Restart=always
+RestartSec=5s
+ExecStart=/usr/bin/waterlily serve
+
+[Install]
+WantedBy=multi-user.target

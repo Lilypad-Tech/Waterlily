@@ -1,47 +1,46 @@
-import {
-  ThemeProvider,
-  createTheme,
-  responsiveFontSizes,
-} from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { WebHeader } from '@/components';
-import { PageLayout } from '@/layouts';
-import {
-  WalletContextProvider,
-  ContractContextProvider,
-  StatusContextProvider,
-  ImageContextProvider,
-  NetworkContextProvider,
-} from '@/context';
+import { useRouter } from 'next/router';
+import React from 'react';
 import HomePage from './HomePage';
+import ArtistSignup from './ArtistSignup';
 
-let theme = createTheme({
-  palette: {
-    mode: 'dark',
-  },
-});
-theme = responsiveFontSizes(theme);
-
-//Wallet auth belongs here too?
+//I think my context's maybe shouldn't have children
 export default function Home() {
+  const router = useRouter();
+
   return (
-    //Wallet Context Provider here
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <StatusContextProvider>
-        <NetworkContextProvider>
-          <WalletContextProvider>
-            <ImageContextProvider>
-              <ContractContextProvider>
-                <WebHeader />
-                <PageLayout>
-                  <HomePage />
-                </PageLayout>
-              </ContractContextProvider>
-            </ImageContextProvider>
-          </WalletContextProvider>
-        </NetworkContextProvider>
-      </StatusContextProvider>
-    </ThemeProvider>
+    <>
+      {/* <WebHeader />
+      <PageLayout> */}
+      {router.pathname === '/' && <HomePage />}
+      {router.pathname === '/ArtistSignup' && <ArtistSignup />}
+      {/* </PageLayout> */}
+    </>
   );
 }
+
+/*
+  // artistId: string; //how do we keep this hidden...
+  //Personal Data
+  artistType: ArtistType;
+  name: string;
+  email: string;
+  walletAddress: string;
+  nationality?: string;
+  period: string;
+  biography: string; //char limited
+  //ArtWork Data
+  category: ArtistCategory;
+  style: string;
+  tags: string[]; //chips
+  portfolio: string;
+  //verification data
+  originalArt: Boolean;
+  trainingConsent: Boolean;
+  legalContent: Boolean;
+  //Images
+  avatar: '';
+  thumbnails: ArtistThumbnail[]; //up to 3 images, cropped // change this type
+  images: '';
+
+
+*/

@@ -131,7 +131,7 @@ cd hardhat
 source .env
 npx hardhat compile
 npx hardhat --network filecoinHyperspace run scripts/deploy.ts
-IMAGE_COST=100 ARTIST_COMMISSION=20 \
+ARTIST_COST=100 IMAGE_COST=100 ARTIST_COMMISSION=20 \
   npx hardhat --network filecoinHyperspace run scripts/changePrice.ts
 ARTIST=mckhallstyle ADDRESS=0x230115404c551Fcd0B6d447DE1DaD3afca230E07 npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
 ARTIST=SARAH_RICHTER ADDRESS=0x230115404c551Fcd0B6d447DE1DaD3afca230E07 npx hardhat --network filecoinHyperspace run scripts/addArtist.ts
@@ -227,3 +227,150 @@ If you need to upload anything to the filestore:
 ```
 curl -F "uploads=@cecnstyle.png" -F "path=artist_thumbnails" https://ai-art-files.cluster.world/upload?access_token=XXX
 ```
+
+## compiling smart contracts
+
+First we need to make sure we have abigen in our path:
+
+```bash
+go install github.com/ethereum/go-ethereum/cmd/abigen@v1.10.26
+```
+
+You will also need jq installed.
+
+Then we can compile the contracts:
+
+```bash
+cd hardhat
+npm run compile
+```
+
+## deployment v2
+
+```bash
+cd hardhat
+source .env
+npx hardhat compile
+npx hardhat --network filecoinHyperspace run scripts/deploy.ts
+ARTIST_COST=100 IMAGE_COST=100 ARTIST_COMMISSION=20 \
+  npx hardhat --network filecoinHyperspace run scripts/changePrice.ts
+```
+
+Set the address that is printed to the `CONTRACT_ADDRESS` env var inside `.env` or `.env.testnet`.
+
+## dev v2
+
+Export vars:
+
+```bash
+export BACALHAU_API_HOST=ai-art-requester.cluster.world
+export CONTRACT_ADDRESS=...
+export WALLET_PRIVATE_KEY=...
+export FILESTORE_TOKEN=wGARXp2KbjPrf9wYdLjU
+export FILESTORE_DIRECTORY=/tmp/waterlily-files
+export SQLITE_DATA_FILE=/tmp/waterlily.db
+export RPC_ENDPOINT=https://api.hyperspace.node.glif.io/rpc/v1
+export CHAIN_ID=3141
+export BIND_PORT=3500
+export APP_URL=http://localhost:3500
+```
+
+Create filestore dir:
+
+```bash
+mkdir -p $FILESTORE_DIRECTORY
+```
+
+Start server:
+
+```bash
+go run . serve
+```
+
+## deploy new binaries
+
+```bash
+bash ops/deploy.sh upload
+bash ops/deploy.sh deploystaging
+```
+
+## TLS
+
+Get TLS cert:
+
+```bash
+sudo apt install certbot python3-certbot-nginx
+```
+
+
+copy the `certbot/nginx.{staging,production}.conf` files to `/etc/nginx/sites-available` and delete the default file
+
+don't forgoet to edit the linkgs in `sites-enabled` also
+
+
+```bash
+sudo systemctl stop nginx
+sudo systemctl start nginx
+sudo systemctl status nginx
+sudo certbot --nginx -d staging.api.waterlily.cluster.world
+sudo certbot --nginx -d api.waterlily.cluster.world
+```
+
+## manage the database
+
+```bash
+gcloud compute ssh artist-vm-0 --zone us-central1-a
+sudo apt install sqlite3
+sudo sqlite3 /data/waterlily/staging/data.db
+.tables
+select * from artist;
+```
+
+## manage bacalhau cluster
+
+Login to https://cloud.lambdalabs.com/instances
+
+Our instances are all labelled with `nodeXX-aXX-ai-art-cluster`
+
+Click the `Launch` link - there is a tmux session with bacalhau running.
+
+## job timeouts
+
+The `ClientID` for the waterlily requester node is: `e8d05c629ae033fb38af58acfe895c8df639cc95a51b7300fbea98429ee0bcb9`
+
+We add this to the `--job-execution-timeout-bypass-client-id` flag on the cluster.
+
+This means we can add timeouts to jobs of 1 hour and not suffer from the default 30 min timeout.
+
+```
+--job-execution-timeout-bypass-client-id e8d05c629ae033fb38af58acfe895c8df639cc95a51b7300fbea98429ee0bcb9
+```
+
+## synchronize production after training artist on staging
+
+```bash
+# SSH onto the machine
+gcloud compute ssh artist-vm-0 --zone us-central1-a
+# IMPORTANT that we are in this folder
+cd /data/waterlily
+# now we copy all artist records from the staging database to the production database
+sudo sqlite3 production/data.db "drop table artist;"
+sudo sqlite3 staging/data.db ".dump artist" | sudo sqlite3 production/data.db
+sudo sqlite3 production/data.db "select count(*) from artist;"
+# copy the new artist ID from the staging setup to here
+export ARTIST_ID=XXX
+# now we copy over the artist files from the filestore
+sudo cp -r staging/files/artists/$ARTIST_ID production/files/artists/$ARTIST_ID
+```
+
+Once you have done the above - the final step is to add the artist to the mainnet contract.
+
+You need to call 2 functions on the contract (in this order):
+
+ * `CreateArtist('XXX', '')`
+ * `ArtistComplete('XXX')`
+
+Where `XXX` is thge id of the artist above.
+
+NOTE: the `CreateArtist` method costs FIL to call - you might want to call the `updateCost` before and after to save FIL.
+

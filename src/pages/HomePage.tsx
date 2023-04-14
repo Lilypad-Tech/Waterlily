@@ -1,4 +1,7 @@
 import { forwardRef, useState, useContext, useEffect } from 'react';
+import { Box, Button, Snackbar } from '@mui/material';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import { KeyboardDoubleArrowUpRounded } from '@mui/icons-material';
 import {
   HeaderLayout,
   TitleLayout,
@@ -9,12 +12,10 @@ import {
   ImageListLayout,
 } from '@/layouts';
 import {
-  Logo,
   Title,
   Subtitle,
   Description,
   UserInput,
-  ArtistCard,
   WalletButton,
   ImageHeader,
   CalloutMessage,
@@ -22,10 +23,11 @@ import {
   TwitterLink,
   StatusMessage,
   GeneratedImages,
-  ErrorMessage,
-  // ParrotLoader,
+  ArtistCardGrid,
+  StatusDisplay,
+  NFTDisplay,
 } from '@/components';
-import { artists } from '@/definitions/artists';
+
 import {
   ContractContext,
   WalletContext,
@@ -33,10 +35,8 @@ import {
   StatusContext,
   defaultStatusState,
   ImageContext,
+  ArtistContext,
 } from '@/context';
-import { Box, Typography, Button, Snackbar } from '@mui/material';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
-import { KeyboardDoubleArrowUpRounded } from '@mui/icons-material';
 
 const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -47,8 +47,7 @@ const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
 
 const HomePage = () => {
   const [isCallout] = useState(true);
-  const { customerImages } = useContext(ContractContext);
-
+  const { artistState: artists } = useContext(ArtistContext);
   const { walletState = defaultWalletState.walletState } =
     useContext(WalletContext);
   const {
@@ -56,8 +55,9 @@ const HomePage = () => {
     closeSnackbar,
     statusState = defaultStatusState.statusState,
   } = useContext(StatusContext);
-  const { quickImages, imagePrompt, imageArtist, setImageArtist, twitterLink } =
+  const { quickImages, imagePrompt, imageArtist, twitterLink } =
     useContext(ImageContext);
+  const { customerImages, nftImages } = useContext(ContractContext);
 
   const goToTop = () => {
     return document.getElementById('justAboveTextField')?.scrollIntoView({
@@ -67,10 +67,14 @@ const HomePage = () => {
     });
   };
 
+  useEffect(() => {
+    console.log('artistState', artists);
+  }, [artists]);
+
   return (
     <>
       <HeaderLayout>
-        <div></div>
+        <div />
         {/* <Logo height={40} /> */}
         <WalletButton />
       </HeaderLayout>
@@ -93,36 +97,33 @@ const HomePage = () => {
                     idx={idx}
                     image={{
                       link: quickImageURL,
-                      alt: 'Not found',
+                      alt: `Waterlily Generated Image ${idx} from ${imageArtist.name} data`,
                     }}
                     sx={{
                       maxWidth: 250,
                       border: '1px solid white',
                     }}
+                    newImg={true}
                   />
                 );
               })}
           </ImageListLayout>
         </SectionLayout>
       )}
-      {statusState.isError && (
-        <SectionLayout>
-          <ErrorMessage />
-        </SectionLayout>
-      )}
+      <StatusDisplay />
       <div id="justAboveTextField"></div>
       <SectionLayout>
         {!walletState?.isConnected ? (
           <WalletButton />
-        ) : !Boolean(statusState.isLoading) ? (
-          <UserInputLayout>
-            <UserInput
-              initialPrompt={imagePrompt}
-              initialArtist={imageArtist}
-            />
-          </UserInputLayout>
         ) : (
-          <StatusMessage />
+          !Boolean(statusState.isLoading) && (
+            <UserInputLayout>
+              <UserInput
+                initialPrompt={imagePrompt}
+                initialArtist={imageArtist}
+              />
+            </UserInputLayout>
+          )
         )}
       </SectionLayout>
       <ArtistLayout>
@@ -130,64 +131,59 @@ const HomePage = () => {
           text="Featured Artists"
           sx={{ fontSize: '3rem', paddingTop: '2rem' }}
         />
-        <ArtistListLayout>
-          {artists.map((artist, e) => {
-            const { artistId, name, style, description, portfolio, image } =
-              artist;
-            return (
-              <ArtistCard
-                key={e}
-                name={name}
-                style={style}
-                description={description}
-                portfolio={portfolio}
-                image={image}
-                disabled={statusState.isLoading ? true : false}
-                onClick={() => {
-                  setImageArtist({
-                    name,
-                    key: artistId,
-                    style,
-                  });
-                  goToTop();
-                }}
-              />
-            );
-          })}
-        </ArtistListLayout>
+        {/* TODO: separate public and private artists & display separately */}
+        <ArtistCardGrid navigate={goToTop} />
         {isCallout && <CalloutMessage />}
       </ArtistLayout>
-      <SectionLayout>
-        <>
-          <Title
-            text="Your Generated Images"
-            sx={{ fontSize: '3rem', paddingTop: '2rem' }}
-          />
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {customerImages.length < 1 ? (
-              <Typography onClick={goToTop}>Generate an Image!</Typography>
-            ) : (
+      {customerImages.length > 0 && customerImages[0].prompt && (
+        <SectionLayout>
+          <>
+            <Title
+              text="Your Generated Images"
+              sx={{ fontSize: '3rem', paddingTop: '2rem' }}
+            />
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
               <GeneratedImages />
-            )}
-            <Box sx={{ padding: '1rem 0' }}>
-              <Button
-                onClick={goToTop}
-                endIcon={<KeyboardDoubleArrowUpRounded />}
-                aria-label="Back to Top"
-              >
-                Back to Top
-              </Button>
             </Box>
-          </Box>
-        </>
-      </SectionLayout>
+          </>
+        </SectionLayout>
+      )}
+      {nftImages && nftImages.length > 0 && (
+        <SectionLayout>
+          <>
+            <Title
+              text="Your NFTs"
+              sx={{ fontSize: '3rem', paddingTop: '2rem' }}
+            />
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <NFTDisplay />
+            </Box>
+          </>
+        </SectionLayout>
+      )}
+      <Box sx={{ padding: '1rem 0' }}>
+        <Button
+          onClick={goToTop}
+          endIcon={<KeyboardDoubleArrowUpRounded />}
+          aria-label="Back to Top"
+        >
+          Back to Top
+        </Button>
+      </Box>
       {snackbar.open && (
         <Snackbar
           open={snackbar.open}
