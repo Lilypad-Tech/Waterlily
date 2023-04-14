@@ -27,6 +27,7 @@ export const NFTDisplay = () => {
                   md="auto" //{3}
                   lg="auto" //{3}
                   xl="auto"
+                  key={idx.toString()}
                 >
                   <Card
                     key={idx}
