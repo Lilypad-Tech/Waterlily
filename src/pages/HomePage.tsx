@@ -135,7 +135,7 @@ const HomePage = () => {
         <ArtistCardGrid navigate={goToTop} />
         {isCallout && <CalloutMessage />}
       </ArtistLayout>
-      {customerImages.length > 0 && (
+      {customerImages.length > 0 && customerImages[0].prompt && (
         <SectionLayout>
           <>
             <Title

@@ -204,7 +204,8 @@ export const ArtistModal = ({
               justifyContent="center"
               alignItems="center"
             >
-              {artist.thumbnails.map((thumb, i) => {
+              Coming Soon...
+              {/* {artist.thumbnails.map((thumb, i) => {
                 if (i > 3) return;
                 return (
                   <Grid
@@ -226,7 +227,7 @@ export const ArtistModal = ({
                     style={{ objectFit: 'cover', maxHeight: '200px' }}
                   />
                 );
-              })}
+              })} */}
             </Grid>
             <Divider sx={{ paddingTop: '1rem' }} />
             <Typography variant="subtitle1" sx={{ margin: '2rem 0 0 0' }}>
@@ -238,7 +239,8 @@ export const ArtistModal = ({
               justifyContent="center"
               alignItems="center"
             >
-              {artist.thumbnails.map((thumb, i) => {
+              Coming soon...
+              {/* {artist.thumbnails.map((thumb, i) => {
                 if (i > 3) return;
                 return (
                   <Grid
@@ -260,7 +262,7 @@ export const ArtistModal = ({
                     style={{ objectFit: 'cover', maxHeight: '200px' }}
                   />
                 );
-              })}
+              })} */}
             </Grid>
             <Divider sx={{ paddingTop: '1rem' }} />
           </Box>
