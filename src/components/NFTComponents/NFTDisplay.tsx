@@ -40,7 +40,7 @@ export const NFTDisplay = () => {
                   >
                     <CardMedia
                       component="img"
-                      image={nft?.image || './monet-water-lilies.jpeg'}
+                      image={nft.image || './monet-water-lilies.jpeg'}
                       alt={nft.name}
                     />
                     {/* <Typography></Typography> */}

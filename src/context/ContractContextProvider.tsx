@@ -79,7 +79,7 @@ export const defaultContractState = {
     connectedWaterlilyNFTContract: null,
   },
   customerImages: [],
-  nftImages: [] as NFTJson[],
+  nftImages: [],
   artistCost: BigNumber.from(0),
   imageCost: BigNumber.from(0),
   setContractState: () => {},
@@ -120,7 +120,7 @@ export const ContractContextProvider = ({
     ),
   });
   const [customerImages, setCustomerImages] = useState<any[]>([]);
-  const [nftImages, setNftImages] = useState<NFTJson[]>([] as NFTJson[]);
+  const [nftImages, setNftImages] = useState<NFTJson[]>([]);
   const [artistCost, setArtistCost] = useState(BigNumber.from(0));
   const [imageCost, setImageCost] = useState(BigNumber.from(0));
   const {
@@ -705,7 +705,7 @@ export const ContractContextProvider = ({
         .then(async (nftCollection: any) => {
           console.log('fetched nfts nftcollection', nftCollection);
           await createImageURLsForRetrieval(nftCollection)
-            .then((data: NFTJson[] | undefined) => {
+            .then((data: any[] | undefined) => {
               if (data) setNftImages(data);
             })
             .catch((err) => {
