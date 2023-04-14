@@ -192,7 +192,7 @@ export const ArtistContextProvider = ({ children }: MyContextProviderProps) => {
     //search artistState
     const fuse = new Fuse(artistState, { keys: ['artistId'] });
     const artistData: any = fuse.search(artistId);
-    console.log('artist data found', artistData);
+    // console.log('artist data found', artistData);
     if (artistData.length < 1) return {} as ArtistData;
     else return artistData[0].item as ArtistData;
   };

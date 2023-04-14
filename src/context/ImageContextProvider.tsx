@@ -51,7 +51,7 @@ export interface NFTMetadata extends TokenInput {
   properties: NFTProperties;
 }
 
-interface NFTJson extends TokenInput {
+export interface NFTJson extends TokenInput {
   name: string;
   description: string;
   image: Blob; //,image.link, //should be a Blob - need to make it
@@ -354,6 +354,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
       isLoading: 'Creating & Storing NFT Metadata to NFT.Storage...',
     });
     let nftJson: NFTJson | undefined = await createNFTMetadata(image);
+    console.log('created nft metadata', nftJson);
     if (!nftJson) {
       setStatusState({
         ...defaultStatusState.statusState,
@@ -362,10 +363,11 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
       });
     }
     if (nftJson) {
-      let ipfsImageBlob = await NFTStorageClient.storeBlob(nftJson.image);
-      nftJson.properties.origins.ipfs = ipfsImageBlob;
+      // let ipfsImageBlob = await NFTStorageClient.storeBlob(nftJson.image);
+      // nftJson.properties.origins.ipfs = ipfsImageBlob;
+      console.log('stored blob', nftJson);
       //setStatus here to loading
-      await NFTStorageClient.store(nftJson)
+      const metadata = await NFTStorageClient.store(nftJson)
         .then((metadata) => {
           console.log('NFT Data pinned to IPFS & stored on Filecoin');
           console.log('Metadata URI:', metadata.url, metadata);
@@ -396,6 +398,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
           });
           throw err;
         });
+      return metadata;
     }
   };
 

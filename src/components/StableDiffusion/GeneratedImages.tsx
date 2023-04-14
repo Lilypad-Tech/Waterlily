@@ -16,9 +16,9 @@ export const GeneratedImages = () => {
   return (
     <>
       {customerImages.map((image) => {
-        console.log('generated', image);
+        // console.log('generated', image);
         const artist: ArtistData | null = findArtistById(image.artist);
-        console.log('generated artist', artist);
+        // console.log('generated artist', artist);
         return (
           <Box
             key={image.id.toString()}
@@ -43,7 +43,7 @@ export const GeneratedImages = () => {
               }}
             >
               {IMAGE_NUMBER_ARRAY.map((imageNumber, idx) => {
-                console.log('artist?', artist);
+                // console.log('artist?', artist);
                 const link = getQuickImageURL(image.id.toNumber(), imageNumber);
                 const alt = artist
                   ? `${artist.name}-${image.id}-image${idx}`

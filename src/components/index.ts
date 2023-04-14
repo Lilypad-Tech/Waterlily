@@ -41,3 +41,4 @@ export * from './ArtistOnboarding/AdminFormDetails';
 export * from './ArtistOnboarding/WalletFormDetails';
 
 /** NFTs */
+export * from './NFTComponents/NFTDisplay';

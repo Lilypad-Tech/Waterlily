@@ -22,6 +22,7 @@ import {
   WalletContext,
   NetworkContext,
   defaultWalletState,
+  NFTJson,
 } from '.';
 
 // /* Contracts */
@@ -53,7 +54,7 @@ interface ContractContextValue {
   contractState?: ContractState;
   setContractState: Dispatch<SetStateAction<ContractState>>;
   customerImages: any[];
-  nftImages: any[];
+  nftImages: NFTJson[];
   artistCost: BigNumber;
   imageCost: BigNumber;
   runStableDiffusionJob: (prompt: string, artistId: string) => Promise<void>;
@@ -78,7 +79,7 @@ export const defaultContractState = {
     connectedWaterlilyNFTContract: null,
   },
   customerImages: [],
-  nftImages: [],
+  nftImages: [] as NFTJson[],
   artistCost: BigNumber.from(0),
   imageCost: BigNumber.from(0),
   setContractState: () => {},
@@ -119,7 +120,7 @@ export const ContractContextProvider = ({
     ),
   });
   const [customerImages, setCustomerImages] = useState<any[]>([]);
-  const [nftImages, setNftImages] = useState<any[]>([]);
+  const [nftImages, setNftImages] = useState<NFTJson[]>([] as NFTJson[]);
   const [artistCost, setArtistCost] = useState(BigNumber.from(0));
   const [imageCost, setImageCost] = useState(BigNumber.from(0));
   const {
@@ -649,27 +650,6 @@ export const ContractContextProvider = ({
     tokenURI: string;
   }
 
-  const formatNFTCollectionForDisplay = async (
-    nftCollection: NFTCollection[]
-  ) => {
-    await createImageURLsForRetrieval(nftCollection)
-      .then((data: any) => {
-        console.log('formatted nfts', data);
-        setNftImages(data);
-      })
-      .catch((err) => {
-        console.log('error creating links', err);
-      });
-  };
-
-  //would be good to be able to check this
-  /* Helper function - manipulating the returned CID into a http link using IPFS gateway */
-  const createIPFSgatewayLink = (el: any) => {
-    console.log('nfts ipfs', el.tokenURI);
-    const fetchURL = `${ipfsHttpGatewayLink}${el.tokenURI}`;
-    return fetchURL;
-  };
-
   /* 
     Helper function for fetching the Filecoin data through IPFS gateways 
     to display the images in the UI 
@@ -687,17 +667,22 @@ export const ContractContextProvider = ({
         return el;
       });
 
-    const imgURLs = await Promise.all(
+    const imgURLs: NFTJson[] = await Promise.all(
       dataCollection.map(async (el) => {
-        console.log('imgurls nfts el', el);
-        const ipfsGatewayLink = `${ipfsHttpGatewayLink}${el.tokenURI}`;
-        // const ipfsGatewayLink = `https://${el.tokenURI}.ipfs.nftstorage.link`;
-        console.log('link nfts', ipfsGatewayLink);
+        const ipfsGatewayLink = `${ipfsHttpGatewayLink}${el.tokenURI}/metadata.json`;
         const response = await fetch(ipfsGatewayLink);
-        console.log('response nfts', response);
+        if (response.status !== 200) {
+          return;
+        }
+
         const json = await response.json();
-        console.log('json nfts', json);
-        return json;
+
+        const displayStr = json.image.split('/');
+
+        const displayUrl = `https://nftstorage.link/ipfs/${displayStr[2]}/blob`;
+        const displayJson = { ...json, image: displayUrl };
+
+        return displayJson;
       })
     );
 
@@ -705,140 +690,27 @@ export const ContractContextProvider = ({
     return imgURLs;
   };
 
-  // const mintWaterlilyNFT = async (image: { link: string; alt: string }) => {
-  //   if (!window.ethereum) {
-  //     setStatusState({
-  //       ...statusState,
-  //       isError: 'Web3 not available',
-  //       isMessage: true,
-  //       message: {
-  //         title: 'Web3 not available',
-  //         description:
-  //           'Please install and unlock a Web3 provider in your browser to use this application.',
-  //       },
-  //     });
-  //     return;
-  //   }
-  //   // 1. Call SaveToNFTStorage
-  //   await saveToNFTStorage(image)
-  //     .then(async (metadata) => {
-  //       const connectedNftContract = getWaterlilyNFTWriteContractConnection();
-  //       if (!connectedNftContract) {
-  //         setStatusState({
-  //           ...defaultStatusState.statusState,
-  //           isError: 'Something went wrong connecting to the NFT Contract',
-  //         });
-  //         throw Error();
-  //       }
-
-  //       await connectedNftContract
-  //         .mintWaterlilyNFT(walletState?.accounts[0], metadata?.ipnft)
-  //         .then(async (tx: any) => {
-  //           setStatusState((prevState) => ({
-  //             ...prevState,
-  //             isLoading:
-  //               'Waiting for transaction to be included in a block on the network...',
-  //             isMessage: true,
-  //             message: {
-  //               title: `This could take some time... please be patient while the transaction is included in a block!`,
-  //               description: (
-  //                 <a
-  //                   href={`${network.blockExplorer}${tx.hash}`}
-  //                   target="_blank"
-  //                   rel="no_referrer"
-  //                 >
-  //                   Check Transaction Status in block explorer here
-  //                 </a>
-  //               ),
-  //             },
-  //           }));
-  //           setSnackbar({
-  //             type: 'success',
-  //             open: true,
-  //             message: `Transaction submitted to the FVM network: ${tx.hash}...`,
-  //           });
-  //           await tx
-  //             .wait()
-  //             .then((receipt: any) => {
-  //               setSnackbar({
-  //                 type: 'success',
-  //                 open: true,
-  //                 message: `NFT Minted!`,
-  //               });
-  //               setStatusState((prevState) => ({
-  //                 ...prevState,
-  //                 isLoading: '',
-  //                 isMessage: true,
-  //                 message: {
-  //                   title: `NFT Minted`,
-  //                   description: (
-  //                     <a
-  //                       href={`${network.blockExplorer}${receipt.transactionHash}`}
-  //                       target="_blank"
-  //                       rel="no_referrer"
-  //                     >
-  //                       Check Transaction in block explorer
-  //                     </a>
-  //                   ), //receipt.transactionHash
-  //                 },
-  //               }));
-  //             })
-  //             .catch((err: any) => {
-  //               setStatusState({
-  //                 ...defaultStatusState.statusState,
-  //                 isError:
-  //                   'Something went wrong including the tx in a block on the network',
-  //                 isMessage: true,
-  //                 message: err.toString(),
-  //               });
-  //             });
-  //         })
-  //         .catch((err: any) => {
-  //           setStatusState({
-  //             ...defaultStatusState.statusState,
-  //             isError: 'Something went wrong submitting the tx to the network',
-  //             isMessage: true,
-  //             message: err.toString(),
-  //           });
-  //         });
-  //     })
-  //     .catch((err) => {
-  //       setStatusState({
-  //         ...defaultStatusState.statusState,
-  //         isError: 'Something went wrong connecting to the NFT Contract',
-  //         isMessage: true,
-  //         message: err.toString(),
-  //       });
-  //       return;
-  //     });
-  // };
-
-  //happens on wallet account change...useEffect
   const fetchNFTImagesByOwner = async () => {
-    // return;
-    console.log('fetching nfts');
     if (
       !walletState?.isConnected ||
       walletState.accounts.length <= 0 ||
       !Boolean(contractState.connectedWaterlilyNFTContract)
-    )
+    ) {
       return;
+    }
     if (contractState && contractState.connectedWaterlilyNFTContract) {
+      console.log('fetching nfts by owner from contract');
       await contractState.connectedWaterlilyNFTContract
         .getNFTCollectionByOwner(walletState.accounts[0])
-        .then((nftCollection: any) => {
-          console.log('fetched nfts', nftCollection);
-          formatNFTCollectionForDisplay(nftCollection);
-          // const nftLinks = nfts.map(async (nft) => {
-          //   const link = `${ipfsHttpGatewayLink}${nft.tokenURI}`;
-          //   const res = await fetch(link);
-
-          //   const json = await res.json();
-          //   console.log('nfts json', json);
-          //   return json;
-          // });
-          // console.log('nfts links', nftLinks);
-          // setNftImages(nftLinks); //need to cycle through to get URI
+        .then(async (nftCollection: any) => {
+          console.log('fetched nfts nftcollection', nftCollection);
+          await createImageURLsForRetrieval(nftCollection)
+            .then((data: NFTJson[] | undefined) => {
+              if (data) setNftImages(data);
+            })
+            .catch((err) => {
+              console.log('error creating links', err);
+            });
         })
         .catch((err: any) => {
           console.log('error fetching nfts', err.message);
@@ -862,9 +734,10 @@ export const ContractContextProvider = ({
     }
     console.log('saving to NFT.storage', image);
     const metadata: any = await saveToNFTStorage(image);
-    console.log('metadata mint', metadata);
     if (!metadata || !metadata.url) {
-      throw Error();
+      console.log('no metadata?', metadata);
+      // throw Error();
+      return;
     }
 
     console.log('Connecting to NFT Contract...');

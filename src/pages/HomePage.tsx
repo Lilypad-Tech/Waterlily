@@ -25,6 +25,7 @@ import {
   GeneratedImages,
   ArtistCardGrid,
   StatusDisplay,
+  NFTDisplay,
 } from '@/components';
 
 import {
@@ -168,7 +169,7 @@ const HomePage = () => {
                 justifyContent: 'center',
               }}
             >
-              {/* <GeneratedImages /> */}
+              <NFTDisplay />
             </Box>
           </>
         </SectionLayout>
