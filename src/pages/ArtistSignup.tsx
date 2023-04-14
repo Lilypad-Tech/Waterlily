@@ -10,6 +10,7 @@ import {
   Snackbar,
   Alert,
 } from '@mui/material';
+import { ChevronLeftOutlined } from '@mui/icons-material';
 import {
   useNavigation,
   defaultWalletState,
@@ -219,7 +220,13 @@ const ArtistSignup: React.FC<{}> = () => {
   return (
     <Box sx={container}>
       <HeaderLayout>
-        <Box onClick={() => handleNavigation('')}>{'<- Back'}</Box>
+        <Button
+          variant="outlined"
+          startIcon={<ChevronLeftOutlined />}
+          onClick={() => handleNavigation('')}
+        >
+          {'Back'}
+        </Button>
         <WalletButton />
       </HeaderLayout>
       <TitleLayout>
@@ -249,10 +256,29 @@ const ArtistSignup: React.FC<{}> = () => {
       ) : walletState.accounts[0] && walletState.balance < 0.1 ? (
         <WalletRequirementsMessage />
       ) : walletState.chainId !== network.chainId ? (
-        <>
-          <div>Wrong chain {walletState.chainId}</div>
-          <div>{network.chainId}</div>
-        </>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+          }}
+        >
+          <Box
+            sx={{
+              border: '1px solid #b583ff',
+              padding: '1rem',
+              borderRadius: '16px',
+              width: '80%',
+              // color: '#b583ff',
+            }}
+          >
+            <div>Wrong chain {walletState.chainId}</div>
+            <div>
+              {`Please change chains to ${network.name} at
+              ${network.chainId}`}
+            </div>
+          </Box>
+        </Box>
       ) : (
         <Formik
           initialValues={initialFormValues}
