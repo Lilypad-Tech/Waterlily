@@ -33,6 +33,7 @@ interface ImageCardProps {
   ipfs?: { link: string; alt: string; minted?: boolean };
   idx: number | string;
   sx?: SxProps;
+  newImg?: boolean;
 }
 
 export const ImageQuickCard: FC<ImageCardProps> = ({
@@ -40,6 +41,7 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
   ipfs,
   idx,
   sx = {},
+  newImg = false,
 }): ReactElement => {
   const { walletState = defaultWalletState.walletState } =
     useContext(WalletContext);
@@ -77,17 +79,19 @@ export const ImageQuickCard: FC<ImageCardProps> = ({
       </Box>
       {/* pass in image link to the nftfunction - it has the rest 
       - probs should be it's own component*/}
-      <Button
-        variant="outlined"
-        onClick={() => mintNFT(image)}
-        disabled={
-          !window.ethereum ||
-          !walletState.accounts[0] ||
-          Boolean(statusState.isLoading)
-        }
-      >
-        Mint as NFT
-      </Button>
+      {newImg && (
+        <Button
+          variant="outlined"
+          onClick={() => mintNFT(image)}
+          disabled={
+            !window.ethereum ||
+            !walletState.accounts[0] ||
+            Boolean(statusState.isLoading)
+          }
+        >
+          Mint as NFT
+        </Button>
+      )}
     </Box>
   );
 };

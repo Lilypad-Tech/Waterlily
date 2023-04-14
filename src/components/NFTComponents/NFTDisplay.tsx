@@ -1,7 +1,6 @@
-import { useContext, useEffect } from 'react';
-import { Box, Typography, CardMedia, Card } from '@mui/material';
-import { ContractContext, ImageContext, IMAGE_NUMBER_ARRAY } from '@/context';
-import { artists } from '@/definitions';
+import { useContext } from 'react';
+import { Box, CardMedia, Card } from '@mui/material';
+import { ContractContext } from '@/context';
 
 export const NFTDisplay = () => {
   const { nftImages } = useContext(ContractContext);
@@ -25,11 +24,11 @@ export const NFTDisplay = () => {
             mt: 2,
           }}
         >
-          {nftImages.map((nft) => {
+          {nftImages.map((nft, idx) => {
             if (nft?.image) {
               return (
                 <Card
-                  key={nft.image}
+                  key={idx}
                   sx={{
                     maxWidth: 250,
                     border: '1px solid white',
@@ -37,7 +36,11 @@ export const NFTDisplay = () => {
                     mr: 1,
                   }}
                 >
-                  <CardMedia component="img" image={nft.image} />
+                  <CardMedia
+                    component="img"
+                    image={nft?.image || './monet-water-lilies.jpeg'}
+                    alt={nft.name}
+                  />
                 </Card>
               );
             }

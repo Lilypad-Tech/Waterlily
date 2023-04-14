@@ -103,6 +103,7 @@ const HomePage = () => {
                       maxWidth: 250,
                       border: '1px solid white',
                     }}
+                    newImg={true}
                   />
                 );
               })}
