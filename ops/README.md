@@ -346,4 +346,31 @@ This means we can add timeouts to jobs of 1 hour and not suffer from the default
 --job-execution-timeout-bypass-client-id e8d05c629ae033fb38af58acfe895c8df639cc95a51b7300fbea98429ee0bcb9
 ```
 
+## synchronize production after training artist on staging
+
+```bash
+# SSH onto the machine
+gcloud compute ssh artist-vm-0 --zone us-central1-a
+# IMPORTANT that we are in this folder
+cd /data/waterlily
+# now we copy all artist records from the staging database to the production database
+sudo sqlite3 production/data.db "drop table artist;"
+sudo sqlite3 staging/data.db ".dump artist" | sudo sqlite3 production/data.db
+sudo sqlite3 production/data.db "select count(*) from artist;"
+# copy the new artist ID from the staging setup to here
+export ARTIST_ID=XXX
+# now we copy over the artist files from the filestore
+sudo cp -r staging/files/artists/$ARTIST_ID production/files/artists/$ARTIST_ID
+```
+
+Once you have done the above - the final step is to add the artist to the mainnet contract.
+
+You need to call 2 functions on the contract (in this order):
+
+ * `CreateArtist('XXX', '')`
+ * `ArtistComplete('XXX')`
+
+Where `XXX` is thge id of the artist above.
+
+NOTE: the `CreateArtist` method costs FIL to call - you might want to call the `updateCost` before and after to save FIL.
 
