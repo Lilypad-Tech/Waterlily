@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { CardMedia, Card, Grid, Typography } from '@mui/material';
-import { ContractContext } from '@/context';
+import { ArtistData, ContractContext } from '@/context';
 
 export const NFTDisplay = () => {
   const { nftImages } = useContext(ContractContext);
@@ -8,6 +8,9 @@ export const NFTDisplay = () => {
   return (
     <Grid container spacing={2} justifyContent="center" alignItems="center">
       {nftImages.map((nft, idx) => {
+        const { originalArtist } = nft.properties;
+        const { name } = originalArtist as ArtistData;
+
         if (nft?.image) {
           return (
             <Grid
@@ -35,9 +38,7 @@ export const NFTDisplay = () => {
                   alt={nft.name}
                 />
               </Card>
-              <Typography variant="caption" sx={{ bt: '1px solid white' }}>
-                {nft.properties.originalArtist.name || ''}
-              </Typography>
+              {name && <Typography variant="caption">{name}</Typography>}
             </Grid>
           );
         }
