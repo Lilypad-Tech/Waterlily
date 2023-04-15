@@ -90,9 +90,8 @@ export const GeneratedImages = () => {
               <Box
                 key={image.id.toString()}
                 sx={{
-                  mt: 2,
-                  pt: 2,
-                  borderTop: 'solid 1px #fff',
+                  mt: 1,
+                  pt: 1,
                   width: '800px',
                   maxWidth: '800px',
                 }}
