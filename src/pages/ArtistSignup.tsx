@@ -269,7 +269,6 @@ const ArtistSignup: React.FC<{}> = () => {
               padding: '1rem',
               borderRadius: '16px',
               width: '80%',
-              // color: '#b583ff',
             }}
           >
             <div>Wrong chain {walletState.chainId}</div>
