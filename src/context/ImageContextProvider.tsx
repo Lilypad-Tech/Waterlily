@@ -370,6 +370,13 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     if (nftJson) {
       let ipfsImageBlob = await NFTStorageClient.storeBlob(nftJson.image);
       console.log('imageblob', ipfsImageBlob);
+      if (!ipfsImageBlob) {
+        setStatusState({
+          ...defaultStatusState.statusState,
+          isError: 'Something went wrong saving NFT data',
+        });
+        return;
+      }
       nftJson.properties.origins.ipfs = ipfsImageBlob;
       console.log('stored blob', nftJson);
       //setStatus here to loading
