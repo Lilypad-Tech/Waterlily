@@ -287,14 +287,24 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
   };
 
   const getNFTStorageClient = () => {
+    const token = process.env.NEXT_PUBLIC_NFT_STORAGE_API_KEY;
+    if (!token) {
+      console.log("can't fetch nftstorage token");
+      return;
+    }
     return new NFTStorage({
-      token: process.env.NEXT_PUBLIC_NFT_STORAGE_API_KEY || 'undefined',
+      token: token,
     });
   };
 
   const getWeb3StorageClient = () => {
+    const token = process.env.NEXT_PUBLIC_WEB3_STORAGE_API_KEY;
+    if (!token) {
+      console.log("can't fetch web3storage token");
+      return;
+    }
     return new Web3Storage({
-      token: process.env.NEXT_PUBLIC_WEB3_STORAGE_API_KEY || 'undefined',
+      token: token,
     });
   };
 
@@ -344,9 +354,14 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
   };
 
   const saveToNFTStorage = async (image: { link: string; alt: string }) => {
-    const NFTStorageClient: NFTStorage = getNFTStorageClient();
+    const NFTStorageClient: NFTStorage | undefined = getNFTStorageClient();
+
     if (!NFTStorageClient) {
-      console.log('No nft.storage client');
+      console.log('No nft.storage client', NFTStorageClient);
+      setStatusState({
+        ...defaultStatusState.statusState,
+        isError: 'Something went wrong saving NFT data',
+      });
       return;
     }
     setStatusState({
@@ -364,8 +379,14 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     }
     if (nftJson) {
       let ipfsImageBlob = await NFTStorageClient.storeBlob(nftJson.image);
+      if (!ipfsImageBlob) {
+        setStatusState({
+          ...defaultStatusState.statusState,
+          isError: 'Something went wrong saving NFT data',
+        });
+        return;
+      }
       nftJson.properties.origins.ipfs = ipfsImageBlob;
-      console.log('stored blob', nftJson);
       //setStatus here to loading
       const metadata = await NFTStorageClient.store(nftJson)
         .then((metadata) => {
@@ -406,7 +427,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     [key: string]: any;
     name: string;
   }) => {
-    const Web3StorageClient: Web3Storage = getWeb3StorageClient();
+    const Web3StorageClient: Web3Storage | undefined = getWeb3StorageClient();
     if (!Web3StorageClient) {
       console.log('No web3.storage client');
       setStatusState({
