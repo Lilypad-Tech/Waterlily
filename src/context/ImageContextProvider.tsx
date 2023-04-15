@@ -355,11 +355,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
 
   const saveToNFTStorage = async (image: { link: string; alt: string }) => {
     const NFTStorageClient: NFTStorage | undefined = getNFTStorageClient();
-    // const NFTStorageClient: NFTStorage = new NFTStorage({
-    //   token:
-    //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDU1QmE2ZUQ0ZjBhRTRhRGZGQTk5YzNBOENDMUJhODA4RTIzODRCYUUiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY4MTU1Nzc5OTU2MCwibmFtZSI6IldhdGVybGlseSJ9.KMmKGExrCk-JCaOIYfxWP_8zSugh--nQwV9cekAvIrk',
-    // });
-    console.log('No nft.storage client?', NFTStorageClient);
+
     if (!NFTStorageClient) {
       console.log('No nft.storage client', NFTStorageClient);
       setStatusState({
@@ -382,18 +378,15 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
       });
     }
     if (nftJson) {
-      console.log('nftstorage metadata exists', nftJson);
-      // let ipfsImageBlob = await NFTStorageClient.storeBlob(nftJson.image);
-      // console.log('imageblob', ipfsImageBlob);
-      // if (!ipfsImageBlob) {
-      //   setStatusState({
-      //     ...defaultStatusState.statusState,
-      //     isError: 'Something went wrong saving NFT data',
-      //   });
-      //   return;
-      // }
-      // nftJson.properties.origins.ipfs = ipfsImageBlob;
-      console.log('stored blob', nftJson);
+      let ipfsImageBlob = await NFTStorageClient.storeBlob(nftJson.image);
+      if (!ipfsImageBlob) {
+        setStatusState({
+          ...defaultStatusState.statusState,
+          isError: 'Something went wrong saving NFT data',
+        });
+        return;
+      }
+      nftJson.properties.origins.ipfs = ipfsImageBlob;
       //setStatus here to loading
       const metadata = await NFTStorageClient.store(nftJson)
         .then((metadata) => {
