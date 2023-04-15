@@ -368,6 +368,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
       });
     }
     if (nftJson) {
+      console.log('nftstorage metadata exists', nftJson);
       let ipfsImageBlob = await NFTStorageClient.storeBlob(nftJson.image);
       console.log('imageblob', ipfsImageBlob);
       if (!ipfsImageBlob) {
