@@ -434,7 +434,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     [key: string]: any;
     name: string;
   }) => {
-    const Web3StorageClient: Web3Storage = getWeb3StorageClient();
+    const Web3StorageClient: Web3Storage | undefined = getWeb3StorageClient();
     if (!Web3StorageClient) {
       console.log('No web3.storage client');
       setStatusState({
