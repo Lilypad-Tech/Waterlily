@@ -48,7 +48,8 @@ export const networks = {
     ],
     contracts: {
       WATERLILY_CONTRACT_ADDRESS: '0x24c6C64650E4E27Ca6EfBE9C23B963e001499222',
-      WATERLILY_NFT_CONTRACT_ADDRESS: '',
+      WATERLILY_NFT_CONTRACT_ADDRESS:
+        '0x19063437B9E1F9A5c4C96A0DC7Bd785564328bEE',
     },
     imageUrlRoot: `https://api.waterlily.cluster.world/api/v1/images/`,
   },
@@ -68,10 +69,14 @@ export const getNetwork = () => {
     return networks.filecoinHyperspace;
   }
   let currentNetworkName: string = getParam('waterlilyNetwork') || '';
-  if (window.location && window.location.hostname == 'localhost' && !currentNetworkName) {
+  if (
+    window.location &&
+    window.location.hostname == 'localhost' &&
+    !currentNetworkName
+  ) {
     return networks.filecoinHyperspace;
   }
-  
+
   if (currentNetworkName == 'filecoinHyperspace')
     return networks.filecoinHyperspace;
   return networks.filecoinMainnet;
