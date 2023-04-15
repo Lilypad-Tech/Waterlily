@@ -345,8 +345,13 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
 
   const saveToNFTStorage = async (image: { link: string; alt: string }) => {
     const NFTStorageClient: NFTStorage = getNFTStorageClient();
+    console.log('No nft.storage client?', NFTStorageClient);
     if (!NFTStorageClient) {
-      console.log('No nft.storage client');
+      console.log('No nft.storage client', NFTStorageClient);
+      setStatusState({
+        ...defaultStatusState.statusState,
+        isError: 'Something went wrong saving NFT data',
+      });
       return;
     }
     setStatusState({
