@@ -325,6 +325,15 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
 
     //fetch artist details...
     const artistData: ArtistData | null = findArtistById(imageArtist.key);
+    if (!artistData) {
+      console.log('no arist found', artistData);
+      setStatusState({
+        ...defaultStatusState.statusState,
+        isError:
+          'Something went wrong downloading the image for storing to NFT.Storage',
+      });
+      return;
+    }
     if (artistData) {
       console.log('artistData in image context', artistData);
       const origArtist =
