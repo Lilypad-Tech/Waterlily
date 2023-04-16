@@ -37,7 +37,7 @@ export const NFTDisplay = () => {
                   alt={nft.name}
                 />
               </Card>
-              {/* <Typography variant="caption">{name}</Typography> */}
+              <Typography variant="caption">{name}</Typography>
             </Grid>
           );
         }

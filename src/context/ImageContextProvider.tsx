@@ -150,7 +150,6 @@ interface MyContextProviderProps {
 export const ImageContext = createContext<ImageContextValue>(defaultImageState);
 
 export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
-  const { network } = useContext(NetworkContext);
   const { walletState = defaultWalletState.walletState } =
     useContext(WalletContext);
   const { setStatusState, setSnackbar } = useContext(StatusContext);
