@@ -326,40 +326,37 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     //fetch artist details...
     const artistData: ArtistData | null = findArtistById(imageArtist.key);
     if (!artistData) {
-      console.log('no arist found', artistData);
-      setStatusState({
-        ...defaultStatusState.statusState,
-        isError:
-          'Something went wrong downloading the image for storing to NFT.Storage',
-      });
-      return;
+      console.log('no artist found', artistData);
+      // setStatusState({
+      //   ...defaultStatusState.statusState,
+      //   isError: 'Something went wrong looking up artist details',
+      // });
+      // return;
     }
-    if (artistData) {
-      console.log('artistData in image context', artistData);
-      const origArtist =
-        Object.keys(artistData).length > 0
-          ? artistData
-          : { name: imageArtist.name, artistId: imageArtist.key };
 
-      const nftJson: NFTJson = {
-        name: 'Waterlily Ethical AI NFTs',
-        description: `This NFT created by Waterlily.ai from artwork trained on artworks by ${imageArtist.name}. Creators are paid for every use of their artwork on waterlily.ai. Be part of the change.`,
-        image: imageBlob, //,image.link, //should be a Blob - need to make it
-        properties: {
-          type: `Stable Diffusion Ethical AI-generated image by Waterlily.ai`,
-          prompt: imagePrompt,
-          originalArtist: origArtist,
-          imageID: imageID,
-          origins: {
-            ipfs: ``, //original bacalhau ipfs link... hmm where to get this
-            img: image,
-          },
-          mintedBy: walletState?.accounts[0] || '',
+    console.log('artistData in image context', artistData);
+    const origArtist =
+      artistData && Object.keys(artistData).length > 0
+        ? artistData
+        : { name: imageArtist.name, artistId: imageArtist.key };
+
+    const nftJson: NFTJson = {
+      name: 'Waterlily Ethical AI NFTs',
+      description: `This NFT created by Waterlily.ai from artwork trained on artworks by ${imageArtist.name}. Creators are paid for every use of their artwork on waterlily.ai. Be part of the change.`,
+      image: imageBlob, //,image.link, //should be a Blob - need to make it
+      properties: {
+        type: `Stable Diffusion Ethical AI-generated image by Waterlily.ai`,
+        prompt: imagePrompt,
+        originalArtist: origArtist,
+        imageID: imageID,
+        origins: {
+          ipfs: ``, //original bacalhau ipfs link... hmm where to get this
+          img: image,
         },
-      };
-      return nftJson;
-    }
-    return;
+        mintedBy: walletState?.accounts[0] || '',
+      },
+    };
+    return nftJson;
   };
 
   const saveToNFTStorage = async (image: { link: string; alt: string }) => {
