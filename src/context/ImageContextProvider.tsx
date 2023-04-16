@@ -338,7 +338,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
     const origArtist =
       artistData && Object.keys(artistData).length > 0
         ? artistData
-        : { name: imageArtist.name, artistId: imageArtist.key };
+        : ({ name: imageArtist.name, artistId: imageArtist.key } as ArtistData);
 
     const nftJson: NFTJson = {
       name: 'Waterlily Ethical AI NFTs',
