@@ -9,6 +9,7 @@ import {
   IMAGE_NUMBER_ARRAY,
 } from '@/context';
 import { ImageQuickCard } from '@/components';
+import { TwitterLink } from '../FeedbackAndStatus/TwitterLink';
 
 export const GeneratedImages = () => {
   const { customerImages } = useContext(ContractContext);
@@ -100,6 +101,7 @@ export const GeneratedImages = () => {
                   {image.prompt}
                 </Typography>
                 <Typography gutterBottom>{artist?.name}</Typography>
+                {/* <TwitterLink /> */}
                 <Box
                   sx={{
                     display: 'flex',
