@@ -10,7 +10,6 @@ export const NFTDisplay = () => {
       {nftImages.map((nft, idx) => {
         const { originalArtist } = nft.properties;
         const { name } = originalArtist as ArtistData;
-
         if (nft?.image) {
           return (
             <Grid
@@ -38,7 +37,7 @@ export const NFTDisplay = () => {
                   alt={nft.name}
                 />
               </Card>
-              {name && <Typography variant="caption">{name}</Typography>}
+              <Typography variant="caption">{name}</Typography>
             </Grid>
           );
         }
