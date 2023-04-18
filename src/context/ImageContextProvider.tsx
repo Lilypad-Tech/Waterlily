@@ -54,7 +54,7 @@ export interface NFTMetadata extends TokenInput {
 export interface NFTJson extends TokenInput {
   name: string;
   description: string;
-  image: Blob; //,image.link, //should be a Blob - need to make it
+  image: any; //,image.link, //should be a Blob - need to make it
   properties: {
     type: string;
     prompt: string;

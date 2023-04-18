@@ -79,34 +79,6 @@ export const GeneratedImages = () => {
 
   return (
     <>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-        <MobileStepper
-          steps={totalPages}
-          position="static"
-          activeStep={activeStep}
-          variant="dots"
-          nextButton={
-            <Button
-              size="small"
-              onClick={handleNext}
-              disabled={totalPages === 1}
-            >
-              Next
-              <KeyboardArrowRight />
-            </Button>
-          }
-          backButton={
-            <Button
-              size="small"
-              onClick={handleBack}
-              disabled={totalPages === 1}
-            >
-              <KeyboardArrowLeft />
-              Back
-            </Button>
-          }
-        />
-      </Box>
       <Box>
         {reversedImages
           .slice(activeStep * imagesPerPage, (activeStep + 1) * imagesPerPage)
@@ -165,6 +137,34 @@ export const GeneratedImages = () => {
                       />
                     );
                   })}
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                  <MobileStepper
+                    steps={totalPages}
+                    position="static"
+                    activeStep={activeStep}
+                    variant="dots"
+                    nextButton={
+                      <Button
+                        size="small"
+                        onClick={handleNext}
+                        disabled={totalPages === 1}
+                      >
+                        Next
+                        <KeyboardArrowRight />
+                      </Button>
+                    }
+                    backButton={
+                      <Button
+                        size="small"
+                        onClick={handleBack}
+                        disabled={totalPages === 1}
+                      >
+                        <KeyboardArrowLeft />
+                        Back
+                      </Button>
+                    }
+                  />
                 </Box>
               </Box>
             );
