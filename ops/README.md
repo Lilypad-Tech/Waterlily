@@ -353,12 +353,11 @@ This means we can add timeouts to jobs of 1 hour and not suffer from the default
 gcloud compute ssh artist-vm-0 --zone us-central1-a
 # IMPORTANT that we are in this folder
 cd /data/waterlily
-# now we copy all artist records from the staging database to the production database
-sudo sqlite3 production/data.db "drop table artist;"
-sudo sqlite3 staging/data.db ".dump artist" | sudo sqlite3 production/data.db
-sudo sqlite3 production/data.db "select count(*) from artist;"
-# copy the new artist ID from the staging setup to here
-export ARTIST_ID=XXX
+# list the artist IDs in the staging database
+sudo sqlite3 staging/data.db "select * from artist;"
+# now import each artist that you want from the staging DB
+export ARTIST_ID=xxx
+sudo sqlite3 staging/data.db "select * from artist where id='$ARTIST_ID'" | sqlite3 production/data.db ".import /dev/stdin artist"
 # now we copy over the artist files from the filestore
 sudo cp -r staging/files/artists/$ARTIST_ID production/files/artists/$ARTIST_ID
 ```
@@ -373,4 +372,32 @@ You need to call 2 functions on the contract (in this order):
 Where `XXX` is thge id of the artist above.
 
 NOTE: the `CreateArtist` method costs FIL to call - you might want to call the `updateCost` before and after to save FIL.
+
+## delete an artist
+
+First we delete the artist from the smart contract:
+
+```bash
+cd hardhat
+npx hardhat run scripts/deleteArtist.ts --contract XXX --network filecoinHyperspace --id $ARTIST_ID
+npx hardhat run scripts/deleteArtist.ts --contract XXX --network filecoinMainnet --id $ARTIST_ID
+```
+
+Then delete the artist from the database:
+
+```bash
+# SSH onto the machine
+gcloud compute ssh artist-vm-0 --zone us-central1-a
+# export the ID of the artist we want to delete
+export ARTIST_ID=xxx
+# IMPORTANT that we are in this folder
+cd /data/waterlily
+# list the artist IDs in the staging database
+sudo sqlite3 staging/data.db "delete from artist where id='$ARTIST_ID';"
+sudo sqlite3 production/data.db "delete from artist where id='$ARTIST_ID';"
+sudo rm -rf staging/files/artists/$ARTIST_ID production/files/artists/$ARTIST_ID
+exit
+```
+
+
 
