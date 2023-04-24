@@ -227,7 +227,7 @@ export const ImageContextProvider = ({ children }: MyContextProviderProps) => {
   }, [imageID]);
 
   const createTwitterLink = (url: string) => {
-    const tweetText = `Check out the ethical AI art I created on waterlily.ai! \n\n✍️ ${imagePrompt} \n\n🎨 ${imageArtist.name} -> 💸 0.09 $FIL paid \n\n❤️ Powered by @BacalhauProject and @Filecoin\n\n`;
+    const tweetText = `Check out the ethical AI art I created on waterlily.ai! \n\n✍️ ${imagePrompt} \n\n🎨 ${imageArtist.name} -> 💸 0.09 $FIL paid \n\n❤️ Powered by @BacalhauProject and @Filecoin #FVM\n\n`;
     // const endTweetText = `\n\nPowered by @BacalhauProject and @Filecoin\n\n`;
     const tweetUrl: string = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
       tweetText
