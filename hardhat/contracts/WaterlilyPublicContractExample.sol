@@ -3,7 +3,7 @@ pragma solidity >=0.8.4;
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "./LilypadEvents.sol";
+import "./LilypadEventsUpgradeable.sol";
 import "./LilypadCallerInterface.sol";
 
 error WaterlilyError();
@@ -19,11 +19,11 @@ contract Waterlily is LilypadCallerInterface, Ownable {
     uint256 public computeProviderEscrow;
     uint256 public computeProviderRevenue;
 
-    uint256 public imageCost = 0.13 * 10**18;
+    uint256 public imageCost = 0.13 * 10**18; 
     
-    uint256 public artistCommission;
-    uint256 public artistCost;
-    uint256 public artistAutoPaymentMin;
+    uint256 public artistCommission = 0.1 * 10**18;
+    uint256 public artistCost = 0.1 * 10**18;
+    uint256 public artistAutoPaymentMin = 3 * 10**18;
 
 
     /** Contract Events **/
@@ -52,10 +52,11 @@ contract Waterlily is LilypadCallerInterface, Ownable {
 
     /** Image Data Structures / vars **/
     using Counters for Counters.Counter; 
-    Counters.Counter private _jobIds;
+    Counters.Counter private _imageIds;
    
     struct Image {
         uint id;
+        uint jobId; //the returned id for a job run by Lilypad.
         address customer;
         string artist; 
         string prompt; 
@@ -69,8 +70,8 @@ contract Waterlily is LilypadCallerInterface, Ownable {
     mapping (address => uint[]) customerImages;
 
     /** Initialise our contract vars **/
-    function initialise() public onlyOwner {
-
+    constructor(address _lilypadEventsContractAddress){
+        lilypadBridgeAddress = _lilypadEventsContractAddress;
     }
 
         /** Artist Functions **/
@@ -146,13 +147,32 @@ contract Waterlily is LilypadCallerInterface, Ownable {
         require(bytes(artists[_artistId].id).length > 0, "Artist does not exist");
         require(artists[_artistId].isTrained, "Artist has not been trained");
         require(msg.value >= imageCost, "Not enough FIL sent to pay for image generation");
-        // note 
 
-        _jobIds.increment();
-        uint id = _jobIds.current();
+        _imageIds.increment();
+        uint id = _imageIds.current();
+
+        // this is where we call the lilypad bridging contract
+        /** NOTE: In reality each of your artists would need a different bacalhau job spec as each 
+        artist uses a unique model to generate images in their specific style. 
+        You can try this using the alternative method for your different specifications: 
+        -> function runLilypadJob(address _from, string memory _specName, string memory _spec, LilypadResultType _resultType)
+        Where _specName == "CustomSpec"
+    **/
+        string memory _spec = "StableDiffusion"; //this is defined in LilypadEvents contract
+        // Cast enum value to uint8 before passing as argument (yes this is something we want to fix:P)
+        uint8 resultType = uint8(LilypadResultType.CID);
+
+         // Call the function in the other contract and send funds
+        (bool success, bytes memory result) = lilypadBridgeAddress.call{value: lilypadFee}(abi.encodeWithSignature("runLilypadJob(address, string, uint8)", address(this), _spec, resultType));
+        require(success, "Failed to call the lilypad Events function to run the job.");
+        uint jobId;
+        assembly {
+            jobId := mload(add(result, 32))
+        }
 
         images[id] = Image({
             id: id,
+            jobId: jobId,
             customer: msg.sender,
             artist: _artistId,
             prompt: _prompt,
@@ -163,19 +183,6 @@ contract Waterlily is LilypadCallerInterface, Ownable {
         });
 
         customerImages[msg.sender].push(id);
-
-        // this is where we call the lilypad bridging contract
-        /** NOTE: In reality each of your artists would need a different bacalhau job spec as each 
-        artist uses a unique model to generate images in their specific style. 
-        You can try this using the alternative method for your different specifications: 
-        -> function runLilypadJob(address _from, string memory _specName, string memory _spec, LilypadResultType _resultType)
-        Where _specName == "CustomSpec"
-    **/
-        string memory spec = "StableDiffusion"; //this is defined in LilypadEvents contract
-
-         // Call the function in the other contract and send funds
-        (bool success, ) = lilypadBridgeAddress.call{value: lilypadFee}(abi.encodeWithSignature("runLilypadJob(address, bytes, uint256)", address(this), spec, uint256(LilypadResultType.CID)));
-        require(success, "Failed to call the lilypad Events function to run the job.");
 
         emit ImageJobCalled(images[id]);
         uint excess = msg.value - imageCost;
