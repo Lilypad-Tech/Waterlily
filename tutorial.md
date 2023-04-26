@@ -2,24 +2,30 @@
 
 Live on FVM at [www.waterlily.ai](http://www.waterlily.ai)
 
-%[https://youtu.be/WD3yrBxunOs]
+%[https://youtu.be/WD3yrBxunOs] 
 
 # 📌 Quick Links
 
 > Github: [https://github.com/bacalhau-project/Waterlily](https://github.com/bacalhau-project/Waterlily)
->
+> 
 > Docs: [https://docs.bacalhau.org](https://docs.bacalhau.org/)
 
 # **👩‍💻 What we'll do...**
 
-In this blog I'll take you through how to go about building a similar application to Waterlily.ai on FEVM and Bacalhau, including:
+In this tutorial I'll take you through how to go about building a similar application to Waterlily.ai on FEVM and Bacalhau, including:
 
-- Building and deploying a solidity smart contract on the Filecoin Virtual Machine
-- Using Lilypad for bridging FVM with AI functions like StableDiffusion
-- Building the front-end UI interactions in Typescript
-- Bonus: Creating an open-source Stable Diffusion model to run on Bacalhau
-  - Bonus: Finetuning models with Dreambooth
-  - Bonus: Creating a private Bacalhau cluster to run your scripts and models on
+* Building and deploying a solidity smart contract on the Filecoin Virtual Machine
+    
+* Using Lilypad for bridging FVM with AI functions like StableDiffusion
+    
+* Building the front-end UI interactions in Typescript
+    
+* Bonus: Creating an open-source Stable Diffusion model to run on Bacalhau
+    
+    * Bonus: Finetuning models with Dreambooth
+        
+    * Bonus: Creating a private Bacalhau cluster to run your scripts and models on
+        
 
 Some knowledge of javascript and solidity is assumed in this tutorial.
 
@@ -71,7 +77,7 @@ Fun fact: 14 March is 3.14 in American date-time or the first 3 PI digits which 
 
 Bacalhau is aiming to help democratise the future of data processing by enabling off-chain computation over data without giving up the decentralisation values inherent to IPFS, Filecoin & Web3 more broadly.
 
-[**Bacalhau**](https://docs.bacalhau.org/) is a peer-to-peer open computation network that provides a platform for public, transparent and optionally verifiable computation processes where users can run Docker containers or Web Assembly images as tasks against _any_ data including data stored in IPFS (& soon Filecoin). It even has support for GPU jobs.
+[**Bacalhau**](https://docs.bacalhau.org/) is a peer-to-peer open computation network that provides a platform for public, transparent and optionally verifiable computation processes where users can run Docker containers or Web Assembly images as tasks against *any* data including data stored in IPFS (& soon Filecoin). It even has support for GPU jobs.
 
 Making data processing and computation open and available to everyone & speeding up the processing times is possible in Bacalhau, firstly - by using batch processing across multiple nodes and secondly by putting the processing nodes where the data lives!
 
@@ -85,28 +91,50 @@ More on this later ;)
 
 ### Tech Tooling Detail
 
-- **Smart Contracts** \[Solidity, Open Zeppelin\]
-  - [Solidity](https://docs.soliditylang.org/en/v0.8.17/) is an OO smart contract programming language for Ethereum (EVM) -compatible blockchains (used for the contracts)
-  - [Open Zeppelin](https://docs.openzeppelin.com/contracts/4.x/) offers a security-audited implementation library of common smart contract components and contracts (we use this for the basis of the NFT contract)
-- **Smart Contract IDE** \[Hardhat, Remix\]
-  - [Hardhat](https://hardhat.org/docs) is a development environment for editing, compiling, debugging & deploying Ethereum software
-  - [Remix Ethereum IDE](https://remix.ethereum.org/), is a no-setup tool with an in-browser GUI for developing smart contracts.
-- **Blockchain Network** \[Filecoin Virtual Machine\]
-  - The FVM is an EVM-compatible mainnet built on the Filecoin blockchain
-- **NFT Metadata Storage** \[NFT.Storage\]
-  - [NFT.Storage](https://nft.storage/) is a public good built on top of IPFS & Filecoin to store NFT Metadata immutably and persistently & offers free decentralised storage for NFTs and a javascript sdk.
-- **Artist Metadata Storage** \[Web3.Storage\]
-  - Similar to NFT.Storage, with web3.storage you get all the benefits of decentralized storage and other cutting-edge protocols with the frictionless experience you expect in a modern dev workflow.
-- **Front-End** \[NextJS / Typescript + NPM\]
-  - We probably all know these... right? :P
-- **Smart Contract Interactions** from client \[Metamask, Ethers, Chainstack RPC Node\]
-  - Using a [public RPC node](https://www.alchemy.com/overviews/rpc-node) - I can get read-only interactions with my blockchain contract.
-  - With a [Metamask](https://metamask.io/) provider (or similar wallet that [injects the Ethereum API](https://docs.metamask.io/guide/ethereum-provider.html#table-of-contents) specified by [EIP-1193](https://eips.ethereum.org/EIPS/eip-1193) into the browser), we enable write calls to the blockchain contract.
-  - [Ethers](https://docs.ethers.org/v5/)js is a library for interacting with EVM-compatible smart contracts
-- AI **Text-To-Image Stable Diffusion Script** \[Python, Tensorflow, Docker\]
-  - [TensorFlow](https://www.tensorflow.org/) is an open-source machine learning platform and library that provides pre-trained models and other data and ML tools.
-- Decentralised **Off-Chain Compute** for AI Text-To-Image Generation & Model Training \[Bacalhau\]
-  - [Bacalhau](https://docs.bacalhau.org/) is a peer-to-peer open computation network that provides a platform for public, transparent and optionally verifiable computation processes. It's a decentralised off-chain data computation layer
+* **Smart Contracts** \[Solidity, Open Zeppelin\]
+    
+    * [Solidity](https://docs.soliditylang.org/en/v0.8.17/) is an OO smart contract programming language for Ethereum (EVM) -compatible blockchains (used for the contracts)
+        
+    * [Open Zeppelin](https://docs.openzeppelin.com/contracts/4.x/) offers a security-audited implementation library of common smart contract components and contracts (we use this for the basis of the NFT contract)
+        
+* **Smart Contract IDE** \[Hardhat, Remix\]
+    
+    * [Hardhat](https://hardhat.org/docs) is a development environment for editing, compiling, debugging & deploying Ethereum software
+        
+    * [Remix Ethereum IDE](https://remix.ethereum.org/), is a no-setup tool with an in-browser GUI for developing smart contracts.
+        
+* **Blockchain Network** \[Filecoin Virtual Machine\]
+    
+    * The FVM is an EVM-compatible mainnet built on the Filecoin blockchain
+        
+* **NFT Metadata Storage** \[NFT.Storage\]
+    
+    * [NFT.Storage](https://nft.storage/) is a public good built on top of IPFS & Filecoin to store NFT Metadata immutably and persistently & offers free decentralised storage for NFTs and a javascript sdk.
+        
+* **Artist Metadata Storage** \[Web3.Storage\]
+    
+    * Similar to NFT.Storage, with web3.storage you get all the benefits of decentralized storage and other cutting-edge protocols with the frictionless experience you expect in a modern dev workflow.
+        
+* **Front-End** \[NextJS / Typescript + NPM\]
+    
+    * We probably all know these... right? :P
+        
+* **Smart Contract Interactions** from client \[Metamask, Ethers, Chainstack RPC Node\]
+    
+    * Using a [public RPC node](https://www.alchemy.com/overviews/rpc-node) - I can get read-only interactions with my blockchain contract.
+        
+    * With a [Metamask](https://metamask.io/) provider (or similar wallet that [injects the Ethereum API](https://docs.metamask.io/guide/ethereum-provider.html#table-of-contents) specified by [EIP-1193](https://eips.ethereum.org/EIPS/eip-1193) into the browser), we enable write calls to the blockchain contract.
+        
+    * [Ethers](https://docs.ethers.org/v5/)js is a library for interacting with EVM-compatible smart contracts
+        
+* AI **Text-To-Image Stable Diffusion Script** \[Python, Tensorflow, Docker\]
+    
+    * [TensorFlow](https://www.tensorflow.org/) is an open-source machine learning platform and library that provides pre-trained models and other data and ML tools.
+        
+* Decentralised **Off-Chain Compute** for AI Text-To-Image Generation & Model Training \[Bacalhau\]
+    
+    * [Bacalhau](https://docs.bacalhau.org/) is a peer-to-peer open computation network that provides a platform for public, transparent and optionally verifiable computation processes. It's a decentralised off-chain data computation layer
+        
 
 # 🏗️ Building the Smart Contracts for Waterlily.ai
 
@@ -118,12 +146,14 @@ The FVM is a fully EVM-compatible network (hence the abbreviation - FEVM). This 
 
 ![The Reality of a Developer's Life Gif](https://dz2cdn1.dzone.com/storage/temp/13990131-code-09.gif align="center")
 
-_Woo-hoo (dev-style) party time 🎉_
+*Woo-hoo (dev-style) party time 🎉*
 
 This project relies on 2 main contracts:
 
 1. An Artist Contract that can onboard and edit artist data
+    
 2. An NFT Contract for NFT creation.
+    
 
 **The NFT Contract**
 
@@ -144,26 +174,31 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 /**
     @notice An experimental contract for POC work to call Bacalhau jobs from FVM smart contracts
 */
-contract ArtistAttribution is Ownable {
+contract Waterlily is Ownable {
     //ok now what...
 }
 ```
 
 The Artist Contract requires the following information:
 
-_Data Models_
+*Data Models*
 
-- An Artist Model (struct) to store data we need to know about an Artist such as their
-  - payment wallet address
-  - an identifier for their specific ML model to run when chosen (we've made special use of this id and made it an IPFS CID that contains metadata the artist input when signing up to Waterlily)
-  - details on their revenue and FIL payments from Waterlily
-  - some convenience helpers in the form of an id=&gt;Artist mapping and an array for the UI to read from
+* An Artist Model (struct) to store data we need to know about an Artist such as their
+    
+    * payment wallet address
+        
+    * an identifier for their specific ML model to run when chosen (we've made special use of this id and made it an IPFS CID that contains metadata the artist input when signing up to Waterlily)
+        
+    * details on their revenue and FIL payments from Waterlily
+        
+    * some convenience helpers in the form of an id=&gt;Artist mapping and an array for the UI to read from
+        
 
 ```solidity
 struct Artist {
     string id; // A CID containing all metadata about an artist
     address wallet; // Their FEVM wallet address for payments
-    uint256 escrow; // amount of FIL owed to an Artist
+    uint256 escrow; // amount of FIL owed to an Artist 
     uint256 revenue; // total amt of revenue earned since joining
     uint256 numJobsRun; // total numbner of jobs run on the artist
     bool isTrained; // a flag for if the Artist Model is ready
@@ -174,24 +209,30 @@ mapping (string => Artist) artists;
 string[] artistIDs;
 ```
 
-- An Image Model (struct) to store information on the generated images made including
-  - The image owner
-  - The original artist the image was generated from
-  - The prompt input used to generate the image
-  - A link to the image generated or the status of the image otherwise (ie. if there's an error)
-  - Convenience helpers: Mappings from customer to images owned by the customer and open Zeppelin Counters contract to generate the Image Id's
+* An Image Model (struct) to store information on the generated images made including
+    
+    * The image owner
+        
+    * The original artist the image was generated from
+        
+    * The prompt input used to generate the image
+        
+    * A link to the image generated or the status of the image otherwise (ie. if there's an error)
+        
+    * Convenience helpers: Mappings from customer to images owned by the customer and open Zeppelin Counters contract to generate the Image Id's
+        
 
 ```solidity
 /* ===I mports === */
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 /* === Contract vars below === */
-using Counters for Counters.Counter;
+using Counters for Counters.Counter; 
 Counters.Counter private _jobIds; // the image id - this is technically a Bacalhau job - hence the name _jobIds
-
+    
 struct Image {
     uint id; // each image created has a unique id like an NFT
-            // we're leveraging OpenZeppelin counter contract to make
+            // we're leveraging OpenZeppelin counter contract to make                                 
             // these id's (see end of code here)
     uint jobId; // the id of the bacalhau job returned from lilypad bridge
     address customer; // the wallet owner for this image
@@ -202,25 +243,37 @@ struct Image {
     bool isComplete; // is the Stable Diffusion job complete?
     bool isCancelled; // if the job was cancelled.
 }
-
+    
 mapping (uint => Image) images; // mapping of id to the Image
 mapping (address => uint[]) customerImages; // a map of customer address onto images they have submitted
 ```
 
-_Methods_ (setters, getters & events) - things we need to interact with the contract
+*Methods* (setters, getters & events) - things we need to interact with the contract
 
-- Artist:
-  - _getArtistIds()_ \* we need to know all the artists in the contract in order for the UI to display them
-  - _getArtistById()_ \* fetch a specific artist
-  - _artistWithdrawFunds(address payable \_to)_ \*onlyArtist function - this function provides a method for the artist to withdraw their earnings at any time. The contract otherwise keeps funds in escrow until an artist has earned 5FIL in order to avoid the gas costs reducing their overall revenue earnings.
-  - _CreateArtist(string calldata \_ArtistId)_ \* Artist Signup is automated. This function is called when a new artist registers on the UI
-  - _DeleteArtist()_ \*ownerOnly function - this is to ensure bad actors uploading illegal or non-IP owned art are able to be removed from the platform
-  - _UpdateArtistWallet()_ \*ownerOnly or artistOnly function - only the artist themselves or the owner of the contract (just in case of a change of public charity address or a verified Artist losing a private key) are able to change the artist wallet address!
-  - _Events:_ Let's also create some events for useful-to-log occurrences on the contract like
-    - When an artist is added
-    - When an artist is deleted
-    - When an artist wallet is updated
-    - When an artist is paid
+* Artist:
+    
+    * *getArtistIds()* \* we need to know all the artists in the contract in order for the UI to display them
+        
+    * *getArtistById()* \* fetch a specific artist
+        
+    * *artistWithdrawFunds(address payable \_to)* \*onlyArtist function - this function provides a method for the artist to withdraw their earnings at any time. The contract otherwise keeps funds in escrow until an artist has earned 5FIL in order to avoid the gas costs reducing their overall revenue earnings.
+        
+    * *CreateArtist(string calldata \_ArtistId)* \* Artist Signup is automated. This function is called when a new artist registers on the UI
+        
+    * *DeleteArtist()* \*ownerOnly function - this is to ensure bad actors uploading illegal or non-IP owned art are able to be removed from the platform
+        
+    * *UpdateArtistWallet()* \*ownerOnly or artistOnly function - only the artist themselves or the owner of the contract (just in case of a change of public charity address or a verified Artist losing a private key) are able to change the artist wallet address!
+        
+    * *Events:* Let's also create some events for useful-to-log occurrences on the contract like
+        
+        * When an artist is added
+            
+        * When an artist is deleted
+            
+        * When an artist wallet is updated
+            
+        * When an artist is paid
+            
 
 ```solidity
 /** The events tracked by the contract *//
@@ -229,12 +282,12 @@ event ArtistDeleted(string indexed artistId);
 event ArtistWalletUpdated(string indexed artistId, address prevWallet, address curWallet);
 event ArtistPaid(string indexed artistId, address _paidTo, uint256 amountPaid);
 
-/** self explanatory XD **/
+/** self explanatory XD **/     
 function getArtistIds() public view returns (string[] memory) {
    return artistIDs; // we defined this earlier!
 }
 
-/** self explanatory XD **/
+/** self explanatory XD **/ 
 function getArtistById(string calldata _artistId) public view returns (Artist memory) {
    return artists[_artistId]; // we defined this earlier!
 }
@@ -246,7 +299,7 @@ function artistWithdrawFunds(string calldata _artistId) public payable {
    require(bytes(artists[_artistId].id).length > 0, "artist does not exist"); // check that the artistID exists
    Artist storage artist = artists[_artistId];
    require(artist.wallet == msg.sender, "only the artist's wallet can call this function"); // only the artist wallet associated with this artistId can withdraw the funds!
-   require(artist.escrow > 0, "artist does not have any money to withdraw");
+   require(artist.escrow > 0, "artist does not have any money to withdraw"); 
    uint256 escrowToSend = artist.escrow;
    artist.escrow = 0; // No reentrancy issues for us please!
    address payable to = payable(msg.sender);
@@ -286,8 +339,8 @@ function deleteArtist(string calldata id) public onlyOwner {
     delete(artists[id]);
         // remove from artistIDs
     for (uint i = 0; i < artistIDs.length; i++) {
-        if (keccak256(abi.encodePacked((artistIDs[i]))) ==
-                keccak256(abi.encodePacked((id))))
+        if (keccak256(abi.encodePacked((artistIDs[i]))) ==       
+                keccak256(abi.encodePacked((id)))) 
         {
              artistIDs[i] = artistIDs[artistIDs.length - 1];
              artistIDs.pop();
@@ -315,12 +368,16 @@ Also, side point - hunky dory is a really weird expression... where did it come 
 
 ![GIF spongebob squarepants season 9 episode 13 - animated GIF on GIFER](https://i.gifer.com/ReWf.gif align="center")
 
-_These folks look pretty hunky dory..._
+*These folks look pretty hunky dory...*
 
-- Images!
-  - _getCustomerImages(address \_ownerAddress)_
-  - _createImage(string calldata artistId, string calldata \_textPrompt)_
-  - _Events:_ ImageJobCall (wait... what's this name... read on friend!)
+* Images!
+    
+    * *getCustomerImages(address \_ownerAddress)*
+        
+    * *createImage(string calldata artistId, string calldata \_textPrompt)*
+        
+    * *Events:* ImageJobCall (wait... what's this name... read on friend!)
+        
 
 ```solidity
 event ImageJobCalled(Image image)
@@ -352,7 +409,7 @@ function createImage(string calldata _artistId, string calldata _prompt) externa
         isCancelled: false
     });
     customerImages[msg.sender].push(id); // add the image to the customer owned images
-    emit ImageJobCalled(images[id]); // emit an event saying the image generation function has been called...
+    emit ImageJobCalled(images[id]); // emit an event saying the image generation function has been called... 
 
     // if they have paid too much then refund the difference assuming it's a mistake (a user can always donate to an Artist from the Waterlily UI :) )
     uint excess = msg.value - imageCost;
@@ -363,7 +420,7 @@ function createImage(string calldata _artistId, string calldata _prompt) externa
 }
 ```
 
-For the savvy readers out there, you might now be wondering.... but where and how exactly is the image generated? This createImage() function code just creates a data structure type of Image and stores it on the contract - it does nothing to _actually_ generate an image... 🤔
+For the savvy readers out there, you might now be wondering.... but where and how exactly is the image generated? This createImage() function code just creates a data structure type of Image and stores it on the contract - it does nothing to *actually* generate an image... 🤔
 
 Well, this is exactly where Project Lilypad comes in!
 
@@ -374,75 +431,79 @@ Well, this is exactly where Project Lilypad comes in!
 Quick refresher: Bacalhau is a peer-to-peer network of nodes (including GPU-enabled nodes) that can run any Docker job or WASM image.
 
 > **Very Important Note Here ie. you should probably stop scrolling & read me** 🚩🫶 **!**
->
+> 
 > [Lilypad](https://github.com/bacalhau-project/lilypad) is currently in alpha stage - which means that while it's fully functional, there aren't guarantees on reliability or security of the network. It is deployed to the FVM Calibration Network, FVM Hyperspace Testnet and [FVM Mainnet](https://www.fvm.dev) and connects to the public p2p [Bacalhau network](https://www.docs.bacalhau.org).
->
+> 
 > The team is currently also working on plans for [Lilypad](https://github.com/bacalhau-project/lilypad) to become much more developer-friendly and expansive, as well as include more comprehensive examples.
->
+> 
 > The good news for you early dev's - is it's all currently free to use outside of FVM network gas fees (I like that price!) **and** you can have your say in Lilypad's direction by letting us know what use cases you're interested in our help to enable! #bacalhau-lilypad channel in
 
 ![](https://cdn.hashnode.com/res/hashnode/image/upload/v1681878052015/e65133dd-30b3-46c3-948e-b66e365294f2.png align="left")
 
 The way Lilypad works to connect FVM and Bacalhau in practice is (aka show me the code!) :
 
-- A developer implements the Lilypad Interface in their own smart contract
-  ```solidity
-  /** === Lilypad Interface === **/
-  pragma solidity >=0.8.4;
-  enum LilypadResultType {
-    CID,
-    StdOut,
-    StdErr,
-    ExitCode
-  }
-
-  interface LilypadCallerInterface {
-    function lilypadFulfilled(address _from, uint _jobId, LilypadResultType _resultType, string calldata _result) external;
-    function lilypadCancelled(address _from, uint _jobId, string calldata _errorMsg) external;
-  }
-
-  /** === User Contract Example === **/
-  contract MyContract is LilypadCallerInterface {
-
-      function lilypadFulfilled(address _from, uint _jobId,
-          LilypadResultType _resultType, string calldata _result)
-          external override {
-          // Do something when the LilypadEvents contract returns
-          // results successfully
-      }
-
-      function lilypadCancelled(address _from, uint _jobId, string
-          calldata _errorMsg) external override {
-          // Do something if there's an error returned by the
-          // LilypadEvents contract
-      }
-  }
-  ```
-- A developer also needs to call the LilypadEvents 'runLilypadJob()' function from their contract with a valid spec - which corresponds to a Docker Image. 💡 If you want to know more about what a valid image for Bacalhau would look like or see some examples, check out the Bacalhau [docs](https://docs.bacalhau.org) or check out the stable diffusion code example provided in the [Lilypad github](https://github.com/bacalhau-project/lilypad).
-  ```solidity
-  import "./LilypadEvents.sol"; //please check the github for up to date contract, instructions & needed addresses!
-  import "./LilypadCallerInterface.sol";
-
-  /** === User Contract Example === **/
-  contract MyContract is LilypadCallerInterface {
-      address payable public lilypadEventsAddress;
-
-      constructor (address payable _eventsContractAddress) {
-          lilypadEventsAddress = _eventsContractAddress;
-      }
-
-      function callLilypadEventsToRunBacalhauJob() external payable     {
-          // Require at least 0.03 FIL to be sent
-          require(msg.value >= 30000000000000000, "Insufficient payment"); //this is the default amount 0.03FIL required to run a job. Check the github docs for more info
-           string memory spec = "StableDiffusion";
-
-           // Call the function in the other contract and send fee
-          (bool success, uint256 jobId) = lilypadBridgeAddress.call{value: lilypadFee}(abi.encodeWithSignature("runLilypadJob(address, bytes, uint256)", address(this), spec, uint256(LilypadResultType.CID)));
-          require(success, "Failed to call the lilypad Events function to run the job.");
-          //do something with the returned jobId
-      }
-  }
-  ```
+* A developer implements the Lilypad Interface in their own smart contract
+    
+    ```solidity
+    /** === Lilypad Interface === **/
+    pragma solidity >=0.8.4;
+    enum LilypadResultType {
+      CID,
+      StdOut,
+      StdErr,
+      ExitCode
+    }
+    
+    interface LilypadCallerInterface {
+      function lilypadFulfilled(address _from, uint _jobId, LilypadResultType _resultType, string calldata _result) external;
+      function lilypadCancelled(address _from, uint _jobId, string calldata _errorMsg) external;
+    }
+    
+    /** === User Contract Example === **/
+    contract MyContract is LilypadCallerInterface {
+        
+        function lilypadFulfilled(address _from, uint _jobId,   
+            LilypadResultType _resultType, string calldata _result)        
+            external override {
+            // Do something when the LilypadEvents contract returns    
+            // results successfully
+        }
+        
+        function lilypadCancelled(address _from, uint _jobId, string 
+            calldata _errorMsg) external override {
+            // Do something if there's an error returned by the
+            // LilypadEvents contract
+        }
+    }
+    ```
+    
+* A developer also needs to call the LilypadEvents 'runLilypadJob()' function from their contract with a valid spec - which corresponds to a Docker Image. 💡 If you want to know more about what a valid image for Bacalhau would look like or see some examples, check out the Bacalhau [docs](https://docs.bacalhau.org) or check out the stable diffusion code example provided in the [Lilypad github](https://github.com/bacalhau-project/lilypad).
+    
+    ```solidity
+    import "./LilypadEvents.sol"; //please check the github for up to date contract, instructions & needed addresses!
+    import "./LilypadCallerInterface.sol";
+    
+    /** === User Contract Example === **/
+    contract MyContract is LilypadCallerInterface {
+        address payable public lilypadEventsAddress;
+        
+        constructor (address payable _eventsContractAddress) {
+            lilypadEventsAddress = _eventsContractAddress;
+        }
+    
+        function callLilypadEventsToRunBacalhauJob() external payable     {
+            // Require at least 0.03 FIL to be sent
+            require(msg.value >= 30000000000000000, "Insufficient payment"); //this is the default amount 0.03FIL required to run a job. Check the github docs for more info
+             string memory spec = "StableDiffusion";
+    
+             // Call the function in the other contract and send fee
+            (bool success, uint256 jobId) = lilypadBridgeAddress.call{value: lilypadFee}(abi.encodeWithSignature("runLilypadJob(address, bytes, uint256)", address(this), spec, uint256(LilypadResultType.CID)));
+            require(success, "Failed to call the lilypad Events function to run the job.");
+            //do something with the returned jobId
+        }
+    }
+    ```
+    
 
 > 👉 See the [LilypadEvents contract in remix  
 > ](https://remix.ethereum.org/bacalhau-project/lilypad/blob/main/hardhat/contracts/LilypadEventsUpgradeable.sol)👉 See the [LilypadCallerInterface in remix](https://remix.ethereum.org/bacalhau-project/lilypad/blob/main/hardhat/contracts/LilypadCallerInterface.sol)
@@ -451,7 +512,7 @@ This is all that's needed on the contract side of things to invoke a Bacalhau jo
 
 ![Cool Cat GIF](https://media.tenor.com/9LjKofWMtV4AAAAM/cool-cat.gif align="center")
 
-_^ Totally you right now_
+*^ Totally you right now*
 
 All that needs to happen now is to put the full contract together and deploy it!
 
@@ -487,15 +548,15 @@ contract Waterlily is LilypadCallerInterface, Ownable {
     /** General Variables */
     address public lilypadBridgeAddress;
     uint256 lilypadFee = 0.03 * 10**18; //default fee
-
+    
     // These are used in order to ensure the lilypad wallet can cover gas fees
     // for returning an image to the contract on FVM mainnet. (no charge on testnet, we auto topup tFIL)
     // The bacalhau network doesn't currently charge for compute use.
     uint256 public computeProviderEscrow;
     uint256 public computeProviderRevenue;
 
-    uint256 public imageCost = 0.13 * 10**18;
-
+    uint256 public imageCost = 0.13 * 10**18; 
+    
     uint256 public artistCommission = 0.1 * 10**18;
     uint256 public artistCost = 0.1 * 10**18;
     uint256 public artistAutoPaymentMin = 3 * 10**18;
@@ -526,22 +587,22 @@ contract Waterlily is LilypadCallerInterface, Ownable {
     event ImageCreated(Image image);
 
     /** Image Data Structures / vars **/
-    using Counters for Counters.Counter;
+    using Counters for Counters.Counter; 
     Counters.Counter private _imageIds;
-
+   
     struct Image {
         uint id;
         uint jobId; //the returned id for a job run by Lilypad.
         address customer;
-        string artist;
-        string prompt;
+        string artist; 
+        string prompt; 
         string ipfsResult;
         string errorMessage;
         bool isComplete;
         bool isCancelled;
     }
-
-    mapping (uint => Image) images;
+    
+    mapping (uint => Image) images; 
     mapping (address => uint[]) customerImages;
 
     /** Initialise our contract vars **/
@@ -551,7 +612,7 @@ contract Waterlily is LilypadCallerInterface, Ownable {
 
         /** Artist Functions **/
     function getArtistIds() public view returns (string[] memory) {
-        return artistIDs;
+        return artistIDs; 
     }
 
     function getArtistById(string calldata _artistId) public view returns (Artist memory) {
@@ -562,7 +623,7 @@ contract Waterlily is LilypadCallerInterface, Ownable {
         require(bytes(artists[_artistId].id).length > 0, "artist does not exist");
         Artist storage artist = artists[_artistId];
         require(artist.wallet == msg.sender, "only the artist's wallet can call this function");
-        require(artist.escrow > 0, "artist does not have any money to withdraw");
+        require(artist.escrow > 0, "artist does not have any money to withdraw"); 
         uint256 escrowToSend = artist.escrow;
         artist.escrow = 0;
         address payable to = payable(msg.sender);
@@ -584,7 +645,7 @@ contract Waterlily is LilypadCallerInterface, Ownable {
                 numJobsRun: 0,
                 isTrained: false
          });
-        emit ArtistCreated(_artistId);
+        emit ArtistCreated(_artistId); 
         // we don't directly trigger training of models via this function
         // though it is possible to do with lilypad
     }
@@ -595,8 +656,8 @@ contract Waterlily is LilypadCallerInterface, Ownable {
         require(artist.escrow == 0, "please have the artist withdraw escrow first"); // they have money still to claim
         delete(artists[id]);
         for (uint i = 0; i < artistIDs.length; i++) {
-            if (keccak256(abi.encodePacked((artistIDs[i]))) ==
-                    keccak256(abi.encodePacked((id))))
+            if (keccak256(abi.encodePacked((artistIDs[i]))) ==       
+                    keccak256(abi.encodePacked((id)))) 
             {
                 artistIDs[i] = artistIDs[artistIDs.length - 1];
                 artistIDs.pop();
@@ -686,7 +747,7 @@ contract Waterlily is LilypadCallerInterface, Ownable {
         require(image.id > 0, "image does not exist");
         require(image.isComplete == false, "image already complete");
         require(image.isCancelled == false, "image was cancelled");
-
+    
         // get a reference to the artist for this image
         Artist storage artist = artists[image.artist];
 
@@ -716,7 +777,7 @@ contract Waterlily is LilypadCallerInterface, Ownable {
         }
 
         emit ImageComplete(image);
-
+        
     }
 
     function lilypadCancelled(address _from, uint _jobId, string calldata _errorMsg) external override {
@@ -731,7 +792,7 @@ contract Waterlily is LilypadCallerInterface, Ownable {
         // mark the image as cancelled and refund the customer
         image.isCancelled = true;
         image.errorMessage = _errorMsg;
-
+        
         // in reality you might want to subtract the cost of the newtork gas costs for the bridge return here
         uint256 amountRefundable = imageCost; //-lilypad costs
         address payable to = payable(image.customer);
@@ -744,8 +805,10 @@ contract Waterlily is LilypadCallerInterface, Ownable {
 
 You might notice that there's a few extra pieces in this contract we haven't so far discussed including:
 
-- _Paying Artist in LilypadFulfilled:_ This code pays out the artist when their escrow hits a specific amount. A technical decision was made against instant payments here so as to avoid the artist losing too much to gas fees. In future iterations though, micropayments could be enabled via an awesome project on the FVM mainnet called [State Channels](http://docs.statechannels.org).
-- In practice, you'd also likely want to enable a way to update the global variables of lilypadBridgeAddress, lilypadFee, imageCost, artistCommission, artistCost and artistAutoPaymentMin.
+* *Paying Artist in LilypadFulfilled:* This code pays out the artist when their escrow hits a specific amount. A technical decision was made against instant payments here so as to avoid the artist losing too much to gas fees. In future iterations though, micropayments could be enabled via an awesome project on the FVM mainnet called [State Channels](http://docs.statechannels.org).
+    
+* In practice, you'd also likely want to enable a way to update the global variables of lilypadBridgeAddress, lilypadFee, imageCost, artistCommission, artistCost and artistAutoPaymentMin.
+    
 
 I will additionally note that it might be advantageous to also make this contract upgradeable with OpenZeppelin's great guide to upgradeable contracts [here](https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeable#modifying-your-contracts) and you could also take advantage of the [OpenZeppelin PaymentSplitter contract](https://docs.openzeppelin.com/contracts/4.x/api/finance#PaymentSplitter) for artist payments rather than handle this manually 😎
 
@@ -758,11 +821,11 @@ Right, we have a contract! Let's deploy this to the FVM!
 See [https://docs.filecoin.io/networks](https://docs.filecoin.io/networks)  
 See also [chainlist.org](https://chainlist.org/?search=Filecoin&testnets=true)
 
-| Chain Name                             | RPC                                                                                                                                                                                                                                                                                                                                                                      | ChainID | BlockExplorer                                                                                                                                                                                                              | Faucet                                                                                   |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| Filecoin Calibration Net (**testnet**) | [https://api.calibration.node.glif.io/rpc/v0](https://api.calibration.node.glif.io/rpc/v0)                                                                                                                                                                                                                                                                               | 314159  | [https://calibration.filscan.io/](https://calibration.filscan.io/),                                                                                                                                                        | [https://faucet.calibration.fildev.network/](https://faucet.calibration.fildev.network/) |
-| Filecoin Hyperspace (**testnet**)      | [https://api.hyperspace.node.glif.io/rpc/v1](https://api.hyperspace.node.glif.io/rpc/v1), [https://hyperspace.filfox.info/rpc/v1](https://hyperspace.filfox.info/rpc/v1), [https://filecoin-hyperspace.chainstacklabs.com/rpc/v1](https://filecoin-hyperspace.chainstacklabs.com/rpc/v1), [https://rpc.ankr.com/filecoin_testnet](https://rpc.ankr.com/filecoin_testnet) | 3141    | [https://fvm.starboard.ventures/hyperspace/explorer/tx/](https://fvm.starboard.ventures/hyperspace/explorer/tx/), [https://explorer.glif.io/](https://explorer.glif.io/),                                                  | [https://hyperspace.yoga/#faucet](https://hyperspace.yoga/#faucet)                       |
-| Filecoin Mainnet                       | [https://api.node.glif.io/rpc/v1](https://api.node.glif.io/rpc/v1), [https://filecoin-mainnet.chainstacklabs.com/rpc/v1](https://filecoin-mainnet.chainstacklabs.com/rpc/v1), [https://rpc.ankr.com/filecoin](https://rpc.ankr.com/filecoin)                                                                                                                             | 314     | [https://fvm.starboard.ventures/](https://fvm.starboard.ventures/), [https://explorer.glif.io/](https://explorer.glif.io/), [https://beryx.zondax.ch/](https://beryx.zondax.ch/), [https://filfox.io/](https://filfox.io/) |                                                                                          |
+| Chain Name | RPC | ChainID | BlockExplorer | Faucet |
+| --- | --- | --- | --- | --- |
+| Filecoin Calibration Net (**testnet**) | [https://api.calibration.node.glif.io/rpc/v0](https://api.calibration.node.glif.io/rpc/v0) | 314159 | [https://calibration.filscan.io/](https://calibration.filscan.io/), | [https://faucet.calibration.fildev.network/](https://faucet.calibration.fildev.network/) |
+| Filecoin Hyperspace (**testnet**) | [https://api.hyperspace.node.glif.io/rpc/v1](https://api.hyperspace.node.glif.io/rpc/v1), [https://hyperspace.filfox.info/rpc/v1](https://hyperspace.filfox.info/rpc/v1), [https://filecoin-hyperspace.chainstacklabs.com/rpc/v1](https://filecoin-hyperspace.chainstacklabs.com/rpc/v1), [https://rpc.ankr.com/filecoin\_testnet](https://rpc.ankr.com/filecoin_testnet) | 3141 | [https://fvm.starboard.ventures/hyperspace/explorer/tx/](https://fvm.starboard.ventures/hyperspace/explorer/tx/), [https://explorer.glif.io/](https://explorer.glif.io/), | [https://hyperspace.yoga/#faucet](https://hyperspace.yoga/#faucet) |
+| Filecoin Mainnet | [https://api.node.glif.io/rpc/v1](https://api.node.glif.io/rpc/v1), [https://filecoin-mainnet.chainstacklabs.com/rpc/v1](https://filecoin-mainnet.chainstacklabs.com/rpc/v1), [https://rpc.ankr.com/filecoin](https://rpc.ankr.com/filecoin) | 314 | [https://fvm.starboard.ventures/](https://fvm.starboard.ventures/), [https://explorer.glif.io/](https://explorer.glif.io/), [https://beryx.zondax.ch/](https://beryx.zondax.ch/), [https://filfox.io/](https://filfox.io/) |  |
 
 There's quite a few ways to go about deploying this contract - I'll go through deployment on both remix (available in your browser) and utilising [Hardhat](https://hardhat.org/) - an Ethereum developer environment tool.
 
@@ -771,7 +834,9 @@ There's quite a few ways to go about deploying this contract - I'll go through d
 To deploy to a Filecoin network, we'll need to
 
 1. [**Set up & connect**](https://docs.filecoin.io/developers/smart-contracts/how-tos/add-to-metamask/) [Metamask](https://metamask.io/) wallet (you can use other compatible wallets, though I'll be using Metamask here)
+    
 2. Obtain funds for deployment (if on testnet, you can use the faucets, otherwise see [this guide](https://docs.filecoin.io/basics/assets/transfer-fil/))
+    
 
 To add the network you're deploying to in the wallet, you can either look it up on [chainlist.org](https://chainlist.org/?search=Filecoin&testnets=true) and add it via their interface, or you can add it manually.  
 To manually add it, navigate to your Metamask wallet and click "Add network" button
@@ -826,7 +891,7 @@ The wallet private key, needed in the config for hardhat is available via Metama
 
 ![](https://cdn.hashnode.com/res/hashnode/image/upload/v1682470066433/49da1d73-075c-48f8-8a8c-cf46025bce24.png align="center")
 
-_hardhat.config.ts_
+*hardhat.config.ts*
 
 ```typescript
 import { HardhatUserConfig, task } from 'hardhat/config';
@@ -876,7 +941,7 @@ export default config;
 
 Now let's use a script to deploy Waterlily.sol!
 
-_scripts/deploy.ts_
+*scripts/deploy.ts*
 
 ```typescript
 import hre, { ethers } from 'hardhat';
@@ -957,36 +1022,37 @@ The second page is the Artist Signup form for new artists to join the platform.
 
 There are 3 types of contract interactions here
 
-- read-only calls to retrieve data from the chain without mutating it
-- write calls that require a wallet to sign and pay gas ie. functions that change the state of the chain, like generating a new image, adding an artist or minting an NFT!
-- event listeners - that listen for events emitted from the contract
+* read-only calls to retrieve data from the chain without mutating it
+    
+* write calls that require a wallet to sign and pay gas ie. functions that change the state of the chain, like generating a new image, adding an artist or minting an NFT!
+    
+* event listeners - that listen for events emitted from the contract
+    
 
 For all of these functions, we'll use the [**ethers.js library**](https://docs.ethers.org/v5/) - a lightweight wrapper for the Ethereum API, to connect to our contract and perform calls to it.
 
 **Connecting to the contract in read mode with a public RPC:**
 
 ```typescript
-//The compiled contract found in hardhat/artifacts/contracts
+//The compiled contract found in hardhat/artifacts/contracts  
 import WaterlilyCompiledContract from '@Contracts/Waterlily.sol/Waterlily.json';
 //On-chain address of the contract
-const contractAddress = '<address here>';
+const contractAddress = '<address here>'; 
 //A public RPC Endpoint (see table from contract section)
 const rpc = '<chain rpc http';
 
 const provider = new ethers.providers.JsonRpcProvider(rpc);
 const connectedReadWaterlilyContract = new ethers.Contract(
-  contractAddress,
-  WaterlilyCompiledContract.abi,
-  provider
-);
+      contractAddress,
+      WaterlilyCompiledContract.abi,
+      provider
+    );
 ```
 
 Fetching data from the contract is a read event, so we can use the above to fetch the artist details or fetch the previously generated images belonging to a user's wallet
 
 ```typescript
-const imageIDs = await connectedReadWaterlilydContract?.getCustomerImages(
-  customerWallet
-);
+const imageIDs = await connectedReadWaterlilydContract?.getCustomerImages(customerWallet);
 ```
 
 Listening for events on the contract is also a read-only (get) event, we can use the public RPC to listen for event emissions on-chain.
@@ -994,61 +1060,57 @@ Listening for events on the contract is also a read-only (get) event, we can use
 ```typescript
 //use the read-only connected Bacalhau Contract
 connectedReadWaterlilyContract.on(
-  // Listen for the specific event we made in our contract
-  'ImageComplete',
-  (Image: image) => {
-    //DO STUFF WHEN AN IMAGEEVENT COMES IN
-    // eg. filter if it is this user's and reload generated imagese-display or
-    //
-  }
+    // Listen for the specific event we made in our contract
+    'ImageComplete',
+    (Image: image) => {
+        //DO STUFF WHEN AN IMAGEEVENT COMES IN
+        // eg. filter if it is this user's and reload generated imagese-display or
+        //
+    }
 );
 ```
 
 **Connecting to the contract in write mode** - this requires that the Ethereum object is being injected into the web browser by a wallet so that a user can sign for a transaction and pay for gas - which is why we're checking for a window.ethereum object.
 
 ```typescript
-//Typescript needs to know window is an object with potentially and ethereum value.
+//Typescript needs to know window is an object with potentially and ethereum value. 
 declare let window: any;
-//The compiled contract found in hardhat/artifacts/contracts
+//The compiled contract found in hardhat/artifacts/contracts  
 import WaterlilyCompiledContract from '@Contracts/Waterlily.sol/Waterlily.json';
 //On-chain address of the contract
-const contractAddress = '<address here>';
+const contractAddress = '<address here>'; 
 
 //check for the ethereum object
 if (!window.ethereum) {
-  //ask user to install a wallet or connect
-  //abort this
+    //ask user to install a wallet or connect
+    //abort this
 }
 // else there's a wallet provider
 else {
-  // same function - different provider - this one has a signer - the user's connected wallet address
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const contract = new ethers.Contract(
-    contractAddress,
-    WaterlilyCompiledContract.abi,
-    provider
-  );
-  const signer = provider.getSigner();
-  const connectedWriteWaterlilyContract = contract.connect(signer);
+// same function - different provider - this one has a signer - the user's connected wallet address
+   const provider = new ethers.providers.Web3Provider(window.ethereum);
+   const contract = new ethers.Contract(
+      contractAddress,
+      WaterlilyCompiledContract.abi,
+      provider
+    );
+   const signer = provider.getSigner();
+   const connectedWriteWaterlilyContract = contract.connect(signer);
 }
 ```
 
 Calling the CreateImage() function in the Waterlily contract with a value of $imageCost:
 
 ```typescript
-const runStableDiffusionJob = async (prompt: string, artistid: string) => {
-  try {
-    console.log('Calling stable diffusion function in Waterlily contract...');
-    const tx = await connectedWriteWaterlilyContract.CreateImage(
-      artistid,
-      prompt,
-      { value: imageCost }
-    ); //wait for netowrk to include tx in a block
-    const receipt = await tx.wait(); //wait for transaction to be run and return a receipt
-  } catch (error: any) {
-    console.error(error);
-  }
-};
+  const runStableDiffusionJob = async (prompt: string, artistid: string) => {
+    try {
+      console.log('Calling stable diffusion function in Waterlily contract...');
+      const tx = await connectedWriteWaterlilyContract.CreateImage(artistid, prompt, { value: imageCost }); //wait for netowrk to include tx in a block
+      const receipt = await tx.wait(); //wait for transaction to be run and return a receipt
+    } catch (error: any) {
+      console.error(error);
+    }
+}
 ```
 
 Calling the minting function for the NFT contract is also described in [this blog](https://developerally.com/build-your-own-ai-generated-art-nft-dapp).
@@ -1095,19 +1157,21 @@ const fetchChainId = async () => {
     });
 };
 
-const fetchWalletBalance = async (account: string): Promise<any> => {
-  let balanceNumber: number;
-  try {
-    const balance = await window.ethereum.request({
-      method: 'eth_getBalance',
-      params: [account],
-    });
-    const formattedBalance = ethers.utils.formatEther(balance);
-    balanceNumber = parseFloat(formattedBalance);
-  } catch (error) {
-    console.error('error getting balance', error);
-  }
-};
+const fetchWalletBalance = async (
+    account: string
+  ): Promise<any> => {
+    let balanceNumber: number;
+    try {
+        const balance = await window.ethereum.request({
+            method: 'eth_getBalance',
+            params: [account],
+          });
+        const formattedBalance = ethers.utils.formatEther(balance);
+        balanceNumber = parseFloat(formattedBalance);    
+    } catch (error) {
+      console.error('error getting balance', error);
+    }
+}
 
 //!! This function checks for a wallet connection WITHOUT being intrusive to to the user or opening their wallet
 export const checkForWalletConnection = async () => {
@@ -1125,7 +1189,7 @@ export const checkForWalletConnection = async () => {
         return false;
       });
   } else {
-    //Handle no wallet connection
+    //Handle no wallet connection 
     return false;
   }
 };
@@ -1154,9 +1218,9 @@ export const setWalletListeners = () => {
     window.ethereum.on('balanceChanged', () => {
       // handle changed balance case
     });
-  } else {
-    //handle the no wallet case
-  }
+  } else { 
+        //handle the no wallet case
+    }
 };
 
 export const changeWalletChain = async (newChainId: string) => {
@@ -1182,7 +1246,10 @@ export const addWalletNetwork = async () => {
         params: [
           {
             chainId: '',
-            rpcUrls: ['https://', 'https://'],
+            rpcUrls: [
+              'https://',
+              'https://',
+            ],
             chainName: 'Filecoin ...',
             nativeCurrency: {
               name: 'tFIL',
@@ -1212,7 +1279,7 @@ export const addWalletNetwork = async () => {
 
 I've previously written about how to create your own open source Stable Diffusion script here and run it on Bacalhau [here](https://developerally.com/build-your-own-ai-generated-art-nft-dapp).
 
-%[https://www.youtube.com/watch?v=53uY48e1lis&t=1454s]
+%[https://www.youtube.com/watch?v=53uY48e1lis&t=1454s] 
 
 Underlying the finetuning is [Dreambooth](https://arxiv.org/abs/2208.12242), which makes stable diffusion even more powerful with the ability to generate realistic looking pictures of humans, animals or any other object by just training them on 20-30 images.
 
@@ -1222,8 +1289,10 @@ There's a great guide on how you could get started making scripts like this in t
 
 Check the following repo's out for more inspiration:
 
-- Training and inference of images: [https://github.com/JoePenna/Dreambooth-Stable-Diffusion](https://github.com/JoePenna/Dreambooth-Stable-Diffusion)
-- Preparation of regularisation images: [https://github.com/aitrepreneur/SD-Regularization-Images-Style-Dreambooth](https://github.com/aitrepreneur/SD-Regularization-Images-Style-Dreambooth)
+* Training and inference of images: [https://github.com/JoePenna/Dreambooth-Stable-Diffusion](https://github.com/JoePenna/Dreambooth-Stable-Diffusion)
+    
+* Preparation of regularisation images: [https://github.com/aitrepreneur/SD-Regularization-Images-Style-Dreambooth](https://github.com/aitrepreneur/SD-Regularization-Images-Style-Dreambooth)
+    
 
 ## Bonus: Creating a Private Bacalhau Node Cluster
 
@@ -1240,19 +1309,30 @@ For me, the current AI trajectory just makes me more sure that blockchain is goi
 
 Proving for truth, authenticity and provenance of data and content are going to be essential in an AI-world. This applies not just to art content, but to any content being released, be it Tay Tay's new music album, or, more seriously, news content, scientific research papers and more.
 
-%[https://twitter.com/rpnickson/status/1639813074176679938?s=20]
+%[https://twitter.com/rpnickson/status/1639813074176679938?s=20] 
 
 Waterlily is aiming to provide a new revenue stream for original creators and perhaps tackle some of the current issues with AI-Art generation. It could also serve as a thought experiment for how we go about both tokenising and training datasets in fully decentralised ways that continues to give individuals authority over their own data.
+
+# 🗺️ Roadmap
+
+Waterlily.ai is an open source repository. We welcome input via the github or submissions of ideas and feedback. Tell us what you think! Tell us what you think should happen next, or help us fix the 🐛🪲🐞 's
+
+If you're an artist, we'd also love to hear from you! Please get in touch :)
 
 # ✍️ Keep in touch!
 
 Congrats if you read all the way through!!!
 
-> A big thank you to the team that helped me develop and deploy Waterlily & Lilypad - including [Luke Marsden](https://twitter.com/lmarsden), [Kai Davenport](https://twitter.com/kai_davenport), [Simon Worthington](https://twitter.com/51M0NW), [Richard Blythman](https://twitter.com/richardblythman) from [Algovera](https://twitter.com/AlgoveraAI) (absolute star creating the incredible models used) and to the rest of the [Bacalhau](https://twitter.com/BacalhauProject) crew!
+> A big thank you to the team that helped me develop and deploy Waterlily & Lilypad - including [Luke Marsden](https://twitter.com/lmarsden), [Kai Davenport](https://twitter.com/kai_davenport), [@Wes Floyd](https://twitter.com/weswfloyd), [Simon Worthington](https://twitter.com/51M0NW), [Richard Blythman](https://twitter.com/richardblythman) from [Algovera](https://twitter.com/AlgoveraAI) and the rest of the [Bacalhau](https://twitter.com/BacalhauProject) crew - without whom this app would not have been possible.
+> 
+> ![Thank You Hug GIF - Thank You Hug Thanks - Discover & Share GIFs](https://media.tenor.com/BT4-2zX_v8sAAAAC/thank-you-hug.gif align="center")
 
+  
+  
 Keep in touch with us!
 
-- Filecoin Project Slack #bacalhau [@filecoinproject](https://filecoinproject.slack.com)
+* [Filecoin Project Slack](https://filecoinproject.slack.com/) #bacalhau
+    
 
 ![](https://cdn.hashnode.com/res/hashnode/image/upload/v1674791065491/9f66f9b5-858f-4db6-8ed7-83ffd0c63c80.png align="center")
 
