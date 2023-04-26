@@ -2,14 +2,16 @@
 
 Live on FVM at [www.waterlily.ai](http://www.waterlily.ai)
 
-%[https://youtu.be/WD3yrBxunOs] 
+%[https://youtu.be/WD3yrBxunOs]. 
 
+&nbsp;
 # 📌 Quick Links
 
 > Github: [https://github.com/bacalhau-project/Waterlily](https://github.com/bacalhau-project/Waterlily)
 > 
 > Docs: [https://docs.bacalhau.org](https://docs.bacalhau.org/)
 
+&nbsp;
 # **👩‍💻 What we'll do...**
 
 In this tutorial I'll take you through how to go about building a similar application to Waterlily.ai on FEVM and Bacalhau, including:
@@ -29,6 +31,7 @@ In this tutorial I'll take you through how to go about building a similar applic
 
 Some knowledge of javascript and solidity is assumed in this tutorial.
 
+&nbsp;
 # 🗺️ Overview
 
 There’s no doubt that AI has reached the mass adoption phase of the technology cycle and is reshaping industries and generating new opportunities across a variety of verticals.
@@ -37,7 +40,7 @@ The use of Stable Diffusion models, for generative AI-Art, is no exception with 
 
 These stable diffusion models raise some important social and legal questions though, not least of which is the problematic use of pre-existing images in models without proper attribution, consent, or revenue provided to the original creator.
 
-![](https://cdn.hashnode.com/res/hashnode/image/upload/v1682315763499/2fc310a4-19d8-4835-9caf-14d64c00f2b6.png align="center")
+![Getty Images sues AI art generator Stable Diffusion for copyright Infringement](https://cdn.hashnode.com/res/hashnode/image/upload/v1682315763499/2fc310a4-19d8-4835-9caf-14d64c00f2b6.png align="center")
 
 [Waterlily.ai](http://Waterlily.ai) is a proof-of-concept application aiming to provide an alternative ethical solution by creating a new paradigm for AI image generation that pays royalties to the original creator and offers a new revenue stream for artists to explore.
 
@@ -45,14 +48,15 @@ To achieve this, Waterlily leverages the transparency & trustlessness of blockch
 
 Each stable diffusion model on Waterlily is trained & finetuned to a selection of artist work that has been uploaded by the artist themselves or is available in the public domain. When a user navigates to the Waterlily.ai platform, they simply enter a text prompt for the images they want to create and choose an artist style that appeals to them.
 
-![](https://cdn.hashnode.com/res/hashnode/image/upload/v1682492030319/0d0d1a73-9783-420d-be5c-f6abd7abe6f8.png align="center")
+![Waterlily Ethical Art Generation Homepage](https://cdn.hashnode.com/res/hashnode/image/upload/v1682492030319/0d0d1a73-9783-420d-be5c-f6abd7abe6f8.png align="center")
 
 The small fee paid by the user is then distributed to the artist's wallet (except the fees required by the network to run the contract calls & return the generated images) - or to a vetted creator foundation in the case of public images.
 
 A user can then opt to download these generated images or mint them as NFTs.
 
-![](https://cdn.hashnode.com/res/hashnode/image/upload/v1682476107570/3e5e30f6-f75c-4051-bae5-ee61dbb0c12b.gif align="center")
+![Waterlily User Generated Image Examples Gif](https://cdn.hashnode.com/res/hashnode/image/upload/v1682476107570/3e5e30f6-f75c-4051-bae5-ee61dbb0c12b.gif align="center")
 
+&nbsp;
 # 🥞 The Tech Stack
 
 Waterlily relies on two main technology tools -
@@ -63,7 +67,7 @@ Waterlily relies on two main technology tools -
 
 The image below provides some great context for the Filecoin star map with FVM = Programmable Application and Bacalhau = Computation Services.
 
-![](https://cdn.hashnode.com/res/hashnode/image/upload/v1681709912892/44470bb6-51e9-452f-849c-280f3d7ba71d.png align="center")
+![Filecoin - 4 key components of a decentralised internet Slide](https://cdn.hashnode.com/res/hashnode/image/upload/v1681709912892/44470bb6-51e9-452f-849c-280f3d7ba71d.png align="center")
 
 ### Filecoin Virtual Machine (FVM)
 
@@ -71,7 +75,7 @@ The Filecoin Virtual Machine went live on the 14th March this year enabling a ne
 
 Fun fact: 14 March is 3.14 in American date-time or the first 3 PI digits which also happens to be the network id of the FVM mainnet chain!
 
-![Bacalhau Project Report – March 14, 2023 - by Luke Marsden](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnD0oiFQJhrKsL6o6EFsa_FR33_kR2HRYrDc4uBIKqUBq4HZ7aOBbHO0mbAew9TYK3atk&usqp=CAU align="center")
+![Bacalhau Project Report – March 14, 2023 - by Luke Marsden gif](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnD0oiFQJhrKsL6o6EFsa_FR33_kR2HRYrDc4uBIKqUBq4HZ7aOBbHO0mbAew9TYK3atk&usqp=CAU align="center")
 
 ### Bacalhau
 
@@ -81,11 +85,11 @@ Bacalhau is aiming to help democratise the future of data processing by enabling
 
 Making data processing and computation open and available to everyone & speeding up the processing times is possible in Bacalhau, firstly - by using batch processing across multiple nodes and secondly by putting the processing nodes where the data lives!
 
-![image](https://docs.bacalhau.org/assets/images/architecture-purpose-f192f229e16abe177d77f146ab2dca30.jpeg align="left")
+![Bacalhau Architecture Image](https://docs.bacalhau.org/assets/images/architecture-purpose-f192f229e16abe177d77f146ab2dca30.jpeg align="left")
 
 ### FVM + Bacalhau = better together
 
-![](https://cdn.hashnode.com/res/hashnode/image/upload/v1681709945041/a95b16ed-8dfb-4491-bbd8-b6671e933111.png align="center")
+![Filecoin, FVM, Bacalhau, Lilypad as L0, L1, L2 & unifier layers Slide](https://cdn.hashnode.com/res/hashnode/image/upload/v1681709945041/a95b16ed-8dfb-4491-bbd8-b6671e933111.png align="center")
 
 More on this later ;)
 
@@ -121,7 +125,7 @@ More on this later ;)
         
 * **Smart Contract Interactions** from client \[Metamask, Ethers, Chainstack RPC Node\]
     
-    * Using a [public RPC node](https://www.alchemy.com/overviews/rpc-node) - I can get read-only interactions with my blockchain contract.
+    * Using a [public RPC node](https://api.node.glif.io) - I can get read-only interactions with my blockchain contract.
         
     * With a [Metamask](https://metamask.io/) provider (or similar wallet that [injects the Ethereum API](https://docs.metamask.io/guide/ethereum-provider.html#table-of-contents) specified by [EIP-1193](https://eips.ethereum.org/EIPS/eip-1193) into the browser), we enable write calls to the blockchain contract.
         
@@ -135,18 +139,18 @@ More on this later ;)
     
     * [Bacalhau](https://docs.bacalhau.org/) is a peer-to-peer open computation network that provides a platform for public, transparent and optionally verifiable computation processes. It's a decentralised off-chain data computation layer
         
-
+&nbsp;
 # 🏗️ Building the Smart Contracts for Waterlily.ai
 
 Wooo, pre-amble complete - let's make some code!
 
 ### Creating the Smart Contracts on FEVM
 
-The FVM is a fully EVM-compatible network (hence the abbreviation - FEVM). This means that not only do we have access to all of the Filecoin decentralised storage network's [API calls](https://docs.filecoin.io/reference/json-rpc/introduction/) we can also use solidity to write our contracts and take advantage of all the awesome tooling & audited contracts available to us on the EVM network as well.
+The FVM is a fully EVM-compatible network (hence the abbreviation - FEVM). This means that not only do we have access to all of the Filecoin decentralised storage network's [API calls](https://docs.filecoin.io/reference/json-rpc/introduction/) we can also use solidity to write our contracts and take advantage of all the awesome tooling & audited contracts available to us on the EVM network as well (and enhance them!).
 
 ![The Reality of a Developer's Life Gif](https://dz2cdn1.dzone.com/storage/temp/13990131-code-09.gif align="center")
 
-*Woo-hoo (dev-style) party time 🎉*
+<center>Woo-hoo (dev-style) party time 🎉</center>
 
 This project relies on 2 main contracts:
 
@@ -368,7 +372,7 @@ Also, side point - hunky dory is a really weird expression... where did it come 
 
 ![GIF spongebob squarepants season 9 episode 13 - animated GIF on GIFER](https://i.gifer.com/ReWf.gif align="center")
 
-*These folks look pretty hunky dory...*
+<center>These folks look pretty hunky dory...</center>
 
 * Images!
     
@@ -512,7 +516,7 @@ This is all that's needed on the contract side of things to invoke a Bacalhau jo
 
 ![Cool Cat GIF](https://media.tenor.com/9LjKofWMtV4AAAAM/cool-cat.gif align="center")
 
-*^ Totally you right now*
+<center>^ Totally you right now</center>
 
 All that needs to happen now is to put the full contract together and deploy it!
 
@@ -527,9 +531,11 @@ You can skip to the bonus sections below to see more details on creating a priva
 
 ### **Full Contract**
 
-Below is a full copy of a working solidity contract utilising the Lilypad StableDiffusion spec. (brace yourself - it's a bit lengthy!)
+Below is a full copy of a working solidity contract utilising the Lilypad StableDiffusion spec.
 
 ![Brace Yourself GIFs | Tenor](https://media.tenor.com/bkBSIGeb3XQAAAAM/brace-yourself-got.gif align="center")
+
+<center>Brace yourself... Lengthy code snippet incoming...</center>
 
 > 👉 [Click here to open this contract in remix!](https://remix.ethereum.org/bacalhau-project/Waterlily/blob/develop/hardhat/contracts/WaterlilyPublicContractExample.sol)
 
@@ -841,11 +847,11 @@ To deploy to a Filecoin network, we'll need to
 To add the network you're deploying to in the wallet, you can either look it up on [chainlist.org](https://chainlist.org/?search=Filecoin&testnets=true) and add it via their interface, or you can add it manually.  
 To manually add it, navigate to your Metamask wallet and click "Add network" button
 
-![](https://cdn.hashnode.com/res/hashnode/image/upload/v1682304141584/4e262a9d-1b12-43e3-9769-5609c36c02b3.png align="left")
+![Metamask Add Network Image](https://cdn.hashnode.com/res/hashnode/image/upload/v1682304141584/4e262a9d-1b12-43e3-9769-5609c36c02b3.png align="left")
 
 Fill out the following details and then click 'Save"
 
-![](https://cdn.hashnode.com/res/hashnode/image/upload/v1682304039986/36e9a229-528f-4270-8395-632fd89e2065.png align="left")
+![Metamask Add Newtork Image](https://cdn.hashnode.com/res/hashnode/image/upload/v1682304039986/36e9a229-528f-4270-8395-632fd89e2065.png align="left")
 
 If you're deploying to a testnet, you'll need to use the faucet to add funds to your wallet - see the above chart for the faucet links. Note the Calibration Net faucet requires a filecoin type address - which you can find by connecting your metamask wallet at [https://www.glif.io/](https://www.glif.io/).
 
@@ -861,11 +867,11 @@ Once you have the 2 contracts and the LilypadCallerInterface in remix, make sure
 
 Go to the compiler tab (solidity icon) and click compile
 
-![](https://cdn.hashnode.com/res/hashnode/image/upload/v1682316846199/078b6214-adbd-4fd5-9958-547af1915daf.png align="center")
+![Remix Compile Contract Image](https://cdn.hashnode.com/res/hashnode/image/upload/v1682316846199/078b6214-adbd-4fd5-9958-547af1915daf.png align="center")
 
 Then go to the Ethereum tab (Ethereum icon) and choose "Injected Provider - Metamask" - this will link to your current Metamask network and wallet settings.
 
-![](https://cdn.hashnode.com/res/hashnode/image/upload/v1682317298848/89c4150a-6628-4baa-9960-2afcfd3beeff.png align="center")
+![Remix Deploy Contract Image](https://cdn.hashnode.com/res/hashnode/image/upload/v1682317298848/89c4150a-6628-4baa-9960-2afcfd3beeff.png align="center")
 
 Then you can deploy this using the big orange Deploy button on the left and passing in the LilypadEvents contract address (for the network you're deploying to) as a constructor argument. Metamask will ask you to approve the deployment transaction & fee.
 
@@ -873,7 +879,7 @@ Then you can deploy this using the big orange Deploy button on the left and pass
 
 On confirming, the contract will be deployed to your connected network. You can look it up in a block explorer or play around with it in remix (bottom left):
 
-![](https://cdn.hashnode.com/res/hashnode/image/upload/v1682318719786/06391efd-32d3-469a-b3d3-2ff0b6ab0c8e.png align="center")
+![Metamask Confirm Transaction](https://cdn.hashnode.com/res/hashnode/image/upload/v1682318719786/06391efd-32d3-469a-b3d3-2ff0b6ab0c8e.png align="center")
 
 > ⚠️ Don't forget to save the address for use in our front end!! ⚠️
 
@@ -889,7 +895,7 @@ To set up a hardhat project see their [docs here](https://hardhat.org/hardhat-ru
 
 The wallet private key, needed in the config for hardhat is available via Metamask -&gt; account details -&gt; export private key, and is here stored in a .env variable.
 
-![](https://cdn.hashnode.com/res/hashnode/image/upload/v1682470066433/49da1d73-075c-48f8-8a8c-cf46025bce24.png align="center")
+![Metamask get private key Image](https://cdn.hashnode.com/res/hashnode/image/upload/v1682470066433/49da1d73-075c-48f8-8a8c-cf46025bce24.png align="center")
 
 *hardhat.config.ts*
 
@@ -1006,6 +1012,7 @@ You just deployed your contracts to FVM!
 
 ![Dancing Unicorn GIFs | Tenor](https://media.tenor.com/MvvXjGVrnMQAAAAC/dancing-unicorn-unicorn.gif align="center")
 
+&nbsp;
 # 📺 Building the User Interface
 
 The UI, or front-end is built on React (NextJS) and Typescript. To build the front end, I'm using NextJS and Typescript. Though, while I use NextJS's routing, I'm not taking advantage of any of NextJS's SSR (server side rendering) features, so you could really just go with a vanilla React set up (or any framework of your choice of course!).
@@ -1273,11 +1280,12 @@ export const addWalletNetwork = async () => {
 };
 ```
 
+&nbsp;
 # 💫 Bonus Code Section
 
 ## Bonus: Creating & Training the Artist ML Models
 
-I've previously written about how to create your own open source Stable Diffusion script here and run it on Bacalhau [here](https://developerally.com/build-your-own-ai-generated-art-nft-dapp).
+I've previously written about how to create your own open source Stable Diffusion script and run it on Bacalhau [here](https://developerally.com/build-your-own-ai-generated-art-nft-dapp).
 
 %[https://www.youtube.com/watch?v=53uY48e1lis&t=1454s] 
 
@@ -1301,6 +1309,7 @@ To create your own private Bacalhau node cluster - you can follow the guide [her
 
 ![Magic GIFs | Tenor](https://media.tenor.com/wn2_Qq6flogAAAAM/magical-magic.gif align="center")
 
+&nbsp;
 # **🌟 Possibilities for AI & Blockchain**
 
 The main power of this POC application lies in its open-source tech stack and in combining the capability of decentralised and verifiable ML & AI with Blockchain payments and traceability.
@@ -1313,12 +1322,14 @@ Proving for truth, authenticity and provenance of data and content are going to 
 
 Waterlily is aiming to provide a new revenue stream for original creators and perhaps tackle some of the current issues with AI-Art generation. It could also serve as a thought experiment for how we go about both tokenising and training datasets in fully decentralised ways that continues to give individuals authority over their own data.
 
+&nbsp;
 # 🗺️ Roadmap
 
 Waterlily.ai is an open source repository. We welcome input via the github or submissions of ideas and feedback. Tell us what you think! Tell us what you think should happen next, or help us fix the 🐛🪲🐞 's
 
 If you're an artist, we'd also love to hear from you! Please get in touch :)
 
+&nbsp;
 # ✍️ Keep in touch!
 
 Congrats if you read all the way through!!!
