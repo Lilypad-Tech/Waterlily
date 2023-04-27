@@ -31,6 +31,23 @@ export const networks = {
     },
     imageUrlRoot: `https://staging.api.waterlily.cluster.world/api/v1/images/`,
   },
+  filecoinCalibrationNet: {
+    name: 'Filecoin Calibration Testnet',
+    apiServer: 'https://staging.api.waterlily.cluster.world',
+    chainId: '0x4cb2f',
+    rpc: ['https://api.calibration.node.glif.io/rpc/v0'],
+    nativeCurrency: {
+      name: 'tFIL',
+      symbol: 'tFIL',
+      decimals: 18,
+    },
+    blockExplorer: ['https://calibration.filscan.io/'],
+    contracts: {
+      WATERLILY_CONTRACT_ADDRESS: '',
+      WATERLILY_NFT_CONTRACT_ADDRESS: '',
+    },
+    imageUrlRoot: `https://staging.api.waterlily.cluster.world/api/v1/images/`,
+  },
   filecoinMainnet: {
     name: 'Filecoin Mainnet',
     apiServer: 'https://api.waterlily.cluster.world',
