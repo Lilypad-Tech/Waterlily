@@ -1,5 +1,5 @@
 # Waterlily
-A project bringing ethics back to Generative AI-Art
+A project pushing for fairer attribution models for AI-generated Art
 
 [Live on FVM!](https://www.waterlily.ai/)
 ![image](https://user-images.githubusercontent.com/12529822/226782037-3d2806ff-c6cc-4346-819d-fabea9b2b688.png)
