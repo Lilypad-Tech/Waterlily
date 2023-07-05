@@ -11,7 +11,7 @@ export const LinkTo: React.FC<{
       href={
         href
           ? href
-          : 'https://luck-muscle-f89.notion.site/Waterlily-ai-FAQs-e920ff00040d411eab93538525abaa3c'
+          : 'https://www.notion.so/lilypadnetwork/Waterlily-ai-FAQs-d89f329c33304a7d8bb8ff8d6ef6e5ac'
       }
       target="_blank"
       rel="noopener noreferrer"

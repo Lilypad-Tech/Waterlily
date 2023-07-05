@@ -21,7 +21,7 @@ export const Description: FC<DescriptionProps> = ({ text }): ReactElement => {
       <Typography variant="h6">They deserve to be paid.</Typography>
       {/* <Typography variant="body1">100% goes to creators </Typography> */}
       <Link
-        href="https://luck-muscle-f89.notion.site/Waterlily-2412ac513d414a8e9d60ad60d06efd8d"
+        href="https://www.notion.so/lilypadnetwork/Waterlily-ai-433c70993c0c4af4a9b5a562f42292c3"
         target="_blank"
         rel="noopener noreferrer"
       >
